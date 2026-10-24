@@ -1,16 +1,113 @@
-/* Shared small-screen rules. Page styles can refine these without duplicating
-   viewport, overflow, and touch-target fixes. */
+/* ==========================================================================
+   Comprehensive Mobile & Tablet Responsiveness System
+   Ensures flawless viewports, touch targets, modals, and tables on mobile devices
+   ========================================================================== */
 
+/* 1. Global Safe-Area & Viewport Adjustments */
 html,
 body,
 #root {
   max-width: 100%;
   overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
 }
 
+/* 2. Tablet & Mobile Responsive Rules (max-width: 992px) */
+@media (max-width: 992px) {
+  /* Customer Dashboard */
+  .ts-dashboard-body {
+    flex-direction: column;
+    padding: 0 1rem;
+    gap: 1rem;
+  }
+
+  .ts-sidebar {
+    position: static;
+    width: 100%;
+    margin: 1rem 0 0;
+    padding: 1rem;
+  }
+
+  .ts-sidebar-menu {
+    flex-direction: row;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    gap: 0.5rem;
+  }
+
+  .ts-sidebar-menu::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ts-sidebar-item {
+    width: auto;
+    white-space: nowrap;
+    padding: 0.6rem 1rem;
+  }
+
+  .ts-main-grid-2col {
+    grid-template-columns: 1fr;
+  }
+
+  .ts-metrics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* Admin Dashboard */
+  .admin-header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .admin-user-profile {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .admin-sections-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .packages-grid-admin,
+  .approval-cards-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+
+  /* Hotel Dashboard */
+  .hotel-profile-card {
+    grid-template-columns: 1fr;
+  }
+
+  .hotel-hero-img {
+    height: 260px;
+    min-height: auto;
+  }
+
+  .rooms-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+
+  /* Guide Dashboard */
+  .guide-profile-card {
+    grid-template-columns: 1fr;
+  }
+
+  .guide-avatar-img {
+    height: 260px;
+    min-height: auto;
+  }
+
+  .guide-meta-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 3. Small Mobile Devices (max-width: 768px) */
 @media (max-width: 768px) {
   html {
-    scroll-padding-top: 78px;
+    scroll-padding-top: 72px;
   }
 
   body {
@@ -22,31 +119,249 @@ body,
   }
 
   .container {
-    padding-inline: 18px;
+    padding-inline: 16px;
   }
 
+  /* Universal Touch Targets: Ensure min 44px on mobile */
   button,
   a,
   input,
   select,
   textarea {
-    min-height: 42px;
+    min-height: 44px;
+    touch-action: manipulation;
   }
 
   input,
   select,
   textarea {
-    font-size: 16px;
+    font-size: 16px !important; /* Prevents auto-zoom on iOS */
   }
 
-  .navbar {
-    height: 68px;
+  /* Sticky Top Navbars for Dashboards */
+  .ts-top-nav {
+    height: auto;
+    padding: 0.85rem 1rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
   }
 
-  .navbar.scrolled {
-    height: 62px;
+  .ts-header-right {
+    width: 100%;
+    justify-content: space-between;
   }
 
+  .ts-search-pill {
+    width: 100%;
+    max-width: 200px;
+  }
+
+  .ts-nav-links {
+    order: 3;
+    width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    gap: 1rem;
+    padding-bottom: 0.25rem;
+  }
+
+  .ts-nav-links::-webkit-scrollbar {
+    display: none;
+  }
+
+  .admin-header,
+  .agent-header,
+  .hotel-header,
+  .transport-header,
+  .guide-header {
+    padding: 1.25rem 1rem;
+  }
+
+  .admin-title-badge h2,
+  .agent-title-badge h2,
+  .hotel-title-badge h2,
+  .transport-title-badge h2,
+  .guide-title-badge h2 {
+    font-size: 1.35rem;
+  }
+
+  /* Tabs Bar Horizontal Scroll on Mobile */
+  .admin-tabs-bar,
+  .agent-tabs-bar,
+  .hotel-tabs-bar,
+  .transport-tabs-bar,
+  .guide-tabs-bar {
+    padding: 0 1rem;
+    gap: 0.5rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .admin-tabs-bar::-webkit-scrollbar,
+  .agent-tabs-bar::-webkit-scrollbar,
+  .hotel-tabs-bar::-webkit-scrollbar,
+  .transport-tabs-bar::-webkit-scrollbar,
+  .guide-tabs-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .admin-tabs-bar .tab-btn,
+  .agent-tabs-bar .tab-btn,
+  .hotel-tabs-bar .tab-btn,
+  .transport-tabs-bar .tab-btn,
+  .guide-tabs-bar .tab-btn {
+    padding: 0.75rem 1rem;
+    font-size: 0.88rem;
+    flex-shrink: 0;
+  }
+
+  /* Content Padding */
+  .admin-content-area,
+  .agent-content-area,
+  .hotel-content-area,
+  .transport-content-area,
+  .guide-content-area {
+    padding: 0 1rem;
+    margin: 1.25rem auto;
+  }
+
+  /* Metrics & Grids */
+  .ts-metrics-grid,
+  .kpi-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .ts-hero-card {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .ts-hero-heading {
+    font-size: 1.85rem;
+  }
+
+  .ts-hero-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .ts-hero-actions button,
+  .ts-hero-actions a {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* All Grids Single Column on Mobile */
+  .agent-packages-grid,
+  .inquiries-grid,
+  .rooms-grid,
+  .services-grid,
+  .requests-grid,
+  .packages-grid-admin,
+  .approval-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  /* Fast Gateway Search Widget */
+  .ts-search-grid-bar {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .ts-search-submit-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .ts-details-4grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  /* Tables: Smooth Horizontal Touch Scrolling */
+  .admin-table-container,
+  .agent-table-container,
+  .hotel-table-container,
+  .transport-table-container,
+  .guide-table-container {
+    border-radius: 14px;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+  }
+
+  .admin-table,
+  .agent-table,
+  .hotel-table,
+  .transport-table,
+  .guide-table {
+    min-width: 680px;
+  }
+
+  /* Filter Bars */
+  .pane-filter-bar,
+  .pane-header-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.85rem;
+  }
+
+  .search-box,
+  .role-filter-group {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  /* Schedule Row on Mobile */
+  .schedule-row-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1.15rem;
+  }
+
+  .sch-times {
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  /* Modals on Mobile: Bottom-sheet style with safe scroll */
+  .modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .agent-modal-card,
+  .hotel-modal-card,
+  .transport-modal-card,
+  .guide-modal-card,
+  .admin-modal-card {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 24px 24px 0 0;
+    max-height: 85dvh;
+    padding: 1.75rem 1.25rem max(1.5rem, env(safe-area-inset-bottom));
+  }
+
+  .form-row-2,
+  .form-row-3 {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .modal-actions button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Public Showcase Pages */
   .navbar-container {
     padding-inline: max(16px, env(safe-area-inset-left)) max(16px, env(safe-area-inset-right));
   }
@@ -56,124 +371,20 @@ body,
     padding-bottom: max(24px, env(safe-area-inset-bottom));
   }
 
-  .mobile-nav-scrim {
-    height: 100dvh;
-  }
-
-  .new-home {
-    margin-top: -68px;
-  }
-
-  .new-home-hero {
-    min-height: max(680px, 100svh);
-  }
-
-  .scroll-hero-section {
-    height: 130vh;
-    min-height: 720px;
-  }
-
-  .scroll-hero-sticky {
-    min-height: 600px;
-    padding: 88px 18px 22px;
-  }
-
-  .scroll-hero-topline,
-  .scroll-hero-content-wrap,
-  .scroll-hero-bottom-bar {
-    max-width: none;
-  }
-
-  .scroll-hero-tagline {
-    display: none;
-  }
-
-  .scroll-hero-content-wrap {
-    align-items: center;
-  }
-
-  .scroll-hero-slide,
-  .scroll-hero-slide.align-right {
-    max-width: 100%;
-    margin-inline: 0;
-    text-align: left;
-  }
-
-  .scroll-hero-slide.align-right .scroll-hero-badge {
-    justify-content: flex-start;
-  }
-
-  .scroll-hero-title {
-    font-size: clamp(2.65rem, 12vw, 4.2rem);
-  }
-
-  .scroll-hero-desc {
-    max-width: 34rem;
-    font-size: 14px;
-  }
-
-  .scroll-hero-actions {
-    align-items: stretch;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .scroll-hero-primary-btn,
-  .scroll-hero-secondary-btn {
-    justify-content: center;
-    width: 100%;
-  }
-
-  .scroll-indicator-text {
-    font-size: 9px;
-  }
-
-  .scroll-steps {
-    gap: 5px;
-  }
-
-  .step-dot {
-    flex: 1;
-    width: auto;
-  }
-
-  .step-dot.is-active {
-    width: auto;
-  }
-
-  .destination-hero,
-  .hotel-hero,
-  .package-heading {
+  .destination-grid,
+  .hotel-grid,
+  .package-grid {
+    grid-template-columns: 1fr;
     width: 100%;
   }
 
   .destination-search,
   .hotel-search-panel,
   .package-search {
-    max-width: none;
-  }
-
-  .destination-search input,
-  .hotel-search-input input,
-  .package-search input {
-    min-width: 0;
-  }
-
-  .hotel-search-panel label {
-    gap: 8px;
-  }
-
-  .hotel-search-panel input[type='range'] {
-    min-width: 0;
-  }
-
-  .destination-drawer {
+    flex-direction: column;
+    align-items: stretch;
     width: 100%;
-    border-left: 0;
-  }
-
-  .drawer-body h2 {
-    overflow-wrap: anywhere;
+    gap: 0.75rem;
   }
 
   .compare-bar {
@@ -182,133 +393,20 @@ body,
     width: auto;
     padding-bottom: max(13px, env(safe-area-inset-bottom));
   }
-
-  .booking-backdrop,
-  .hotel-backdrop,
-  .vehicle-backdrop {
-    padding: 10px;
-    align-items: end;
-  }
-
-  .booking-modal,
-  .hotel-booking,
-  .vehicle-modal {
-    width: 100%;
-    max-width: 100%;
-    max-height: calc(100dvh - 20px);
-    overflow-y: auto;
-  }
-
-  .modal-close,
-  .hotel-modal-close,
-  .vehicle-close {
-    width: 42px;
-    height: 42px;
-  }
-
-  .admin-table-container,
-  .agent-table-container,
-  .hotel-table-container,
-  .transport-table-container,
-  .guide-table-container {
-    max-width: 100%;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .auth-page,
-  .login-page,
-  .register-page {
-    min-height: calc(100svh - 68px);
-  }
-
-  .footer-grid,
-  .footer-bottom {
-    gap: 24px;
-  }
 }
 
-@media (max-width: 480px) {
-  .navbar-logo {
-    min-width: 0;
-  }
-
-  .logo-text {
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .nav-account-button {
-    min-height: 40px;
-  }
-
-  .mobile-nav-account {
-    grid-template-columns: 1fr;
-  }
-
-  .destination-hero h1,
-  .hotel-hero h1,
-  .package-heading h1 {
-    overflow-wrap: anywhere;
-  }
-
-  .destination-grid,
-  .hotel-grid,
-  .package-grid {
-    width: calc(100% - 28px);
-  }
-
-  .tile-content,
-  .hotel-card-body,
-  .package-card-body {
-    padding-inline: 16px;
-  }
-
-  .hotel-card-footer,
-  .package-card-footer {
-    align-items: stretch;
-  }
-
-  .hotel-card-actions,
-  .package-card-footer button {
-    width: 100%;
-  }
-
-  .hotel-card-actions a,
-  .hotel-card-actions button {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .drawer-body {
-    padding: 22px 18px;
-  }
-
-  .drawer-body h2 {
-    font-size: clamp(2.2rem, 12vw, 3rem);
-  }
-
-  .scroll-hero-sticky {
-    padding-inline: 16px;
-  }
-
-  .scroll-hero-pill {
-    padding-inline: 10px;
-    font-size: 10px;
-  }
-
-  .scroll-hero-feature-pill {
-    width: 100%;
-    justify-content: center;
-    font-size: 12px;
-  }
-}
-
+/* 4. Touch Precision on Mobile Screens */
 @media (hover: none) and (pointer: coarse) {
   .platform-lift:hover,
   .hotel-card:hover,
   .package-product-card:hover,
   .destination-tile:hover,
-  .hero-orbit-card:hover {
+  .hero-orbit-card:hover,
+  .agent-card:hover,
+  .room-card:hover,
+  .service-card:hover,
+  .request-card:hover,
+  .kpi-card:hover {
     transform: none;
   }
 }
