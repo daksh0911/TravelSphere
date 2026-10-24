@@ -1,0 +1,1263 @@
+/* TravelSphere Premium User Dashboard CSS - Enhanced & Polished */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap');
+
+:root {
+  --primary-copper: var(--color-primary, #a3704c);
+  --primary-copper-hover: var(--color-primary-hover, #8c5d3b);
+  --primary-copper-soft: rgba(163, 112, 76, 0.12);
+  --accent-gold: #b9a06c;
+  --text-dark: var(--color-text-dark, #292524);
+  --text-body: #44403c;
+  --text-muted: var(--color-text-light, #78716c);
+  --border-light: var(--color-border-light, rgba(41, 37, 36, 0.08));
+  --bg-canvas: var(--color-bg-alt, #f7f3ee);
+  --card-bg: var(--color-bg-card, #ffffff);
+  --surface-subtle: #f9f6f2;
+  --success-bg: #f0fdf4;
+  --success-text: #166534;
+  --warning-bg: #fff7ed;
+  --warning-text: #9a3412;
+  --info-bg: #f8f6f1;
+  --font-family: var(--font-family-base, 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif);
+  --font-family-heading: var(--font-family-heading, 'Playfair Display', Georgia, serif);
+}
+
+.ts-dashboard-page {
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #f9f6f2 0%, var(--bg-canvas) 55%);
+  font-family: var(--font-family);
+  color: var(--text-dark);
+  line-height: 1.6;
+}
+
+/* 1. TOP HEADER NAVBAR */
+.ts-top-nav {
+  height: 76px;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-light);
+  padding: 0 clamp(1.25rem, 4vw, 2.5rem);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 110;
+  box-shadow: 0 10px 40px -30px rgba(41, 37, 36, 0.9);
+}
+
+.ts-logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  text-decoration: none;
+  font-weight: 800;
+  font-size: 1.32rem;
+  letter-spacing: -0.01em;
+  color: var(--primary-copper);
+}
+
+.ts-logo-icon {
+  width: 34px;
+  height: 34px;
+  background: radial-gradient(circle at top, #b98a5a, var(--primary-copper));
+  color: #fff;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  box-shadow: 0 18px 40px -24px rgba(163, 112, 76, 0.9);
+}
+
+.ts-nav-links {
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 2vw, 1.9rem);
+}
+
+.ts-nav-link {
+  position: relative;
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: color 0.25s ease;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.4rem 0;
+}
+
+.ts-nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -0.4rem;
+  width: 100%;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, var(--primary-copper), transparent);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.25s ease;
+  opacity: 0.8;
+}
+
+.ts-nav-link:hover,
+.ts-nav-link.active {
+  color: var(--text-dark);
+}
+
+.ts-nav-link:hover::after,
+.ts-nav-link.active::after {
+  transform: scaleX(1);
+}
+
+.ts-header-right {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.8rem, 1.6vw, 1.25rem);
+}
+
+.ts-search-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: linear-gradient(90deg, rgba(249, 246, 242, 0.9), #ffffff);
+  border: 1px solid var(--border-light);
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  width: min(280px, 24vw);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.ts-search-pill input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.88rem;
+  width: 100%;
+  color: var(--text-dark);
+}
+
+.ts-search-pill input::placeholder {
+  color: rgba(120, 113, 108, 0.8);
+}
+
+.ts-notif-btn {
+  position: relative;
+  background: linear-gradient(180deg, #ffffff, var(--surface-subtle));
+  border: 1px solid var(--border-light);
+  color: var(--text-muted);
+  cursor: pointer;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+  box-shadow: 0 18px 40px -28px rgba(41, 37, 36, 0.9);
+}
+
+.ts-notif-btn:hover {
+  color: var(--text-dark);
+  transform: translateY(-1px);
+}
+
+.ts-notif-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: radial-gradient(circle, #f87171, #dc2626);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12px 30px -16px rgba(220, 38, 38, 0.9);
+}
+
+.ts-user-profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  background: linear-gradient(180deg, #ffffff, var(--surface-subtle));
+  border: 1px solid var(--border-light);
+  border-radius: 999px;
+  padding: 0.4rem 0.9rem 0.4rem 0.45rem;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.25s ease;
+  box-shadow: 0 18px 40px -28px rgba(41, 37, 36, 0.9);
+}
+
+.ts-user-profile-btn:hover {
+  transform: translateY(-1px);
+}
+
+.ts-user-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 16px 30px -22px rgba(41, 37, 36, 0.9);
+}
+
+.ts-user-info-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.ts-user-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  line-height: 1.1;
+}
+
+.ts-user-tag {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
+/* 2. BODY LAYOUT WITH SIDEBAR */
+.ts-dashboard-body {
+  display: flex;
+  min-height: calc(100vh - 76px);
+  gap: clamp(1rem, 2vw, 1.6rem);
+  padding: 0 clamp(1.25rem, 4vw, 2.5rem);
+}
+
+.ts-sidebar {
+  width: 236px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), #ffffff);
+  border: 1px solid var(--border-light);
+  border-radius: 20px;
+  margin: clamp(1rem, 2vw, 1.6rem) 0;
+  padding: 1.6rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-shrink: 0;
+  box-shadow: 0 60px 80px -70px rgba(41, 37, 36, 0.9);
+  position: sticky;
+  top: 92px;
+  height: fit-content;
+}
+
+.ts-sidebar-title {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: rgba(120, 113, 108, 0.8);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  padding-left: 0.9rem;
+}
+
+.ts-sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.ts-sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.76rem 0.95rem;
+  border-radius: 999px;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: all 0.25s ease;
+}
+
+.ts-sidebar-item svg {
+  width: 18px;
+  height: 18px;
+}
+
+.ts-sidebar-item:hover {
+  background: var(--primary-copper-soft);
+  color: var(--text-dark);
+  transform: translateX(4px);
+}
+
+.ts-sidebar-item.active {
+  background: radial-gradient(circle at left, rgba(185, 138, 90, 0.22), transparent 70%), linear-gradient(90deg, rgba(163, 112, 76, 0.16) 0%, transparent 100%);
+  color: var(--text-dark);
+  box-shadow: inset 0 0 0 1px rgba(163, 112, 76, 0.25);
+}
+
+.ts-sidebar-item.logout-item {
+  color: #dc2626;
+}
+
+.ts-sidebar-item.logout-item:hover {
+  background: rgba(248, 113, 113, 0.12);
+  color: #b91c1c;
+}
+
+/* MAIN CONTENT AREA */
+.ts-main-content {
+  flex: 1;
+  padding: clamp(1rem, 2vw, 1.8rem) 0 clamp(3rem, 6vw, 4rem);
+  max-width: 1320px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.4rem, 3vw, 2.2rem);
+}
+
+/* SECTION 1: HERO HEADER */
+.ts-hero-card {
+  background: radial-gradient(circle at top right, rgba(185, 138, 90, 0.14), transparent 55%), linear-gradient(180deg, #ffffff 0%, #fbf7f2 100%);
+  border: 1px solid var(--border-light);
+  border-radius: 24px;
+  padding: clamp(1.6rem, 4vw, 2.6rem);
+  box-shadow: 0 80px 120px -90px rgba(41, 37, 36, 0.9);
+  position: relative;
+  overflow: hidden;
+}
+
+.ts-hero-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at bottom left, rgba(163, 112, 76, 0.1), transparent 55%);
+  pointer-events: none;
+}
+
+.ts-hero-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.ts-hero-top-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: clamp(1rem, 3vw, 2rem);
+  margin-bottom: clamp(1.4rem, 3vw, 2.2rem);
+}
+
+.ts-club-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: linear-gradient(90deg, rgba(163, 112, 76, 0.18), rgba(185, 160, 108, 0.14));
+  color: var(--primary-copper);
+  padding: 0.38rem 0.95rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.9rem;
+  box-shadow: inset 0 0 0 1px rgba(163, 112, 76, 0.28);
+}
+
+.ts-hero-heading {
+  font-family: var(--font-family-heading);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 0.6rem;
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+}
+
+.ts-hero-sub {
+  font-size: clamp(0.98rem, 1.2vw, 1.08rem);
+  color: var(--text-body);
+  max-width: 620px;
+}
+
+.ts-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.ts-btn-outline {
+  background: linear-gradient(180deg, #ffffff, var(--surface-subtle));
+  border: 1px solid var(--border-light);
+  color: var(--text-dark);
+  padding: 0.72rem 1.4rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.25s ease;
+  box-shadow: 0 40px 60px -50px rgba(41, 37, 36, 0.9);
+}
+
+.ts-btn-outline:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 50px 70px -48px rgba(41, 37, 36, 0.9);
+}
+
+.ts-btn-primary {
+  background: radial-gradient(circle at top, #b98a5a, var(--primary-copper));
+  color: #ffffff;
+  border: none;
+  padding: 0.76rem 1.6rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 50px 80px -48px rgba(163, 112, 76, 0.95);
+  transition: all 0.25s ease;
+  text-decoration: none;
+}
+
+.ts-btn-primary:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.02);
+}
+
+/* 4 METRIC STAT CARDS */
+.ts-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(0.9rem, 2vw, 1.2rem);
+}
+
+.ts-metric-box {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), #fbf7f2);
+  border: 1px solid var(--border-light);
+  border-radius: 18px;
+  padding: clamp(1rem, 2vw, 1.4rem);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 60px 80px -70px rgba(41, 37, 36, 0.9);
+}
+
+.ts-metric-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.ts-metric-num {
+  font-size: clamp(1.4rem, 2.6vw, 1.8rem);
+  font-weight: 800;
+  color: var(--text-dark);
+  line-height: 1.1;
+}
+
+.ts-metric-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+/* SECTION 2: FAST GATEWAY SEARCH WIDGET */
+.ts-fast-gateway-card {
+  background: linear-gradient(180deg, #ffffff 0%, #fbf7f2 100%);
+  border: 1px solid var(--border-light);
+  border-radius: 24px;
+  padding: clamp(1.4rem, 3vw, 2rem);
+  box-shadow: 0 80px 120px -90px rgba(41, 37, 36, 0.9);
+}
+
+.ts-gateway-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: clamp(1rem, 2vw, 1.6rem);
+  margin-bottom: clamp(1rem, 2vw, 1.6rem);
+  flex-wrap: wrap;
+}
+
+.ts-section-tag {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--primary-copper);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+
+.ts-section-title {
+  font-family: var(--font-family-heading);
+  font-size: clamp(1.4rem, 2.4vw, 2rem);
+  font-weight: 600;
+  color: var(--text-dark);
+  letter-spacing: -0.01em;
+}
+
+.ts-gateway-tabs {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: linear-gradient(90deg, rgba(249, 246, 242, 0.9), #ffffff);
+  padding: 0.35rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-light);
+  flex-wrap: wrap;
+}
+
+.ts-tab-pill {
+  padding: 0.5rem 1.1rem;
+  border-radius: 999px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.ts-tab-pill.active {
+  background: radial-gradient(circle at top, #b98a5a, var(--primary-copper));
+  color: #ffffff;
+  box-shadow: 0 30px 50px -36px rgba(163, 112, 76, 0.95);
+}
+
+/* SEARCH INPUTS ROW */
+.ts-search-grid-bar {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) 56px;
+  gap: 0.8rem;
+  align-items: stretch;
+}
+
+.ts-input-card {
+  background: linear-gradient(180deg, #ffffff, var(--surface-subtle));
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  padding: 0.8rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.ts-input-label {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.ts-input-field {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  width: 100%;
+}
+
+.ts-search-submit-btn {
+  width: 56px;
+  height: 56px;
+  background: radial-gradient(circle at top, #b98a5a, var(--primary-copper));
+  color: #fff;
+  border: none;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 40px 60px -40px rgba(163, 112, 76, 0.95);
+}
+
+.ts-search-submit-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* SECTION 3: 2 COLUMN GRID (HERO TOUR + RIGHT CARDS) */
+.ts-main-grid-2col {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);
+  gap: clamp(1rem, 2vw, 1.6rem);
+}
+
+/* LEFT TOUR HIGHLIGHT HERO CARD */
+.ts-tour-highlight-card {
+  background: linear-gradient(180deg, #ffffff 0%, #fbf7f2 100%);
+  border: 1px solid var(--border-light);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 80px 120px -90px rgba(41, 37, 36, 0.9);
+  display: flex;
+  flex-direction: column;
+}
+
+.ts-tour-banner-img {
+  position: relative;
+  height: clamp(240px, 28vw, 290px);
+  background-size: cover;
+  background-position: center;
+  color: #ffffff;
+  padding: clamp(1.2rem, 3vw, 2rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.ts-tour-banner-img::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top, rgba(41, 37, 36, 0.25), transparent 55%), linear-gradient(180deg, rgba(41, 37, 36, 0.2) 0%, rgba(41, 37, 36, 0.88) 100%);
+  z-index: 1;
+}
+
+.ts-banner-content-top {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.ts-badge-pill-orange {
+  background: linear-gradient(90deg, rgba(249, 115, 22, 0.95), rgba(234, 88, 12, 0.95));
+  color: #ffffff;
+  padding: 0.36rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  box-shadow: 0 30px 50px -36px rgba(234, 88, 12, 0.9);
+}
+
+.ts-ref-code {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.86);
+  font-weight: 600;
+}
+
+.ts-banner-content-bottom {
+  position: relative;
+  z-index: 2;
+}
+
+.ts-tour-hero-title {
+  font-family: var(--font-family-heading);
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+  line-height: 1.12;
+}
+
+.ts-tour-hero-route {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.92);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.ts-tour-card-body {
+  padding: clamp(1.4rem, 3vw, 2rem);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2vw, 1.4rem);
+}
+
+/* STEPPER PROGRESS */
+.ts-stepper-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding-bottom: clamp(0.9rem, 2vw, 1.2rem);
+  border-bottom: 1px solid var(--border-light);
+  flex-wrap: wrap;
+}
+
+.ts-step-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.ts-step-item.done {
+  color: var(--primary-copper);
+}
+
+/* TOUR DETAILS GRID */
+.ts-details-4grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.ts-detail-box {
+  background: linear-gradient(180deg, #ffffff, var(--surface-subtle));
+  border: 1px solid var(--border-light);
+  border-radius: 14px;
+  padding: 0.9rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.ts-detail-label {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.ts-detail-val {
+  font-size: 0.98rem;
+  font-weight: 800;
+  color: var(--text-dark);
+}
+
+.ts-detail-sub {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+/* PROMO CALLOUT */
+.ts-promo-box {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.ts-promo-text {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1e40af;
+}
+
+/* RIGHT COLUMN CARDS */
+.ts-right-cards-col {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2vw, 1.4rem);
+}
+
+.ts-card-panel {
+  background: linear-gradient(180deg, #ffffff 0%, #fbf7f2 100%);
+  border: 1px solid var(--border-light);
+  border-radius: 22px;
+  padding: clamp(1.2rem, 2vw, 1.6rem);
+  box-shadow: 0 80px 120px -90px rgba(41, 37, 36, 0.9);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.ts-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.ts-panel-title {
+  font-family: var(--font-family-heading);
+  font-size: clamp(1.1rem, 1.8vw, 1.4rem);
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+/* PROFILE CARD DETAILS */
+.ts-profile-user-row {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+.ts-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+}
+
+.ts-card-item {
+  background: var(--color-bg-alt);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.825rem;
+}
+
+/* TRIP FEEDBACK CARD */
+.ts-star-rating-row {
+  display: flex;
+  gap: 0.4rem;
+  margin: 0.75rem 0;
+  color: #f59e0b;
+}
+
+.ts-textarea {
+  width: 100%;
+  height: 70px;
+  background: var(--color-bg-alt);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 0.65rem;
+  font-size: 0.825rem;
+  outline: none;
+  resize: none;
+  margin-bottom: 1rem;
+  font-family: inherit;
+}
+
+/* SECTION 4: BOOKING HISTORY TABLE */
+.ts-table-section {
+  background: linear-gradient(180deg, #ffffff 0%, #fbf7f2 100%);
+  border: 1px solid var(--border-light);
+  border-radius: 24px;
+  padding: clamp(1.4rem, 3vw, 2rem);
+  box-shadow: 0 80px 120px -90px rgba(41, 37, 36, 0.9);
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.ts-table-filters {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.ts-filter-chip {
+  background: linear-gradient(180deg, #ffffff, var(--surface-subtle));
+  color: var(--text-muted);
+  border: 1px solid var(--border-light);
+  padding: 0.48rem 1rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ts-filter-chip.active {
+  background: radial-gradient(circle at top, #b98a5a, var(--primary-copper));
+  color: #ffffff;
+  border-color: transparent;
+}
+
+.ts-custom-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+  background: #ffffff;
+}
+
+.ts-custom-table th {
+  padding: 0.9rem 1.2rem;
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  background: linear-gradient(90deg, #fbf7f2, #ffffff);
+  text-align: left;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.ts-custom-table td {
+  padding: 1.1rem 1.2rem;
+  font-size: 0.9rem;
+  border-bottom: 1px solid var(--border-light);
+  vertical-align: middle;
+}
+
+.ts-custom-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.ts-status-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.32rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.ts-status-tag.pending {
+  background: var(--warning-bg);
+  color: var(--warning-text);
+}
+
+.ts-status-tag.completed {
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+/* SECTION 5: WISHLIST CARDS GRID */
+.ts-wishlist-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.ts-wishlist-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1rem, 2vw, 1.4rem);
+}
+
+.ts-adventure-card {
+  background: linear-gradient(180deg, #ffffff 0%, #fbf7f2 100%);
+  border: 1px solid var(--border-light);
+  border-radius: 22px;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 70px 100px -80px rgba(41, 37, 36, 0.9);
+}
+
+.ts-adventure-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 80px 110px -78px rgba(41, 37, 36, 0.9);
+}
+
+.ts-adventure-img-wrap {
+  position: relative;
+  height: 200px;
+}
+
+.ts-adventure-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ts-fav-heart-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: rgba(255, 255, 255, 0.95);
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #dc2626;
+  cursor: pointer;
+  box-shadow: 0 30px 50px -34px rgba(41, 37, 36, 0.9);
+}
+
+.ts-duration-tag {
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  background: rgba(41, 37, 36, 0.82);
+  color: #fff;
+  padding: 0.32rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.ts-adventure-body {
+  padding: clamp(1.1rem, 2vw, 1.4rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.ts-adventure-title {
+  font-family: var(--font-family-heading);
+  font-size: 1.16rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  line-height: 1.32;
+}
+
+.ts-adventure-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.ts-price-tag {
+  font-size: 1.16rem;
+  font-weight: 800;
+  color: var(--text-dark);
+}
+
+.ts-price-tag span {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+/* MAKEMYTRIP CATEGORY FILTER PILLS */
+.mmt-category-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  overflow-x: auto;
+  padding-bottom: 0.4rem;
+  scrollbar-width: thin;
+}
+
+.mmt-cat-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffffff, var(--surface-subtle));
+  border: 1px solid var(--border-light);
+  color: var(--text-muted);
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.25s ease;
+  box-shadow: 0 40px 60px -50px rgba(41, 37, 36, 0.9);
+}
+
+.mmt-cat-pill:hover {
+  color: var(--text-dark);
+  transform: translateY(-2px);
+}
+
+.mmt-cat-pill.active {
+  background: radial-gradient(circle at top, #b98a5a, var(--primary-copper));
+  border-color: transparent;
+  color: #ffffff;
+  box-shadow: 0 40px 60px -38px rgba(163, 112, 76, 0.95);
+}
+
+/* MAKEMYTRIP CONTROLS ROW */
+.mmt-controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: linear-gradient(180deg, #ffffff, #fbf7f2);
+  border: 1px solid var(--border-light);
+  padding: 0.8rem 1.4rem;
+  border-radius: 18px;
+  box-shadow: 0 70px 100px -80px rgba(41, 37, 36, 0.9);
+  flex-wrap: wrap;
+}
+
+.mmt-search-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex: 1;
+  min-width: min(320px, 100%);
+  background: linear-gradient(180deg, #ffffff, var(--surface-subtle));
+  border: 1px solid var(--border-light);
+  border-radius: 999px;
+  padding: 0.62rem 1.2rem;
+}
+
+.mmt-search-input-wrap input {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.mmt-clear-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.mmt-sort-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-shrink: 0;
+}
+
+.mmt-sort-select {
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-light);
+  background: linear-gradient(180deg, #ffffff, var(--surface-subtle));
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  outline: none;
+  cursor: pointer;
+}
+
+/* MAKEMYTRIP INCLUSIONS PILLS & BADGES */
+.mmt-category-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  background: radial-gradient(circle at top, rgba(185, 138, 90, 0.95), rgba(163, 112, 76, 0.95));
+  color: #ffffff;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mmt-inclusions-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.mmt-inc-chip {
+  background: linear-gradient(180deg, #ffffff, var(--surface-subtle));
+  color: var(--text-muted);
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 0.28rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-light);
+}
+
+@media (max-width: 1200px) {
+  .ts-dashboard-body {
+    flex-direction: column;
+  }
+
+  .ts-sidebar {
+    position: static;
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .ts-sidebar-menu {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .ts-sidebar-item {
+    width: auto;
+  }
+
+  .ts-main-grid-2col {
+    grid-template-columns: 1fr;
+  }
+
+  .ts-wishlist-cards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1024px) {
+  .ts-metrics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .ts-search-grid-bar {
+    grid-template-columns: 1fr 1fr;
+  }
+  .ts-details-4grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .ts-top-nav {
+    flex-wrap: wrap;
+    height: auto;
+    gap: 0.8rem;
+    padding: 0.8rem clamp(1rem, 4vw, 1.6rem);
+  }
+
+  .ts-nav-links {
+    order: 3;
+    width: 100%;
+    overflow-x: auto;
+    justify-content: flex-start;
+  }
+
+  .ts-metrics-grid,
+  .ts-wishlist-cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ts-search-grid-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .ts-search-submit-btn {
+    width: 100%;
+  }
+
+  .ts-hero-top-row {
+    flex-direction: column;
+  }
+}
+

@@ -1,0 +1,10 @@
+.error-boundary { min-height: 100vh; display: grid; place-items: center; padding: 48px 24px; background: var(--color-bg-main); text-align: center; }
+.error-boundary-inner { max-width: 600px; }
+.error-boundary-eyebrow { font-size: .78rem; letter-spacing: .18em; text-transform: uppercase; font-weight: 600; color: var(--color-primary); }
+.error-boundary h1 { margin: 16px 0 14px; font-family: var(--font-family-heading); font-weight: 500; font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.1; color: var(--color-text-dark); }
+.error-boundary h1 em { font-style: italic; color: var(--color-primary); }
+.error-boundary p { color: var(--color-text-medium); line-height: 1.7; margin: 0 0 28px; }
+.error-boundary-actions { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
+.error-boundary-actions button, .error-boundary-actions a { padding: 13px 26px; border-radius: 999px; font: 600 .95rem var(--font-family-base); cursor: pointer; text-decoration: none; }
+.error-boundary-actions button { background: var(--color-primary); color: #fff; border: 1px solid var(--color-primary); }
+.error-boundary-actions a { background: transparent; color: var(--color-primary); border: 1px solid var(--color-primary); }

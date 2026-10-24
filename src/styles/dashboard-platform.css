@@ -1,0 +1,289 @@
+/* ==========================================================================
+   TravelSphere Dashboards Global Smooth Motion & Micro-Interactions System
+   Adds fluid, luxury transitions, hover lifts, and entrance choreography
+   ========================================================================== */
+
+/* 1. Global Entrance Animation Keyframes */
+@keyframes tsFadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes tsFadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes tsShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* 2. Page & Pane Entrance Animations */
+.ts-dashboard-page,
+.admin-dashboard-container,
+.agent-dashboard-container,
+.hotel-dashboard-container,
+.transport-dashboard-container,
+.guide-dashboard-container {
+  animation: tsFadeInScale 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.ts-main-content,
+.admin-content-area,
+.agent-content-area,
+.hotel-content-area,
+.transport-content-area,
+.guide-content-area,
+.tab-pane {
+  animation: tsFadeInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* 3. Luxury Motion & Micro-Interactions for Customer Dashboard */
+.ts-hero-card {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ts-hero-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 90px 140px -90px rgba(163, 112, 76, 0.25);
+}
+
+.ts-metric-box {
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.28s ease;
+  cursor: pointer;
+}
+
+.ts-metric-box:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px -12px rgba(163, 112, 76, 0.22);
+  border-color: rgba(163, 112, 76, 0.35);
+}
+
+.ts-metric-icon-wrap {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.ts-metric-box:hover .ts-metric-icon-wrap {
+  transform: scale(1.1) rotate(4deg);
+}
+
+.ts-gateway-tab {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ts-gateway-tab:hover:not(.active) {
+  transform: translateY(-1px);
+  background: rgba(163, 112, 76, 0.08);
+}
+
+.ts-gateway-tab.active {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ts-pkg-card,
+.ts-booking-card,
+.ts-wishlist-card {
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.32s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.32s ease;
+}
+
+.ts-pkg-card:hover,
+.ts-booking-card:hover,
+.ts-wishlist-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px -12px rgba(41, 37, 36, 0.14);
+}
+
+.ts-pkg-card:hover img,
+.ts-wishlist-card:hover img {
+  transform: scale(1.04);
+}
+
+/* 4. Luxury Motion & Micro-Interactions for Admin Dashboard */
+.kpi-card {
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.28s ease;
+}
+
+.kpi-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px -10px rgba(15, 23, 42, 0.15);
+  border-color: rgba(196, 151, 108, 0.35);
+}
+
+.kpi-card:hover .kpi-icon-wrap {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.kpi-icon-wrap {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.admin-tabs-bar .tab-btn {
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+.admin-tabs-bar .tab-btn:hover {
+  transform: translateY(-1px);
+}
+
+.admin-table tbody tr {
+  transition: background-color 0.18s ease, transform 0.18s ease;
+}
+
+.admin-table tbody tr:hover {
+  background-color: rgba(196, 151, 108, 0.05);
+}
+
+/* 5. Luxury Motion for Agent Dashboard */
+.agent-card {
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.32s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.32s ease;
+}
+
+.agent-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 42px -10px rgba(6, 78, 59, 0.15);
+  border-color: rgba(5, 150, 105, 0.35);
+}
+
+.day-step {
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.day-step:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(6, 78, 59, 0.08);
+  border-color: rgba(5, 150, 105, 0.4);
+}
+
+.inquiry-card {
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.inquiry-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 32px -8px rgba(6, 78, 59, 0.12);
+}
+
+/* 6. Luxury Motion for Hotel Dashboard */
+.room-card {
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.32s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.32s ease;
+}
+
+.room-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 22px 45px -12px rgba(69, 26, 3, 0.16);
+  border-color: rgba(163, 112, 76, 0.4);
+}
+
+.facility-pill {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.facility-pill:hover {
+  transform: translateY(-1px) scale(1.02);
+  background-color: #fef3c7;
+  border-color: #f59e0b;
+}
+
+/* 7. Luxury Motion for Transport Dashboard */
+.service-card {
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.32s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.32s ease;
+}
+
+.service-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 42px -10px rgba(15, 23, 42, 0.16);
+  border-color: rgba(2, 132, 199, 0.4);
+}
+
+.route-arrow .line {
+  transition: all 0.3s ease;
+}
+
+.service-card:hover .route-arrow .line {
+  background: linear-gradient(90deg, #38bdf8, #0284c7, #38bdf8);
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
+}
+
+.schedule-row-item {
+  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.24s ease, border-color 0.24s ease;
+}
+
+.schedule-row-item:hover {
+  transform: translateY(-2px) translateX(2px);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  border-color: rgba(2, 132, 199, 0.35);
+}
+
+/* 8. Luxury Motion for Guide Dashboard */
+.request-card {
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.32s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.32s ease;
+}
+
+.request-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 42px -10px rgba(67, 20, 7, 0.15);
+  border-color: rgba(194, 65, 12, 0.35);
+}
+
+.lang-pill {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.lang-pill:hover {
+  transform: translateY(-1px);
+  border-color: rgba(194, 65, 12, 0.35);
+  background-color: #fff7ed;
+}
+
+/* 9. Universal Interactive Buttons & Modals Motion */
+.btn-save,
+.btn-confirm-res,
+.btn-cancel-res,
+.btn-accept,
+.btn-reject,
+.btn-create-pkg,
+.btn-add-room,
+.btn-add-service,
+.btn-edit-profile,
+.ts-btn-primary,
+.ts-btn-outline {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s ease;
+}
+
+.btn-save:hover,
+.btn-create-pkg:hover,
+.btn-add-room:hover,
+.btn-add-service:hover,
+.btn-edit-profile:hover {
+  transform: translateY(-2px);
+}
+
+.modal-overlay {
+  animation: tsFadeInScale 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.agent-modal-card,
+.hotel-modal-card,
+.transport-modal-card,
+.guide-modal-card,
+.admin-modal-card {
+  animation: tsFadeInUp 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

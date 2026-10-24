@@ -1,0 +1,27 @@
+.global-experience-layer {
+  --scroll-progress: 0;
+  position: fixed;
+  z-index: 1100;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  pointer-events: none;
+}
+
+.global-scroll-progress {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform: scaleX(var(--scroll-progress));
+  transform-origin: left center;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
+  box-shadow: 0 0 8px rgba(163, 112, 76, 0.2);
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .global-scroll-progress {
+    will-change: auto;
+  }
+}

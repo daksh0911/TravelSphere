@@ -1,0 +1,314 @@
+/* Shared small-screen rules. Page styles can refine these without duplicating
+   viewport, overflow, and touch-target fixes. */
+
+html,
+body,
+#root {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+@media (max-width: 768px) {
+  html {
+    scroll-padding-top: 78px;
+  }
+
+  body {
+    min-width: 320px;
+  }
+
+  main {
+    width: 100%;
+  }
+
+  .container {
+    padding-inline: 18px;
+  }
+
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    min-height: 42px;
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  .navbar {
+    height: 68px;
+  }
+
+  .navbar.scrolled {
+    height: 62px;
+  }
+
+  .navbar-container {
+    padding-inline: max(16px, env(safe-area-inset-left)) max(16px, env(safe-area-inset-right));
+  }
+
+  .mobile-nav-panel {
+    max-height: calc(100dvh - 68px);
+    padding-bottom: max(24px, env(safe-area-inset-bottom));
+  }
+
+  .mobile-nav-scrim {
+    height: 100dvh;
+  }
+
+  .new-home {
+    margin-top: -68px;
+  }
+
+  .new-home-hero {
+    min-height: max(680px, 100svh);
+  }
+
+  .scroll-hero-section {
+    height: 130vh;
+    min-height: 720px;
+  }
+
+  .scroll-hero-sticky {
+    min-height: 600px;
+    padding: 88px 18px 22px;
+  }
+
+  .scroll-hero-topline,
+  .scroll-hero-content-wrap,
+  .scroll-hero-bottom-bar {
+    max-width: none;
+  }
+
+  .scroll-hero-tagline {
+    display: none;
+  }
+
+  .scroll-hero-content-wrap {
+    align-items: center;
+  }
+
+  .scroll-hero-slide,
+  .scroll-hero-slide.align-right {
+    max-width: 100%;
+    margin-inline: 0;
+    text-align: left;
+  }
+
+  .scroll-hero-slide.align-right .scroll-hero-badge {
+    justify-content: flex-start;
+  }
+
+  .scroll-hero-title {
+    font-size: clamp(2.65rem, 12vw, 4.2rem);
+  }
+
+  .scroll-hero-desc {
+    max-width: 34rem;
+    font-size: 14px;
+  }
+
+  .scroll-hero-actions {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .scroll-hero-primary-btn,
+  .scroll-hero-secondary-btn {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .scroll-indicator-text {
+    font-size: 9px;
+  }
+
+  .scroll-steps {
+    gap: 5px;
+  }
+
+  .step-dot {
+    flex: 1;
+    width: auto;
+  }
+
+  .step-dot.is-active {
+    width: auto;
+  }
+
+  .destination-hero,
+  .hotel-hero,
+  .package-heading {
+    width: 100%;
+  }
+
+  .destination-search,
+  .hotel-search-panel,
+  .package-search {
+    max-width: none;
+  }
+
+  .destination-search input,
+  .hotel-search-input input,
+  .package-search input {
+    min-width: 0;
+  }
+
+  .hotel-search-panel label {
+    gap: 8px;
+  }
+
+  .hotel-search-panel input[type='range'] {
+    min-width: 0;
+  }
+
+  .destination-drawer {
+    width: 100%;
+    border-left: 0;
+  }
+
+  .drawer-body h2 {
+    overflow-wrap: anywhere;
+  }
+
+  .compare-bar {
+    left: 10px;
+    right: 10px;
+    width: auto;
+    padding-bottom: max(13px, env(safe-area-inset-bottom));
+  }
+
+  .booking-backdrop,
+  .hotel-backdrop,
+  .vehicle-backdrop {
+    padding: 10px;
+    align-items: end;
+  }
+
+  .booking-modal,
+  .hotel-booking,
+  .vehicle-modal {
+    width: 100%;
+    max-width: 100%;
+    max-height: calc(100dvh - 20px);
+    overflow-y: auto;
+  }
+
+  .modal-close,
+  .hotel-modal-close,
+  .vehicle-close {
+    width: 42px;
+    height: 42px;
+  }
+
+  .admin-table-container,
+  .agent-table-container,
+  .hotel-table-container,
+  .transport-table-container,
+  .guide-table-container {
+    max-width: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .auth-page,
+  .login-page,
+  .register-page {
+    min-height: calc(100svh - 68px);
+  }
+
+  .footer-grid,
+  .footer-bottom {
+    gap: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-logo {
+    min-width: 0;
+  }
+
+  .logo-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .nav-account-button {
+    min-height: 40px;
+  }
+
+  .mobile-nav-account {
+    grid-template-columns: 1fr;
+  }
+
+  .destination-hero h1,
+  .hotel-hero h1,
+  .package-heading h1 {
+    overflow-wrap: anywhere;
+  }
+
+  .destination-grid,
+  .hotel-grid,
+  .package-grid {
+    width: calc(100% - 28px);
+  }
+
+  .tile-content,
+  .hotel-card-body,
+  .package-card-body {
+    padding-inline: 16px;
+  }
+
+  .hotel-card-footer,
+  .package-card-footer {
+    align-items: stretch;
+  }
+
+  .hotel-card-actions,
+  .package-card-footer button {
+    width: 100%;
+  }
+
+  .hotel-card-actions a,
+  .hotel-card-actions button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .drawer-body {
+    padding: 22px 18px;
+  }
+
+  .drawer-body h2 {
+    font-size: clamp(2.2rem, 12vw, 3rem);
+  }
+
+  .scroll-hero-sticky {
+    padding-inline: 16px;
+  }
+
+  .scroll-hero-pill {
+    padding-inline: 10px;
+    font-size: 10px;
+  }
+
+  .scroll-hero-feature-pill {
+    width: 100%;
+    justify-content: center;
+    font-size: 12px;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .platform-lift:hover,
+  .hotel-card:hover,
+  .package-product-card:hover,
+  .destination-tile:hover,
+  .hero-orbit-card:hover {
+    transform: none;
+  }
+}

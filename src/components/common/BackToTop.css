@@ -1,0 +1,1 @@
+.back-to-top{position:fixed;right:max(20px,env(safe-area-inset-right,0px));bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:1100;width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,.5);background:var(--color-primary,#a3704c);color:#fff;display:grid;place-items:center;cursor:pointer;box-shadow:0 12px 30px rgba(16,40,59,.25)}

@@ -1,0 +1,3 @@
+.save-heart{position:relative;display:inline-grid;place-items:center}
+.save-heart-icon{display:inline-grid;place-items:center}
+.save-heart-dot{position:absolute;width:5px;height:5px;border-radius:50%;background:currentColor;pointer-events:none}
