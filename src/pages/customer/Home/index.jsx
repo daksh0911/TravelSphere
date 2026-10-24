@@ -107,7 +107,6 @@ export default function Home() {
             <div className="orbit-pill pill-top"><WandSparkles size={15} /><span>Made around<br /><strong>your rhythm</strong></span></div>
           </Reveal>
         </div>
-        <div className="hero-scroll-cue"><span /> Scroll to wander</div>
       </section>
 
       <section className="new-home-section discovery-section">
