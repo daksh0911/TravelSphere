@@ -2,7 +2,29 @@ import express from 'express';
 import cors from 'cors';
 import crypto from 'node:crypto';
 import bcrypt from 'bcryptjs';
-import { createUser, findUserByEmail, getAllUsers, getUserDashboardData, updateUserProfile, createBooking, addToWishlist, getAllPackages, createSupportTicket, listSupportTickets, updateSupportTicketStatus } from './db.js';
+import { 
+  createUser, 
+  findUserByEmail, 
+  getAllUsers, 
+  getUserDashboardData, 
+  updateUserProfile, 
+  createBooking, 
+  addToWishlist, 
+  getAllPackages, 
+  createSupportTicket, 
+  listSupportTickets, 
+  updateSupportTicketStatus,
+  createReview,
+  getReviewsByUser,
+  getAllReviews,
+  createContactMessage,
+  listContactMessages,
+  recordPayment,
+  validateCoupon,
+  createNotification,
+  getNotificationsByUser,
+  markNotificationRead
+} from './db.js';
 
 const app = express();
 const PORT = Number(process.env.PORT || 5000);
@@ -203,6 +225,142 @@ app.put('/api/support/tickets/:id', adminOnly, async (req, res) => {
     if (!validId(req.params.id) || !['open', 'in_progress', 'resolved'].includes(status)) return safeError(res, 400, 'Invalid ticket or status.');
     return (await updateSupportTicketStatus(Number(req.params.id), status)) ? res.json({ success: true }) : safeError(res, 404, 'Ticket not found.');
   } catch (error) { console.error('Ticket update failed:', error.message); return safeError(res, 500, 'Failed to update ticket.'); }
+});
+
+// Reviews endpoint (PDF Table 22 / Table 19)
+app.post('/api/reviews', requireAuth, rateLimit(15 * 60_000, 15, 'review'), async (req, res) => {
+  try {
+    const { userId, bookingId, rating, comment } = req.body || {};
+    const parsedRating = Number(rating);
+    if (!validId(userId) || !Number.isInteger(parsedRating) || parsedRating < 1 || parsedRating > 5) {
+      return safeError(res, 400, 'Choose a rating from 1 to 5.');
+    }
+    if (!isSelf(req, userId)) {
+      return safeError(res, 403, 'You can only submit reviews for your own account.');
+    }
+    const cleanComment = cleanText(comment, 2000);
+    if (!cleanComment) {
+      return safeError(res, 400, 'Please write a short review before submitting.');
+    }
+    const reviewId = await createReview({
+      userId: Number(userId),
+      bookingId: validId(bookingId) ? Number(bookingId) : null,
+      rating: parsedRating,
+      comment: cleanComment
+    });
+    return res.status(201).json({ success: true, message: 'Review submitted successfully!', reviewId });
+  } catch (error) {
+    console.error('Review submission failed:', error.message);
+    return safeError(res, 500, 'Review could not be saved right now.');
+  }
+});
+
+app.get('/api/reviews', async (req, res) => {
+  try {
+    const userId = req.query.userId;
+    if (userId && validId(userId)) {
+      return res.json({ success: true, reviews: await getReviewsByUser(Number(userId)) });
+    }
+    return res.json({ success: true, reviews: await getAllReviews() });
+  } catch (error) {
+    console.error('Fetch reviews failed:', error.message);
+    return safeError(res, 500, 'Failed to fetch reviews.');
+  }
+});
+
+// Contact messages endpoint (PDF Table 17 / Table 14)
+app.post('/api/contact', rateLimit(15 * 60_000, 10, 'contact'), async (req, res) => {
+  try {
+    const name = cleanText(req.body?.name, 100);
+    const email = cleanText(req.body?.email, 254).toLowerCase();
+    const subject = cleanText(req.body?.subject, 200);
+    const message = cleanText(req.body?.message, 2000);
+    if (name.length < 2 || !validEmail(email) || message.length < 5) {
+      return safeError(res, 400, 'Please provide your name, valid email, and a message.');
+    }
+    const contactId = await createContactMessage({ name, email, subject, message });
+    return res.status(201).json({ success: true, message: 'Message sent successfully! Our team will contact you soon.', contactId });
+  } catch (error) {
+    console.error('Contact message failed:', error.message);
+    return safeError(res, 500, 'Could not send your message right now.');
+  }
+});
+
+app.get('/api/contact/messages', adminOnly, async (req, res) => {
+  try {
+    return res.json({ success: true, messages: await listContactMessages(100) });
+  } catch (error) {
+    console.error('List contact messages failed:', error.message);
+    return safeError(res, 500, 'Failed to fetch contact messages.');
+  }
+});
+
+// Coupon validation endpoint (PDF Table 18 / Table 15)
+app.post('/api/coupons/validate', rateLimit(15 * 60_000, 30, 'coupon'), async (req, res) => {
+  try {
+    const code = cleanText(req.body?.code, 50);
+    const amount = Number(req.body?.amount || 0);
+    if (!code) return safeError(res, 400, 'Coupon code is required.');
+    const result = await validateCoupon(code, amount);
+    if (!result.valid) return safeError(res, 400, result.message);
+    return res.json({ success: true, ...result });
+  } catch (error) {
+    console.error('Coupon validation failed:', error.message);
+    return safeError(res, 500, 'Failed to validate coupon.');
+  }
+});
+
+// Payments recording endpoint (PDF Table 21 / Table 18)
+app.post('/api/payments', requireAuth, rateLimit(15 * 60_000, 20, 'payment'), async (req, res) => {
+  try {
+    const { bookingId, userId, amount, method } = req.body || {};
+    if (!validId(userId) || !validId(bookingId) || !Number.isFinite(Number(amount)) || Number(amount) <= 0) {
+      return safeError(res, 400, 'Payment details are invalid.');
+    }
+    if (!isSelf(req, userId)) {
+      return safeError(res, 403, 'Payment authorization mismatch.');
+    }
+    const record = await recordPayment({
+      bookingId: Number(bookingId),
+      userId: Number(userId),
+      amount: Number(amount),
+      method: cleanText(method, 50) || 'card'
+    });
+    // Create an automatic confirmation notification (PDF Section 1.5 & Table 20)
+    await createNotification({
+      userId: Number(userId),
+      title: 'Payment Successful',
+      message: `Your payment of $${Number(amount).toFixed(2)} for booking #${bookingId} was successful (Ref: ${record.transactionRef}).`
+    }).catch(err => console.warn('Notification create warning:', err.message));
+
+    return res.status(201).json({ success: true, message: 'Payment confirmed!', ...record });
+  } catch (error) {
+    console.error('Payment failed:', error.message);
+    return safeError(res, 500, 'Failed to record payment.');
+  }
+});
+
+// Notifications endpoint (PDF Table 20 / Table 17)
+app.get('/api/notifications', requireAuth, async (req, res) => {
+  try {
+    const userId = Number(req.auth.sub);
+    const notifications = await getNotificationsByUser(userId);
+    return res.json({ success: true, notifications });
+  } catch (error) {
+    console.error('Fetch notifications failed:', error.message);
+    return safeError(res, 500, 'Failed to fetch notifications.');
+  }
+});
+
+app.put('/api/notifications/:id/read', requireAuth, async (req, res) => {
+  try {
+    if (!validId(req.params.id)) return safeError(res, 400, 'Invalid notification ID.');
+    await markNotificationRead(Number(req.params.id));
+    return res.json({ success: true });
+  } catch (error) {
+    console.error('Notification update failed:', error.message);
+    return safeError(res, 500, 'Failed to update notification.');
+  }
 });
 
 app.use((req, res) => safeError(res, 404, 'Endpoint not found.'));

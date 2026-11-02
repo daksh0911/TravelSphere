@@ -69,7 +69,7 @@ export default function DestinationsPage() {
         <div className="section-heading-row">
           <div>
             <span className="eyebrow dark">Start with a feeling</span>
-            <h2>Find your next <em>somewhere.</em></h2>
+            <h2>Choose your next <em>destination.</em></h2>
           </div>
           <div className="saved-count"><Heart size={16} fill="currentColor"/> {saved.length} saved</div>
         </div>

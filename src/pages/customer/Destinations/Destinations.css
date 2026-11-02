@@ -189,13 +189,16 @@
   font-weight: 900;
 }
 
-/* ── Region Tabs ──────────────────────────────────────────────── */
+/* ── Region & Country Filter Tabs (Modern Luxury Pill Design) ── */
 .region-tabs {
   display: flex;
-  gap: 8px;
-  overflow: auto;
-  margin-bottom: 25px;
+  gap: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  margin-bottom: 18px;
+  padding: 6px 4px 12px;
   scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 .region-tabs::-webkit-scrollbar {
@@ -204,22 +207,68 @@
 
 .region-tabs button {
   white-space: nowrap;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background: var(--color-bg-white);
-  color: var(--color-text-medium);
-  border-radius: 999px;
-  padding: 9px 14px;
-  font-size: 11px;
-  font-weight: 800;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  background: #ffffff;
+  color: #475569;
+  border-radius: 9999px;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
   cursor: pointer;
-  transition: all 0.25s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.region-tabs button.active,
 .region-tabs button:hover {
-  background: var(--color-primary);
-  border-color: var(--color-primary);
-  color: var(--color-bg-main);
+  background: #f8fafc;
+  color: #0f172a;
+  border-color: #cbd5e1;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.07);
+}
+
+.region-tabs button.active {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border-color: #0f172a;
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.22);
+  transform: translateY(-2px);
+}
+
+.country-tabs {
+  margin-top: -6px;
+  margin-bottom: 30px;
+  padding-top: 0;
+  gap: 8px;
+}
+
+.country-tabs button {
+  padding: 8px 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 500;
+  box-shadow: none;
+}
+
+.country-tabs button:hover {
+  background: #ffffff;
+  color: #1e293b;
+  border-color: #94a3b8;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.country-tabs button.active {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  border-color: #1d4ed8;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
 /* ── Destination Grid ─────────────────────────────────────────── */
@@ -745,5 +794,5 @@
 .destination-tile { transition: transform .35s ease, box-shadow .35s ease; box-shadow: 0 14px 28px rgba(68, 53, 38, .08); }
 .destination-tile:hover { transform: translateY(-6px); box-shadow: 0 24px 44px rgba(68, 53, 38, .15); }
 .destination-image-shared::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, transparent 38%, rgba(20, 16, 12, .68)); }
-.region-tabs { scrollbar-width: thin; }
+/* region-tabs custom scrollbar removed */
 @media (prefers-reduced-motion: reduce) { .destination-tile, .package-product-card, .hotel-card, .vehicle-card { transition: none; } .destination-tile:hover, .package-product-card:hover, .hotel-card:hover, .vehicle-card:hover { transform: none; } }

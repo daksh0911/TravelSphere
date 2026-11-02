@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
       if (res.success && res.user) {
         if (res.token) sessionStorage.setItem('travelsphere_session_token', res.token);
         setUser(res.user);
-        return { success: true, message: res.message };
+        return { success: true, message: res.message, user: res.user };
       } else {
         throw new Error(res.message || 'Login failed.');
       }

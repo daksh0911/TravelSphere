@@ -12,6 +12,22 @@ dist
 dist-ssr
 *.local
 
+# Root build output used by Live Server
+/assets/
+/destination-images/
+/hotel-images/
+/package-images/
+/vehicle-images/
+/favicon.svg
+/hero-lago-di-braies.jpg
+/travel-image-placeholder.svg
+/llms.txt
+/manus-routes.json
+/robots.txt
+/sitemap.xml
+/_headers
+/404.html
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

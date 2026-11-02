@@ -30,7 +30,7 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState('overview');
-  const [data, setData] = useState({ users: [], packages: [], complaints: [], stats: {} });
+  const [data, setData] = useState({ users: [], packages: [], complaints: [], bookings: [], stats: {} });
   const [loading, setLoading] = useState(true);
   const [userRoleFilter, setUserRoleFilter] = useState('ALL');
   const [userSearchQuery, setUserSearchQuery] = useState('');
@@ -67,14 +67,14 @@ const AdminDashboard = () => {
   };
 
   const handleApproveProvider = async (userId) => {
-    await dashboardService.approveProviderAccount(userId);
+    await dashboardService.approveProvider(userId);
     setActionMsg('Service Provider account approved successfully!');
     setTimeout(() => setActionMsg(''), 3000);
     loadAdminData();
   };
 
   const handleResolveComplaint = async (complaintId) => {
-    await dashboardService.updateComplaintStatus(complaintId, 'Resolved', replyText);
+    await dashboardService.resolveComplaint(complaintId, replyText);
     setActionMsg('Complaint status updated to Resolved');
     setSelectedComplaint(null);
     setReplyText('');
@@ -436,42 +436,17 @@ const AdminDashboard = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td><strong>#BK-9901</strong></td>
-                        <td>Alice Walker</td>
-                        <td>Kyoto Cherry Blossom Tour</td>
-                        <td>2026-10-15</td>
-                        <td>$2,900.00</td>
-                        <td><span className="status-badge active">CONFIRMED</span></td>
-                        <td><span className="status-tag confirmed">PAID</span></td>
-                      </tr>
-                      <tr>
-                        <td><strong>#RES-8801</strong></td>
-                        <td>Alice Walker</td>
-                        <td>Susuki Pavilion (Aman Kyoto)</td>
-                        <td>2026-10-15 to 2026-10-20</td>
-                        <td>$14,000.00</td>
-                        <td><span className="status-badge active">CONFIRMED</span></td>
-                        <td><span className="status-tag confirmed">PAID</span></td>
-                      </tr>
-                      <tr>
-                        <td><strong>#TRP-501</strong></td>
-                        <td>Alice Walker</td>
-                        <td>Skyways Flight SK-702 (NYC to Paris)</td>
-                        <td>2026-10-10</td>
-                        <td>$1,360.00</td>
-                        <td><span className="status-badge active">CONFIRMED</span></td>
-                        <td><span className="status-tag confirmed">PAID</span></td>
-                      </tr>
-                      <tr>
-                        <td><strong>#RES-8802</strong></td>
-                        <td>Robert Vance</td>
-                        <td>Zen Garden Executive Suite</td>
-                        <td>2026-11-01 to 2026-11-05</td>
-                        <td>$2,080.00</td>
-                        <td><span className="status-badge pending">PENDING</span></td>
-                        <td><span className="status-tag pending">DEPOSIT PAID</span></td>
-                      </tr>
+                      {data.bookings.map((booking) => (
+                        <tr key={booking.id}>
+                          <td><strong>#{booking.id}</strong></td>
+                          <td>{booking.customerName}</td>
+                          <td>{booking.serviceTitle}</td>
+                          <td>{booking.schedule}</td>
+                          <td>${Number(booking.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                          <td><span className={`status-badge ${booking.status.toLowerCase()}`}>{booking.status.toUpperCase()}</span></td>
+                          <td><span className={`status-tag ${booking.paymentStatus.toLowerCase().replaceAll(' ', '-')}`}>{booking.paymentStatus.toUpperCase()}</span></td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>

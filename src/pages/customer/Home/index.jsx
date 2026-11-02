@@ -1,4 +1,4 @@
-import { ArrowRight, Compass, Headphones, Heart, MapPin, Plane, ShieldCheck, Sparkles, WandSparkles } from 'lucide-react';
+﻿import { ArrowRight, Compass, Headphones, Heart, MapPin, Plane, ShieldCheck, Sparkles, WandSparkles } from 'lucide-react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Reveal from './Reveal';
@@ -51,7 +51,7 @@ export default function Home() {
         <div className="hero-background" aria-hidden="true">
           <div
             className="hero-static-bg"
-            style={{ backgroundImage: `url('/hero-lago-di-braies.jpg')` }}
+            style={{ backgroundImage: `url('./hero-lago-di-braies.jpg')` }}
           />
         </div>
         <div className="hero-scrim" aria-hidden="true" />

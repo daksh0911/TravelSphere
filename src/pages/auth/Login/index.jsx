@@ -103,7 +103,8 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const res = await login({ email: finalEmail, password });
-      navigate(target(res.user?.role || 'CUSTOMER'));
+      const userRole = res?.user?.role || (finalEmail === 'admin@travel.com' ? 'ADMIN' : 'CUSTOMER');
+      navigate(target(userRole), { replace: true });
     } catch (err) {
       setErrorMessage(err.message || 'Login failed. Please check your credentials.');
     } finally {

@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from 'react';
+import { useEffect } from 'react';
 import { AnimatePresence, LayoutGroup, motion } from 'framer-motion';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
@@ -24,15 +24,7 @@ import HotelDashboard from '../pages/hotel/HotelDashboard';
 import TransportDashboard from '../pages/transport/TransportDashboard';
 import GuideDashboard from '../pages/guide/GuideDashboard';
 
-function RouteLoading() {
-  return null;
-}
-
-function LazyPage({ component: Component, ...props }) {
-  return <Component {...props} />;
-}
-
-// Protected Route Guard: never manufacture a client-side user or bypass authorization.
+// Protected Route Guard: checks auth status and role permissions
 function ProtectedRoute({ children, allowedRoles }) {
   const { isAuthenticated, user } = useAuth();
   if (!isAuthenticated) return <Navigate to="/login" replace />;
@@ -40,7 +32,7 @@ function ProtectedRoute({ children, allowedRoles }) {
   return children;
 }
 
-function AppRoutes() {
+export default function AppRoutes() {
   const location = useLocation();
 
   useEffect(() => {
@@ -59,95 +51,93 @@ function AppRoutes() {
           transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
         >
           <Routes location={location}>
-          <Route path="/login" element={<LazyPage component={Login} />} />
-          <Route path="/register" element={<LazyPage component={Register} />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
 
-          {/* Separate protected role dashboards */}
-          <Route
-            path="/admin"
-            element={(
-              <ProtectedRoute allowedRoles={['ADMIN', 'ADMINISTRATOR', 'SUPER_ADMIN']}>
-                <LazyPage component={AdminDashboard} />
-              </ProtectedRoute>
-            )}
-          />
-          <Route
-            path="/admin-dashboard"
-            element={(
-              <ProtectedRoute allowedRoles={['ADMIN', 'ADMINISTRATOR', 'SUPER_ADMIN']}>
-                <LazyPage component={AdminDashboard} />
-              </ProtectedRoute>
-            )}
-          />
-          <Route
-            path="/user-dashboard"
-            element={(
-              <ProtectedRoute allowedRoles={['CUSTOMER', 'USER']}>
-                <LazyPage component={CustomerDashboard} />
-              </ProtectedRoute>
-            )}
-          />
-          <Route
-            path="/customer-dashboard"
-            element={(
-              <ProtectedRoute allowedRoles={['CUSTOMER', 'USER']}>
-                <LazyPage component={CustomerDashboard} />
-              </ProtectedRoute>
-            )}
-          />
-          <Route
-            path="/agent-dashboard"
-            element={(
-              <ProtectedRoute allowedRoles={['TRAVEL_AGENT']}>
-                <LazyPage component={AgentDashboard} />
-              </ProtectedRoute>
-            )}
-          />
-          <Route
-            path="/hotel-dashboard"
-            element={(
-              <ProtectedRoute allowedRoles={['HOTEL_MANAGER']}>
-                <LazyPage component={HotelDashboard} />
-              </ProtectedRoute>
-            )}
-          />
-          <Route
-            path="/transport-dashboard"
-            element={(
-              <ProtectedRoute allowedRoles={['TRANSPORT_PROVIDER']}>
-                <LazyPage component={TransportDashboard} />
-              </ProtectedRoute>
-            )}
-          />
-          <Route
-            path="/guide-dashboard"
-            element={(
-              <ProtectedRoute allowedRoles={['TOUR_GUIDE']}>
-                <LazyPage component={GuideDashboard} />
-              </ProtectedRoute>
-            )}
-          />
+            {/* Separate protected role dashboards */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN', 'ADMINISTRATOR', 'SUPER_ADMIN']}>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin-dashboard"
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN', 'ADMINISTRATOR', 'SUPER_ADMIN']}>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/user-dashboard"
+              element={
+                <ProtectedRoute allowedRoles={['CUSTOMER', 'USER']}>
+                  <CustomerDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/customer-dashboard"
+              element={
+                <ProtectedRoute allowedRoles={['CUSTOMER', 'USER']}>
+                  <CustomerDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/agent-dashboard"
+              element={
+                <ProtectedRoute allowedRoles={['TRAVEL_AGENT']}>
+                  <AgentDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/hotel-dashboard"
+              element={
+                <ProtectedRoute allowedRoles={['HOTEL_MANAGER']}>
+                  <HotelDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/transport-dashboard"
+              element={
+                <ProtectedRoute allowedRoles={['TRANSPORT_PROVIDER']}>
+                  <TransportDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/guide-dashboard"
+              element={
+                <ProtectedRoute allowedRoles={['TOUR_GUIDE']}>
+                  <GuideDashboard />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route path="/" element={<MainLayout />}>
-            <Route index element={<LazyPage component={Home} />} />
-            <Route path="destinations" element={<LazyPage component={Destinations} />} />
-            <Route path="destinations/:id" element={<LazyPage component={DestinationDetail} />} />
-            <Route path="packages" element={<LazyPage component={TourPackages} />} />
-            <Route path="hotels" element={<LazyPage component={Hotels} />} />
-            <Route path="vehicles" element={<LazyPage component={Vehicles} />} />
-            <Route path="about" element={<LazyPage component={About} />} />
-            <Route path="contact" element={<LazyPage component={Contact} />} />
-            <Route path="faq" element={<LazyPage component={Support} />} />
-            <Route path="support" element={<LazyPage component={Support} />} />
-            <Route path="terms" element={<LazyPage component={Legal} type="terms" />} />
-            <Route path="privacy" element={<LazyPage component={Legal} type="privacy" />} />
-            <Route path="*" element={<LazyPage component={NotFound} />} />
-          </Route>
+            <Route path="/" element={<MainLayout />}>
+              <Route index element={<Home />} />
+              <Route path="destinations" element={<Destinations />} />
+              <Route path="destinations/:id" element={<DestinationDetail />} />
+              <Route path="packages" element={<TourPackages />} />
+              <Route path="hotels" element={<Hotels />} />
+              <Route path="vehicles" element={<Vehicles />} />
+              <Route path="about" element={<About />} />
+              <Route path="contact" element={<Contact />} />
+              <Route path="faq" element={<Support />} />
+              <Route path="support" element={<Support />} />
+              <Route path="terms" element={<Legal type="terms" />} />
+              <Route path="privacy" element={<Legal type="privacy" />} />
+              <Route path="*" element={<NotFound />} />
+            </Route>
           </Routes>
         </motion.div>
       </AnimatePresence>
     </LayoutGroup>
   );
 }
-
-export default AppRoutes;

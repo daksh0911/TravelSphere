@@ -7,7 +7,7 @@ import RoundCarousel from '../../../components/common/RoundCarousel';
 import usePageTitle from '../../../hooks/usePageTitle';
 
 const VEHICLES = [
-  // ── Cars & Sedans ──────────────────────────────────────────────────────────
+  // Ã¢â€â‚¬Ã¢â€â‚¬ Cars & Sedans Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
   {
     id: 1,
     name: 'Mercedes-Benz E-Class',
@@ -22,7 +22,7 @@ const VEHICLES = [
     tag: 'Executive Luxury',
     family: false,
     childSeats: 0,
-    safety: 'Active Brake Assist, 360° Sensor Suite'
+    safety: 'Active Brake Assist, 360Ã‚? Sensor Suite'
   },
   {
     id: 2,
@@ -153,7 +153,7 @@ const VEHICLES = [
     childSeats: 0,
     safety: 'Lexus Safety System+, Blind Spot Monitor'
   },
-  // ── SUVs & 4x4 ─────────────────────────────────────────────────────────────
+  // Ã¢â€â‚¬Ã¢â€â‚¬ SUVs & 4x4 Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
   {
     id: 6,
     name: 'Range Rover Velar',
@@ -267,7 +267,7 @@ const VEHICLES = [
     safety: 'Toyota Safety Sense 2.5+, 8 airbags'
   },
 
-  // ── Motorcycles ────────────────────────────────────────────────────────────
+  // Ã¢â€â‚¬Ã¢â€â‚¬ Motorcycles Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
   {
     id: 17,
     name: 'BMW R 1250 GS',
@@ -286,7 +286,7 @@ const VEHICLES = [
   },
   {
     id: 18,
-    name: 'Yamaha Ténéré 700',
+    name: 'Yamaha TÃƒÂ©nÃƒÂ©rÃƒÂ© 700',
     category: 'Motorcycles',
     type: 'Dual-Sport Adventure',
     price: 78,
@@ -554,7 +554,7 @@ export default function VehiclesPage() {
             <span className="vehicle-eyebrow dark">THE FLEET</span>
             <h2>More ways<br /><em>to go together.</em></h2>
           </div>
-          <span>{vehicles.length} model references · live availability on request</span>
+          <span>{vehicles.length} model references Ã‚? live availability on request</span>
         </div>
 
         {groupedVehicles.length === 0 ? (
@@ -589,11 +589,11 @@ export default function VehiclesPage() {
                       <div className="vehicle-specs">
                         <span><Users size={15} />{vehicle.seats} seats</span>
                         <span><Gauge size={15} />{vehicle.gear}</span>
-                        <span>▣ {vehicle.luggage} bags</span>
+                        <span>Ã¢-Â£ {vehicle.luggage} bags</span>
                       </div>
                       <div className="vehicle-safety">
                         <ShieldCheck size={14} /> {vehicle.safety}
-                        {vehicle.family && <span>· up to {vehicle.childSeats} child-seat fit checks</span>}
+                        {vehicle.family && <span>Ã‚? up to {vehicle.childSeats} child-seat fit checks</span>}
                       </div>
                       <div className="vehicle-footer">
                         <div>
@@ -621,11 +621,11 @@ export default function VehiclesPage() {
               <button type="button" className="vehicle-close" onClick={() => setSelected(null)}><X size={18} /></button>
               <SmartImage src={selected.image} alt={`${selected.name} ${selected.category} rental`} sizes="(max-width: 620px) 100vw, 560px" />
               <div className="vehicle-modal-body">
-                <span className="vehicle-eyebrow dark">{selected.category} · {selected.type}</span>
+                <span className="vehicle-eyebrow dark">{selected.category} Ã‚? {selected.type}</span>
                 <h2>{selected.name}</h2>
-                <p>{selected.pickup} · indicative from ${selected.price} / day · final quote after availability check</p>
+                <p>{selected.pickup} Ã‚? indicative from ${selected.price} / day Ã‚? final quote after availability check</p>
                 <div className="vehicle-modal-safety">
-                  <ShieldCheck size={16} /> {selected.safety} · {selected.family ? `up to ${selected.childSeats} child-seat fit checks on request` : 'Rider safety equipment required'}
+                  <ShieldCheck size={16} /> {selected.safety} Ã‚? {selected.family ? `up to ${selected.childSeats} child-seat fit checks on request` : 'Rider safety equipment required'}
                 </div>
                 <label>
                   Pickup date
@@ -651,7 +651,7 @@ export default function VehiclesPage() {
                   Send availability request <ArrowRight size={16} />
                 </button>
                 <small className="vehicle-note">
-                  <ShieldCheck size={14} /> Partner confirmation required · no payment is taken from this request
+                  <ShieldCheck size={14} /> Partner confirmation required Ã‚? no payment is taken from this request
                 </small>
               </div>
             </motion.form>

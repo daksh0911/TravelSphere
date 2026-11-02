@@ -1,4 +1,4 @@
-import { BrowserRouter } from 'react-router-dom';
+import { HashRouter } from 'react-router-dom';
 import { MotionConfig } from 'framer-motion';
 import AppRoutes from './routes/AppRoutes';
 import { AuthProvider } from './context/AuthContext';
@@ -12,13 +12,13 @@ function App() {
     <MotionConfig reducedMotion="user">
       <AuthProvider>
         <GlobalExperienceLayer />
-        <BrowserRouter>
+        <HashRouter>
           <SiteCommandCenter />
           <Toaster />
           <ErrorBoundary>
             <AppRoutes />
           </ErrorBoundary>
-        </BrowserRouter>
+        </HashRouter>
       </AuthProvider>
     </MotionConfig>
   );

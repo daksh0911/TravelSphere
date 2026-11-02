@@ -160,17 +160,32 @@ export const getUserDashboardData = async (email) => {
     [userId]
   );
 
+  // Fetch live reviews submitted by user
+  let reviews = [];
+  try {
+    await ensureReviewsTable();
+    const [revRows] = await pool.execute(
+      `SELECT review_id, user_id, booking_id, rating, comment, created_at FROM reviews WHERE user_id = ? ORDER BY review_id DESC`,
+      [userId]
+    );
+    reviews = revRows;
+  } catch (err) {
+    console.warn('Reviews fetch warning:', err.message);
+  }
+
   const { password: _password, ...userProfile } = user;
 
   return {
     user: userProfile,
     bookings,
     wishlist,
+    reviews,
     allPackages: packagesList,
     stats: {
       totalBookings: bookings.length,
       activeBookings: bookings.filter(b => b.status === 'confirmed').length,
-      wishlistCount: wishlist.length
+      wishlistCount: wishlist.length,
+      reviewsCount: reviews.length
     }
   };
 };
@@ -248,6 +263,195 @@ export const updateSupportTicketStatus = async (ticketId, status) => {
   await ensureTicketsTable();
   const [result] = await pool.execute(`UPDATE support_tickets SET status = ? WHERE ticket_id = ?`, [status, ticketId]);
   return result.affectedRows > 0;
+};
+
+// ----------------- REVIEWS (PDF Table 22 / Table 19) -----------------
+let reviewsReady;
+const ensureReviewsTable = () => (reviewsReady ??= pool.execute(
+  `CREATE TABLE IF NOT EXISTS reviews (
+     review_id INT AUTO_INCREMENT PRIMARY KEY,
+     user_id INT NOT NULL,
+     booking_id INT NULL,
+     rating TINYINT NOT NULL,
+     comment TEXT NULL,
+     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   )`
+).catch(err => { reviewsReady = undefined; throw err; }));
+
+export const createReview = async ({ userId, bookingId, rating, comment }) => {
+  await ensureReviewsTable();
+  const [result] = await pool.execute(
+    `INSERT INTO reviews (user_id, booking_id, rating, comment) VALUES (?, ?, ?, ?)`,
+    [userId, bookingId || null, rating, comment || null]
+  );
+  return result.insertId;
+};
+
+export const getReviewsByUser = async (userId) => {
+  await ensureReviewsTable();
+  const [rows] = await pool.execute(
+    `SELECT review_id, user_id, booking_id, rating, comment, created_at FROM reviews WHERE user_id = ? ORDER BY review_id DESC`,
+    [userId]
+  );
+  return rows;
+};
+
+export const getAllReviews = async () => {
+  await ensureReviewsTable();
+  const [rows] = await pool.execute(
+    `SELECT r.review_id, r.user_id, r.booking_id, r.rating, r.comment, r.created_at, u.name AS user_name, u.email AS user_email
+     FROM reviews r
+     LEFT JOIN users u ON r.user_id = u.user_id
+     ORDER BY r.review_id DESC`
+  );
+  return rows;
+};
+
+// ------------- CONTACT MESSAGES (PDF Table 17 / Table 14) -------------
+let contactReady;
+const ensureContactTable = () => (contactReady ??= pool.execute(
+  `CREATE TABLE IF NOT EXISTS contact_messages (
+     contact_id INT AUTO_INCREMENT PRIMARY KEY,
+     name VARCHAR(100) NOT NULL,
+     email VARCHAR(150) NOT NULL,
+     subject VARCHAR(200) NULL,
+     message TEXT NOT NULL,
+     is_read TINYINT(1) DEFAULT 0,
+     replied_at TIMESTAMP NULL,
+     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   )`
+).catch(err => { contactReady = undefined; throw err; }));
+
+export const createContactMessage = async ({ name, email, subject, message }) => {
+  await ensureContactTable();
+  const [result] = await pool.execute(
+    `INSERT INTO contact_messages (name, email, subject, message, is_read) VALUES (?, ?, ?, ?, 0)`,
+    [name, email, subject || '', message]
+  );
+  return result.insertId;
+};
+
+export const listContactMessages = async (limit = 100) => {
+  await ensureContactTable();
+  const [rows] = await pool.execute(
+    `SELECT contact_id, name, email, subject, message, is_read, replied_at, created_at FROM contact_messages ORDER BY contact_id DESC LIMIT ${Number(limit) | 0}`
+  );
+  return rows;
+};
+
+// ----------------- PAYMENTS (PDF Table 21 / Table 18) -----------------
+let paymentsReady;
+const ensurePaymentsTable = () => (paymentsReady ??= pool.execute(
+  `CREATE TABLE IF NOT EXISTS payments (
+     payment_id INT AUTO_INCREMENT PRIMARY KEY,
+     booking_id INT NOT NULL,
+     user_id INT NOT NULL,
+     amount DECIMAL(10,2) NOT NULL,
+     method VARCHAR(50) NOT NULL,
+     status VARCHAR(50) DEFAULT 'completed',
+     transaction_ref VARCHAR(200) NULL,
+     paid_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   )`
+).catch(err => { paymentsReady = undefined; throw err; }));
+
+export const recordPayment = async ({ bookingId, userId, amount, method = 'card', transactionRef }) => {
+  await ensurePaymentsTable();
+  const ref = transactionRef || `TXN-${Date.now()}-${Math.floor(Math.random() * 9000 + 1000)}`;
+  const [result] = await pool.execute(
+    `INSERT INTO payments (booking_id, user_id, amount, method, status, transaction_ref, paid_at)
+     VALUES (?, ?, ?, ?, 'completed', ?, CURRENT_TIMESTAMP)`,
+    [bookingId, userId, amount, method, ref]
+  );
+  return { paymentId: result.insertId, transactionRef: ref };
+};
+
+// ------------------ COUPONS (PDF Table 18 / Table 15) -----------------
+let couponsReady;
+const ensureCouponsTable = async () => {
+  if (couponsReady) return couponsReady;
+  couponsReady = (async () => {
+    await pool.execute(
+      `CREATE TABLE IF NOT EXISTS coupons (
+         coupon_id INT AUTO_INCREMENT PRIMARY KEY,
+         code VARCHAR(50) UNIQUE NOT NULL,
+         discount_type VARCHAR(20) NOT NULL,
+         discount_value DECIMAL(10,2) NOT NULL,
+         min_amount DECIMAL(10,2) DEFAULT 0.00,
+         max_uses INT DEFAULT 100,
+         used_count INT DEFAULT 0,
+         expires_at DATE NULL,
+         is_active TINYINT(1) DEFAULT 1,
+         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+       )`
+    );
+    // Seed initial coupon code if empty
+    const [existing] = await pool.execute(`SELECT coupon_id FROM coupons LIMIT 1`);
+    if (existing.length === 0) {
+      await pool.execute(
+        `INSERT INTO coupons (code, discount_type, discount_value, min_amount, max_uses, used_count, expires_at, is_active)
+         VALUES ('TRAVEL20', 'percentage', 20.00, 100.00, 500, 0, '2027-12-31', 1),
+                ('EXPLORE50', 'fixed', 50.00, 200.00, 200, 0, '2027-12-31', 1)`
+      );
+    }
+  })().catch(err => { couponsReady = undefined; throw err; });
+  return couponsReady;
+};
+
+export const validateCoupon = async (code, amount = 0) => {
+  await ensureCouponsTable();
+  const [rows] = await pool.execute(
+    `SELECT coupon_id, code, discount_type, discount_value, min_amount, max_uses, used_count, expires_at, is_active
+     FROM coupons
+     WHERE UPPER(code) = UPPER(?) AND is_active = 1`,
+    [code.trim()]
+  );
+  const coupon = rows[0];
+  if (!coupon) return { valid: false, message: 'Invalid or expired coupon code.' };
+  if (coupon.min_amount && Number(amount) < Number(coupon.min_amount)) {
+    return { valid: false, message: `Minimum booking amount of $${coupon.min_amount} required.` };
+  }
+  const discount = coupon.discount_type === 'percentage'
+    ? (Number(amount) * Number(coupon.discount_value)) / 100
+    : Number(coupon.discount_value);
+  return { valid: true, couponId: coupon.coupon_id, discount: Math.min(discount, Number(amount)), code: coupon.code };
+};
+
+// -------------- NOTIFICATIONS (PDF Table 20 / Table 17) --------------
+let notificationsReady;
+const ensureNotificationsTable = () => (notificationsReady ??= pool.execute(
+  `CREATE TABLE IF NOT EXISTS notifications (
+     notification_id INT AUTO_INCREMENT PRIMARY KEY,
+     user_id INT NOT NULL,
+     title VARCHAR(200) NOT NULL,
+     message TEXT NULL,
+     is_read TINYINT(1) DEFAULT 0,
+     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   )`
+).catch(err => { notificationsReady = undefined; throw err; }));
+
+export const createNotification = async ({ userId, title, message }) => {
+  await ensureNotificationsTable();
+  const [result] = await pool.execute(
+    `INSERT INTO notifications (user_id, title, message, is_read) VALUES (?, ?, ?, 0)`,
+    [userId, title, message]
+  );
+  return result.insertId;
+};
+
+export const getNotificationsByUser = async (userId) => {
+  await ensureNotificationsTable();
+  const [rows] = await pool.execute(
+    `SELECT notification_id, user_id, title, message, is_read, created_at FROM notifications WHERE user_id = ? ORDER BY notification_id DESC`,
+    [userId]
+  );
+  return rows;
+};
+
+export const markNotificationRead = async (notificationId) => {
+  await ensureNotificationsTable();
+  await pool.execute(`UPDATE notifications SET is_read = 1 WHERE notification_id = ?`, [notificationId]);
+  return true;
 };
 
 export default pool;

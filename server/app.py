@@ -143,6 +143,17 @@ def init_sqlite_db(conn):
     );
     """)
 
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS reviews (
+        review_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        booking_id INTEGER,
+        rating INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5),
+        comment TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    """)
+
     # Populate MakeMyTrip inspired packages if empty or outdated
     cursor.execute("SELECT COUNT(*) FROM packages")
     if cursor.fetchone()[0] < 10:
@@ -455,6 +466,56 @@ def add_to_wishlist():
     finally:
         conn.close()
 
+@app.route('/api/reviews', methods=['POST'])
+def create_review():
+    data = request.json or {}
+    user_id = data.get('userId')
+    booking_id = data.get('bookingId')
+    rating = data.get('rating')
+    comment = (data.get('comment') or '').strip()
+
+    try:
+        rating = int(rating)
+    except (TypeError, ValueError):
+        return jsonify({'success': False, 'message': 'Choose a rating from 1 to 5.'}), 400
+
+    if not user_id or rating not in range(1, 6) or len(comment) > 2000:
+        return jsonify({'success': False, 'message': 'Review details are invalid.'}), 400
+
+    conn, db_type = get_db_connection()
+    try:
+        if db_type == "mysql":
+            with conn.cursor() as cursor:
+                cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS reviews (
+                        review_id INT AUTO_INCREMENT PRIMARY KEY,
+                        user_id INT NOT NULL,
+                        booking_id INT NULL,
+                        rating TINYINT NOT NULL,
+                        comment TEXT NULL,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )
+                """)
+                cursor.execute(
+                    "INSERT INTO reviews (user_id, booking_id, rating, comment) VALUES (%s, %s, %s, %s)",
+                    (user_id, booking_id or None, rating, comment or None)
+                )
+                review_id = cursor.lastrowid
+        else:
+            cursor = conn.cursor()
+            cursor.execute(
+                "INSERT INTO reviews (user_id, booking_id, rating, comment) VALUES (?, ?, ?, ?)",
+                (user_id, booking_id or None, rating, comment or None)
+            )
+            conn.commit()
+            review_id = cursor.lastrowid
+
+        return jsonify({'success': True, 'message': 'Review submitted successfully.', 'reviewId': review_id})
+    except Exception:
+        return jsonify({'success': False, 'message': 'Review could not be saved.'}), 500
+    finally:
+        conn.close()
+
 @app.route('/api/user-dashboard-data', methods=['GET'])
 def get_user_dashboard_data():
     email = (request.args.get('email') or '').strip().lower()
@@ -490,6 +551,8 @@ def get_user_dashboard_data():
                     WHERE w.user_id = %s ORDER BY w.wishlist_id DESC
                 """, (user_id,))
                 wishlist = cursor.fetchall()
+                cursor.execute("SELECT * FROM reviews WHERE user_id = %s ORDER BY review_id DESC", (user_id,))
+                user_reviews = cursor.fetchall()
         else:
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM users WHERE email = ?", (email,))
@@ -519,6 +582,9 @@ def get_user_dashboard_data():
             """, (user_id,))
             wishlist = [dict(r) for r in cursor.fetchall()]
 
+            cursor.execute("SELECT * FROM reviews WHERE user_id = ? ORDER BY review_id DESC", (user_id,))
+            user_reviews = [dict(r) for r in cursor.fetchall()]
+
         user.pop('password', None)
         user['id'] = user.get('user_id') or user.get('id')
 
@@ -527,11 +593,13 @@ def get_user_dashboard_data():
             'user': user,
             'bookings': bookings,
             'wishlist': wishlist,
+            'reviews': user_reviews,
             'allPackages': all_packages,
             'stats': {
                 'totalBookings': len(bookings),
                 'activeBookings': len([b for b in bookings if b.get('status') == 'confirmed']),
-                'wishlistCount': len(wishlist)
+                'wishlistCount': len(wishlist),
+                'reviewsCount': len(user_reviews)
             }
         })
     except Exception as e:

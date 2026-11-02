@@ -250,6 +250,26 @@ export const dashboardService = {
     const complaints = getStored('ts_admin_complaints', SEED_COMPLAINTS);
     const hotelReservations = getStored('ts_hotel_reservations', SEED_HOTEL_RESERVATIONS);
     const transportBookings = getStored('ts_transport_bookings', SEED_TRANSPORT_BOOKINGS);
+    const bookings = [
+      ...hotelReservations.map((reservation) => ({
+        id: reservation.id,
+        customerName: reservation.guestName,
+        serviceTitle: reservation.roomType,
+        schedule: `${reservation.checkIn} to ${reservation.checkOut}`,
+        amount: reservation.totalAmount,
+        status: reservation.status,
+        paymentStatus: reservation.paymentStatus,
+      })),
+      ...transportBookings.map((booking) => ({
+        id: booking.id,
+        customerName: booking.passengerName,
+        serviceTitle: booking.serviceTitle,
+        schedule: booking.travelDate,
+        amount: booking.totalAmount,
+        status: booking.status,
+        paymentStatus: booking.paymentStatus,
+      })),
+    ];
 
     const totalRevenue = hotelReservations.reduce((sum, r) => sum + r.totalAmount, 0) + 
                          transportBookings.reduce((sum, t) => sum + t.totalAmount, 0) + 
@@ -259,6 +279,7 @@ export const dashboardService = {
       users,
       packages,
       complaints,
+      bookings,
       stats: {
         totalRevenue,
         totalUsers: users.length,
