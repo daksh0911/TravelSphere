@@ -374,8 +374,15 @@ body,
   .destination-grid,
   .hotel-grid,
   .package-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
     width: 100%;
+    gap: 16px;
+  }
+
+  .destination-tile,
+  .destination-tile.featured {
+    grid-column: 1 / -1 !important;
+    min-height: 380px;
   }
 
   .destination-search,
@@ -385,6 +392,18 @@ body,
     align-items: stretch;
     width: 100%;
     gap: 0.75rem;
+  }
+
+  /* Filter pill scroll container on mobile */
+  .region-tabs {
+    padding: 6px 2px 14px;
+    gap: 8px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .region-tabs button {
+    padding: 8px 16px;
+    font-size: 12px;
   }
 
   .compare-bar {
