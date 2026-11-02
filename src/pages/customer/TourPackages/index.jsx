@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
-import { ArrowRight, Check, ChevronDown, Clock3, FileDown, Globe, Heart, LayoutGrid, MapPin, Search, ShieldCheck, Sparkles, Star, Users, X } from 'lucide-react';
+import { ArrowRight, Check, ChevronDown, Clock3, FileDown, Globe, Heart, LayoutGrid, MapPin, Search, ShieldCheck, Star, Users, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import './TourPackages.css';
 import '../../../styles/showcase-skin.css';
 import './Compare.css';
@@ -149,39 +149,21 @@ export default function TourPackagesPage() {
   return (
     <div className="package-marketplace">
       <section className="package-heading">
-        <div className="package-heading-content">
-          <span className="market-eyebrow">TRAVELSPHERE COLLECTION / 2026</span>
-          <h1>Trips worth<br /><em>remembering.</em></h1>
-          <p>Thoughtful itineraries, trusted local experts, and the little details already taken care of. Prices are general estimates and vary by dates, room type, and inclusions.</p>
-        </div>
-        <div className="package-trust">
-          <ShieldCheck size={22} />
-          <div>
-            <strong>Protected booking</strong>
-            <small>Flexible support before you go</small>
+        <div className="package-heading-inner">
+          <div className="package-heading-content">
+            <span className="market-eyebrow">TRAVELSPHERE COLLECTION / 2026</span>
+            <h1>Trips worth<br /><em>remembering.</em></h1>
+            <p>Thoughtful itineraries, trusted local experts, and the little details already taken care of. Prices are general estimates and vary by dates, room type, and inclusions.</p>
+          </div>
+          <div className="package-trust">
+            <ShieldCheck size={22} />
+            <div>
+              <strong>Protected booking</strong>
+              <small>Flexible support before you go</small>
+            </div>
           </div>
         </div>
       </section>
-
-      {/* AI TRIP PLANNER PROMO BANNER */}
-      <div className="package-ai-banner-wrap">
-        <div className="package-ai-banner">
-          <div>
-            <div className="package-ai-eyebrow">
-              <Sparkles size={14} /> AI-Powered Dynamic Itinerary Generator (Gemini 2026)
-            </div>
-            <h3>
-              Want a custom day-by-day itinerary tailored to your budget?
-            </h3>
-            <p>
-              Input your origin, vibe, and duration—get instant route maps, matched hotels, and split group costs.
-            </p>
-          </div>
-          <Link to="/itinerary-planner" className="package-book package-ai-btn">
-            <Sparkles size={15} /> Launch AI Trip Planner ➔
-          </Link>
-        </div>
-      </div>
 
       <section className="package-toolbar">
         <div className="package-search">

@@ -11,18 +11,23 @@
 
 /* ── Hero / Heading ───────────────────────────────────────────── */
 .package-heading {
-  padding: 42px max(5vw, 28px) 28px;
+  padding: 52px 0 36px;
   background: linear-gradient(135deg, var(--color-bg-main) 0%, var(--color-bg-white) 100%);
   color: var(--color-text-dark);
+  border-bottom: 1px solid rgba(163, 123, 92, 0.15);
+}
+
+.package-heading-inner {
+  width: min(1180px, calc(100% - 56px));
+  margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 30px;
-  border-bottom: 1px solid rgba(163, 123, 92, 0.15);
 }
 
 .package-heading-content {
-  max-width: 650px;
+  max-width: 640px;
 }
 
 .market-eyebrow {
@@ -83,64 +88,11 @@
   margin-top: 2px;
 }
 
-/* ── AI Itinerary Promo Banner ────────────────────────────── */
-.package-ai-banner-wrap {
-  width: min(1180px, calc(100% - 56px));
-  margin: 20px auto 0;
-}
-
-.package-ai-banner {
-  background: linear-gradient(135deg, rgba(163, 112, 76, 0.09) 0%, rgba(163, 112, 76, 0.03) 100%);
-  border: 1.5px solid rgba(163, 112, 76, 0.22);
-  border-radius: 16px;
-  padding: 1.15rem 1.6rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.package-ai-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  color: #a3704c;
-  font-weight: 800;
-  font-size: 0.78rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  margin-bottom: 0.25rem;
-}
-
-.package-ai-banner h3 {
-  font-size: 1.15rem;
-  font-weight: 800;
-  color: #1e293b;
-  margin: 0;
-}
-
-.package-ai-banner p {
-  color: #64748b;
-  font-size: 0.86rem;
-  margin: 0.2rem 0 0;
-}
-
-.package-ai-btn {
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.7rem 1.4rem;
-  font-size: 0.875rem;
-  border-radius: 999px;
-  white-space: nowrap;
-}
 
 /* ── Toolbar ──────────────────────────────────────────────────── */
 .package-toolbar {
   width: min(1180px, calc(100% - 56px));
-  margin: 16px auto 24px;
+  margin: 28px auto 26px;
   display: grid;
   grid-template-columns: 1.1fr 1.5fr auto;
   gap: 14px;
@@ -693,8 +645,16 @@
 /* ── Responsive: ≤ 620px ──────────────────────────────────────── */
 @media (max-width: 620px) {
   .package-heading {
-    padding: 54px 18px 42px;
+    padding: 38px 18px 24px;
     display: block;
+  }
+
+  .package-heading-inner {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
   }
 
   .package-heading p {
