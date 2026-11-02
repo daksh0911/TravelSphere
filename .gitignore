@@ -53,3 +53,17 @@ dist-ssr
 __pycache__/
 *.py[cod]
 *$py.class
+
+# Agent and internal tooling
+.agent/
+.agents/
+.gemini/
+.gsd/
+GSD-STYLE.md
+PROJECT_RULES.md
+VERSION
+adapters/
+model_capabilities.yaml
+scripts/search_repo.*
+scripts/setup_search.*
+scripts/validate-*

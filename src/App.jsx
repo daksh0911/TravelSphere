@@ -7,6 +7,7 @@ import GlobalExperienceLayer from './components/common/GlobalExperienceLayer';
 import SiteCommandCenter from './components/common/SiteCommandCenter';
 import Toaster from './components/common/Toaster';
 import ErrorBoundary from './components/common/ErrorBoundary';
+import LiveTravelMessenger from './components/common/LiveTravelMessenger';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
             <ErrorBoundary>
               <AppRoutes />
             </ErrorBoundary>
+            <LiveTravelMessenger />
           </HashRouter>
         </CurrencyProvider>
       </AuthProvider>

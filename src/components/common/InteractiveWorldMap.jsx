@@ -61,6 +61,30 @@ export default function InteractiveWorldMap({ items = [], type = 'destinations',
         const dest = DESTINATION_COORDS[item.id] || { lat: 20, lng: 0, price: '$1,200' };
         coords = [dest.lat, dest.lng];
         displayPrice = dest.price;
+      } else if (type === 'packages') {
+        const loc = (item.location || '').toLowerCase();
+        let matched = Object.entries(DESTINATION_COORDS).find(([key]) => loc.includes(key.replace('-', ' ')));
+        if (!matched) {
+          if (loc.includes('maldives')) matched = ['maldives', DESTINATION_COORDS.maldives];
+          else if (loc.includes('greece') || loc.includes('santorini')) matched = ['santorini', DESTINATION_COORDS.santorini];
+          else if (loc.includes('indonesia') || loc.includes('bali')) matched = ['bali', DESTINATION_COORDS.bali];
+          else if (loc.includes('switzerland') || loc.includes('interlaken') || loc.includes('alps')) matched = ['swiss-alps', DESTINATION_COORDS['swiss-alps']];
+          else if (loc.includes('japan') || loc.includes('kyoto')) matched = ['kyoto', DESTINATION_COORDS.kyoto];
+          else if (loc.includes('dubai') || loc.includes('uae')) matched = ['dubai', DESTINATION_COORDS.dubai];
+          else if (loc.includes('france') || loc.includes('paris')) matched = ['paris', DESTINATION_COORDS.paris];
+          else if (loc.includes('india') || loc.includes('rajasthan') || loc.includes('jaipur')) matched = ['rajasthan', DESTINATION_COORDS.rajasthan];
+          else if (loc.includes('thailand') || loc.includes('bangkok')) matched = ['bangkok', DESTINATION_COORDS.bangkok];
+          else if (loc.includes('netherlands') || loc.includes('amsterdam')) matched = ['amsterdam', DESTINATION_COORDS.amsterdam];
+          else if (loc.includes('italy') || loc.includes('rome')) matched = ['rome', DESTINATION_COORDS.rome];
+          else if (loc.includes('egypt') || loc.includes('cairo')) matched = ['cairo', DESTINATION_COORDS.cairo];
+          else if (loc.includes('australia') || loc.includes('sydney')) matched = ['sydney', DESTINATION_COORDS.sydney];
+          else if (loc.includes('south africa') || loc.includes('cape town')) matched = ['capetown', DESTINATION_COORDS.capetown];
+          else if (loc.includes('new york') || loc.includes('united states')) matched = ['new-york', DESTINATION_COORDS['new-york']];
+          else if (loc.includes('canada') || loc.includes('banff')) matched = ['banff', DESTINATION_COORDS.banff];
+        }
+        const coordsData = matched ? matched[1] : { lat: 20, lng: 0 };
+        coords = [coordsData.lat, coordsData.lng];
+        displayPrice = item.priceLabel || `$${item.price}`;
       } else {
         const hotel = HOTEL_COORDS[item.id] || { lat: 20, lng: 0 };
         coords = [hotel.lat, hotel.lng];
@@ -80,13 +104,14 @@ export default function InteractiveWorldMap({ items = [], type = 'destinations',
     const list = new Set(['All']);
     items.forEach(it => {
       if (it.region) list.add(it.region);
-      else if (it.city) {
-        if (it.city.includes('Japan') || it.city.includes('Indonesia') || it.city.includes('India') || it.city.includes('Maldives') || it.city.includes('Thailand')) list.add('Asia');
-        else if (it.city.includes('Greece') || it.city.includes('Switzerland') || it.city.includes('France') || it.city.includes('Italy') || it.city.includes('Netherlands')) list.add('Europe');
-        else if (it.city.includes('United States') || it.city.includes('Canada')) list.add('Americas');
-        else if (it.city.includes('Egypt') || it.city.includes('South Africa')) list.add('Africa');
-        else if (it.city.includes('United Arab Emirates')) list.add('Middle East');
-        else if (it.city.includes('Australia')) list.add('Oceania');
+      else if (it.city || it.location) {
+        const place = (it.city || it.location || '');
+        if (/Japan|Indonesia|India|Maldives|Thailand/i.test(place)) list.add('Asia');
+        else if (/Greece|Switzerland|France|Italy|Netherlands/i.test(place)) list.add('Europe');
+        else if (/United States|Canada/i.test(place)) list.add('Americas');
+        else if (/Egypt|South Africa/i.test(place)) list.add('Africa');
+        else if (/United Arab Emirates|Dubai/i.test(place)) list.add('Middle East');
+        else if (/Australia|Sydney/i.test(place)) list.add('Oceania');
       }
     });
     return Array.from(list);
@@ -97,7 +122,7 @@ export default function InteractiveWorldMap({ items = [], type = 'destinations',
     if (activeRegion === 'All') return mappedItems;
     return mappedItems.filter(item => {
       if (item.region) return item.region === activeRegion;
-      const c = item.city || '';
+      const c = item.city || item.location || '';
       if (activeRegion === 'Asia') return /Japan|Indonesia|India|Maldives|Thailand/i.test(c);
       if (activeRegion === 'Europe') return /Greece|Switzerland|France|Italy|Netherlands/i.test(c);
       if (activeRegion === 'Americas') return /United States|Canada/i.test(c);
@@ -235,15 +260,16 @@ export default function InteractiveWorldMap({ items = [], type = 'destinations',
           </button>
           <SmartImage
             src={selectedItem.image}
-            alt={selectedItem.name}
+            alt={selectedItem.title || selectedItem.name}
             className="ts-preview-thumb"
           />
           <div className="ts-preview-info">
             <div>
-              <h4 className="ts-preview-title">{selectedItem.name}</h4>
+              <h4 className="ts-preview-title">{selectedItem.title || selectedItem.name}</h4>
               <p className="ts-preview-sub">
                 <MapPin size={12} style={{ display: 'inline', marginRight: 4 }} />
-                {selectedItem.city || selectedItem.country || 'Global Destination'}
+                {selectedItem.location || selectedItem.city || selectedItem.country || 'Global Destination'}
+                {selectedItem.days ? ` · ${selectedItem.days} days` : ''}
               </p>
             </div>
             <div className="ts-preview-bottom">
@@ -256,7 +282,7 @@ export default function InteractiveWorldMap({ items = [], type = 'destinations',
                   if (onSelect) onSelect(selectedItem);
                 }}
               >
-                Explore <ArrowRight size={12} />
+                {type === 'packages' ? 'View & Reserve Trip' : 'Explore'} <ArrowRight size={12} />
               </button>
             </div>
           </div>
