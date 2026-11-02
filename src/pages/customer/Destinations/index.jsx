@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { ArrowRight, CalendarDays, Heart, MapPin, Search, Sparkles, X } from 'lucide-react';
+import { ArrowRight, CalendarDays, Globe, Heart, LayoutGrid, MapPin, Search, Sparkles, X } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import '../../../styles/showcase-skin.css';
@@ -7,6 +7,7 @@ import './Destinations.css';
 import SmartImage from '../../../components/common/SmartImage';
 import TiltArticle from '../../../components/common/TiltArticle';
 import SaveHeart from '../../../components/common/SaveHeart';
+import InteractiveWorldMap from '../../../components/common/InteractiveWorldMap';
 import toast from '../../../services/toast';
 import { DESTINATIONS } from '../../../data/destinations';
 
@@ -24,6 +25,7 @@ export default function DestinationsPage() {
   const [country, setCountry] = useState('All countries');
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState(null);
+  const [viewMode, setViewMode] = useState('grid');
   const [saved, setSaved] = useState(() => { try { return JSON.parse(localStorage.getItem('ts_saved_destinations') || '[]'); } catch { return []; } });
   
   const filtered = useMemo(() => 
@@ -71,7 +73,25 @@ export default function DestinationsPage() {
             <span className="eyebrow dark">Start with a feeling</span>
             <h2>Choose your next <em>destination.</em></h2>
           </div>
-          <div className="saved-count"><Heart size={16} fill="currentColor"/> {saved.length} saved</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+            <div className="ts-view-mode-toggle">
+              <button
+                type="button"
+                className={`ts-toggle-option ${viewMode === 'grid' ? 'active' : ''}`}
+                onClick={() => setViewMode('grid')}
+              >
+                <LayoutGrid size={15} /> Grid View
+              </button>
+              <button
+                type="button"
+                className={`ts-toggle-option ${viewMode === 'map' ? 'active' : ''}`}
+                onClick={() => setViewMode('map')}
+              >
+                <Globe size={15} /> World Map Explorer
+              </button>
+            </div>
+            <div className="saved-count"><Heart size={16} fill="currentColor"/> {saved.length} saved</div>
+          </div>
         </div>
         
         <div className="region-tabs">
@@ -85,7 +105,15 @@ export default function DestinationsPage() {
           ))}
         </div>
         
-        <div className="destination-grid">
+        {viewMode === 'map' && (
+          <InteractiveWorldMap
+            items={filtered}
+            type="destinations"
+            onSelect={(item) => setSelected(item)}
+            height="580px"
+          />
+        )}
+        <div className="destination-grid" style={{ display: viewMode === 'grid' ? 'grid' : 'none' }}>
           <AnimatePresence mode="popLayout">
           {filtered.map((item, index) => (
             <TiltArticle className={`destination-tile ${index === 0 ? 'featured' : ''}`} key={item.id} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 22, delay: Math.min(index, 8) * 0.07 } }} layout exit={{ opacity: 0, scale: 0.92, transition: { duration: 0.2 } }}>
