@@ -148,10 +148,10 @@ export default function InteractiveWorldMap({ items = [], type = 'destinations',
         scrollWheelZoom: true
       });
 
-      // CartoDB Voyager luxury travel tiles
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        subdomains: 'abcd',
-        maxZoom: 19
+      // OpenStreetMap global travel tiles (No API key required)
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
       }).addTo(map);
 
       // Re-position zoom control to top-right
@@ -182,12 +182,15 @@ export default function InteractiveWorldMap({ items = [], type = 'destinations',
       if (!item.coords) return;
 
       const isSelected = selectedItem?.id === item.id;
+      const markerTitle = item.title || item.name || 'Trip';
+      const markerIcon = type === 'destinations' ? '📍' : type === 'packages' ? '✈️' : '🏨';
+      const priceText = (item.displayPrice || '$999').split('-')[0];
       const html = `
         <div class="ts-leaflet-marker">
           <div class="ts-marker-bubble ${isSelected ? 'highlighted' : ''}">
-            <span class="ts-marker-icon">${type === 'destinations' ? '📍' : '🏨'}</span>
-            <span class="ts-marker-label">${item.name}</span>
-            <span class="ts-marker-price">${item.displayPrice.split('-')[0]}</span>
+            <span class="ts-marker-icon">${markerIcon}</span>
+            <span class="ts-marker-label">${markerTitle}</span>
+            <span class="ts-marker-price">${priceText}</span>
           </div>
           <div class="ts-marker-arrow"></div>
         </div>
