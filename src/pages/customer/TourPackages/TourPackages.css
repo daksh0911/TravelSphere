@@ -658,19 +658,22 @@
   }
 
   .package-heading h1 {
-    font-size: clamp(3.2rem, 16vw, 4.8rem);
-    margin: 17px 0;
+    font-size: clamp(2.1rem, 8.5vw, 2.85rem);
+    line-height: 1.12;
+    margin: 14px 0;
   }
 
   .package-heading p {
     font-size: 14px;
+    line-height: 1.5;
   }
 
   .package-trust {
-    margin-top: 25px;
+    margin-top: 18px;
     border-left: 0;
     border-top: 1px solid rgba(0, 0, 0, 0.08);
-    padding: 17px 0 0;
+    padding: 14px 0 0;
+    width: 100%;
   }
 
   .package-toolbar {
