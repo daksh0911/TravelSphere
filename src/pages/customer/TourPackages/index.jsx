@@ -4,7 +4,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import './TourPackages.css';
 import '../../../styles/showcase-skin.css';
 import './Compare.css';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
+import { useCurrency } from '../../../context/useCurrency';
+import { Sparkles } from 'lucide-react';
 import SmartImage from '../../../components/common/SmartImage';
 import { DESTINATIONS_BY_ID } from '../../../data/destinations';
 
@@ -42,6 +44,7 @@ const itemVariants = {
 
 export default function TourPackagesPage() {
   usePageTitle('Tour Packages');
+  const { formatPrice, currency } = useCurrency();
   const [searchParams] = useSearchParams();
   const destinationParam = searchParams.get('destination');
   const [query, setQuery] = useState(() => DESTINATIONS_BY_ID[destinationParam]?.name || localStorage.getItem('ts_destination_interest') || '');
@@ -127,6 +130,27 @@ export default function TourPackagesPage() {
         )}
       </AnimatePresence>
       
+      
+      {/* AI TRIP PLANNER PROMO BANNER */}
+      <div style={{ maxWidth: '1240px', margin: '0 auto 2.5rem auto', padding: '0 1.5rem' }}>
+        <div style={{ background: 'linear-gradient(135deg, rgba(163, 112, 76, 0.12) 0%, rgba(163, 112, 76, 0.04) 100%)', border: '1.5px solid rgba(163, 112, 76, 0.25)', borderRadius: '20px', padding: '1.5rem 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem' }}>
+          <div>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: '#a3704c', fontWeight: 800, fontSize: '0.8rem', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.35rem' }}>
+              <Sparkles size={14} /> 2026 AI Trip Generator
+            </div>
+            <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#1e293b', margin: 0 }}>
+              Want a custom day-by-day plan tailored to your budget?
+            </h3>
+            <p style={{ color: '#64748b', fontSize: '0.9rem', margin: '0.25rem 0 0' }}>
+              Generate complete schedules with matched hotels, rail transit, and group bill splitting in seconds.
+            </p>
+          </div>
+          <Link to="/itinerary-planner" className="package-book" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.6rem', fontSize: '0.9rem', borderRadius: '999px' }}>
+            <Sparkles size={16} /> Open AI Trip Planner ➔
+          </Link>
+        </div>
+      </div>
+  
       <motion.section className="package-grid" variants={containerVariants} initial="hidden" animate="show">
         {results.map(pkg => (
           <motion.article className="package-product-card" key={pkg.id} variants={itemVariants}>
@@ -145,7 +169,7 @@ export default function TourPackagesPage() {
                 {pkg.inclusions.map(item => <li key={item}><Check size={14}/>{item}</li>)}
               </ul>
               <div className="package-card-footer">
-                <div><small>Typical estimate</small><strong>{pkg.priceLabel}</strong><small>USD / person</small></div>
+                <div><small>Typical estimate</small><strong>{currency === "USD" ? pkg.priceLabel : `${formatPrice(pkg.price)}`}</strong><small>{currency} / person</small></div>
                 <button className="package-book" onClick={() => setBooking(pkg)}>View trip <ArrowRight size={16}/></button>
               </div>
               <label className="compare-check">

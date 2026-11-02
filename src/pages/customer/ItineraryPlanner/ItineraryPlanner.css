@@ -1,0 +1,388 @@
+/* ==========================================================================
+   TravelSphere AI Dynamic Itinerary Planner — Luxury Experience Skin
+   ========================================================================== */
+
+.itinerary-planner-page {
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #fcfbf9 0%, #f4efe6 100%);
+  color: #292524;
+  padding-bottom: 5rem;
+}
+
+.itinerary-hero {
+  padding: 5rem 1.5rem 3rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.itinerary-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(163, 112, 76, 0.12);
+  color: #a3704c;
+  padding: 0.4rem 1.1rem;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+  border: 1px solid rgba(163, 112, 76, 0.25);
+}
+
+.itinerary-hero h1 {
+  font-family: var(--font-family-heading, 'Playfair Display', Georgia, serif);
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: #1e293b;
+  margin-bottom: 1rem;
+}
+
+.itinerary-hero h1 em {
+  font-style: italic;
+  color: #a3704c;
+}
+
+.itinerary-hero p {
+  font-size: 1.1rem;
+  color: #64748b;
+  max-width: 650px;
+  margin: 0 auto 2.5rem;
+  line-height: 1.6;
+}
+
+/* Generator Form Card */
+.itinerary-card-wizard {
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 2.2rem;
+  box-shadow: 0 20px 48px -12px rgba(41, 37, 36, 0.1);
+  border: 1px solid rgba(41, 37, 36, 0.08);
+  max-width: 1050px;
+  margin: 0 auto 3.5rem;
+}
+
+.wizard-grid-inputs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.wizard-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.wizard-field-group label {
+  font-size: 0.825rem;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.wizard-select,
+.wizard-input {
+  width: 100%;
+  padding: 0.85rem 1.1rem;
+  border-radius: 14px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  font-size: 0.95rem;
+  color: #1e293b;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.wizard-select:focus,
+.wizard-input:focus {
+  border-color: #a3704c;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(163, 112, 76, 0.15);
+}
+
+/* Vibe Selection Cards */
+.vibe-pills-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.25rem;
+}
+
+.vibe-pill {
+  padding: 0.55rem 1rem;
+  border-radius: 9999px;
+  border: 1.5px solid #e2e8f0;
+  background: #ffffff;
+  color: #475569;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.vibe-pill:hover {
+  border-color: #a3704c;
+  color: #a3704c;
+}
+
+.vibe-pill.active {
+  background: #a3704c;
+  color: #ffffff;
+  border-color: #a3704c;
+  box-shadow: 0 4px 12px rgba(163, 112, 76, 0.28);
+}
+
+/* Generate CTA */
+.wizard-cta-row {
+  display: flex;
+  justify-content: center;
+  padding-top: 1rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.btn-generate-ai {
+  background: linear-gradient(135deg, #a3704c 0%, #8c5d3b 100%);
+  color: #ffffff;
+  font-size: 1.05rem;
+  font-weight: 700;
+  padding: 1rem 2.5rem;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 10px 24px -6px rgba(163, 112, 76, 0.45);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  transition: all 0.25s ease;
+}
+
+.btn-generate-ai:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px -6px rgba(163, 112, 76, 0.55);
+}
+
+.btn-generate-ai:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Results Showcase */
+.itinerary-results-container {
+  max-width: 1050px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.itinerary-overview-header {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 2rem;
+  border: 1px solid rgba(41, 37, 36, 0.08);
+  box-shadow: 0 10px 30px -8px rgba(0, 0, 0, 0.06);
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.overview-title-block h2 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 0.35rem;
+}
+
+.overview-meta-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+
+.meta-chip {
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 0.775rem;
+  font-weight: 700;
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.overview-price-block {
+  text-align: right;
+}
+
+.overview-total-price {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #a3704c;
+  line-height: 1;
+}
+
+.overview-per-person {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-top: 0.25rem;
+}
+
+/* Day by Day Cards */
+.days-timeline-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.day-card {
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  box-shadow: 0 6px 20px -4px rgba(0, 0, 0, 0.05);
+  transition: all 0.25s ease;
+}
+
+.day-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 12px 30px -6px rgba(0, 0, 0, 0.08);
+}
+
+.day-card-header {
+  background: #f8fafc;
+  padding: 1.1rem 1.6rem;
+  border-bottom: 1px solid #edf2f7;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.day-card-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.day-est-cost {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #a3704c;
+  background: rgba(163, 112, 76, 0.1);
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+}
+
+.day-schedule-body {
+  padding: 1.6rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.slot-item {
+  display: flex;
+  gap: 0.85rem;
+}
+
+.slot-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #f1f5f9;
+  color: #a3704c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.slot-content h4 {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #334155;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.25rem;
+}
+
+.slot-content p {
+  font-size: 0.9rem;
+  color: #475569;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Split Payment & Actions Bar */
+.itinerary-actions-panel {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 2rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.06);
+  margin-bottom: 2rem;
+}
+
+.split-calculator-box {
+  background: #f8fafc;
+  border-radius: 14px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.split-numbers {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.split-stat {
+  font-size: 0.825rem;
+  color: #64748b;
+}
+
+.split-stat strong {
+  display: block;
+  font-size: 1.35rem;
+  color: #1e293b;
+}
+
+.itinerary-btns-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .wizard-grid-inputs {
+    grid-template-columns: 1fr;
+  }
+  .itinerary-overview-header {
+    flex-direction: column;
+    text-align: left;
+    align-items: flex-start;
+  }
+  .overview-price-block {
+    text-align: left;
+  }
+}

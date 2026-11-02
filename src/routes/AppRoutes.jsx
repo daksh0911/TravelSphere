@@ -23,6 +23,7 @@ import AgentDashboard from '../pages/agent/AgentDashboard';
 import HotelDashboard from '../pages/hotel/HotelDashboard';
 import TransportDashboard from '../pages/transport/TransportDashboard';
 import GuideDashboard from '../pages/guide/GuideDashboard';
+import ItineraryPlanner from '../pages/customer/ItineraryPlanner';
 
 // Protected Route Guard: checks auth status and role permissions
 function ProtectedRoute({ children, allowedRoles }) {
@@ -125,6 +126,8 @@ export default function AppRoutes() {
               <Route path="destinations" element={<Destinations />} />
               <Route path="destinations/:id" element={<DestinationDetail />} />
               <Route path="packages" element={<TourPackages />} />
+              <Route path="itinerary-planner" element={<ItineraryPlanner />} />
+              <Route path="trip-planner" element={<ItineraryPlanner />} />
               <Route path="hotels" element={<Hotels />} />
               <Route path="vehicles" element={<Vehicles />} />
               <Route path="about" element={<About />} />

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
 import { ChevronDown, LogOut, Menu, Search, Sparkles, X } from 'lucide-react';
 import { useAuth } from '../../context/useAuth';
+import { useCurrency } from '../../context/useCurrency';
 import { openCommandPalette, openTripStudio } from '../common/siteCommandCenterActions';
 import './Navbar.css';
 
@@ -10,6 +11,7 @@ const PRIMARY_LINKS = [
   { name: 'Tour Packages', path: '/packages' },
   { name: 'Hotels', path: '/hotels' },
   { name: 'Vehicles', path: '/vehicles' },
+  { name: 'AI Planner', path: '/itinerary-planner' },
 ];
 const SECONDARY_LINKS = [
   { name: 'About', path: '/about' },
@@ -37,6 +39,7 @@ const linkClass = ({ isActive }) => (isActive ? 'nav-link active' : 'nav-link');
 const Navbar = () => {
   const { pathname } = useLocation();
   const { user, isAuthenticated, logout } = useAuth();
+  const { currency, setCurrency } = useCurrency();
   const [scrolled, setScrolled] = useState(false);
   // A menu counts as open only on the page where it was opened, so it closes
   // automatically on navigation without needing an effect.
@@ -110,6 +113,22 @@ const Navbar = () => {
         </ul>
 
         <div className="navbar-right">
+          <div className="nav-currency-wrap">
+            <select
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value)}
+              className="nav-currency-select"
+              aria-label="Select display currency"
+              title="Change display currency"
+            >
+              <option value="USD">USD ($)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="GBP">GBP (£)</option>
+              <option value="INR">INR (₹)</option>
+              <option value="JPY">JPY (¥)</option>
+              <option value="AED">AED (د.إ)</option>
+            </select>
+          </div>
           <div className="nav-menu-wrap" ref={moreRef}>
             <button
               ref={moreButtonRef}
@@ -126,6 +145,7 @@ const Navbar = () => {
               <div className="nav-menu-popover" id="nav-more-menu">
                 {SECONDARY_LINKS.map((link) => <NavLink key={link.path} to={link.path} onClick={closeMore}>{link.name}</NavLink>)}
                 <div className="nav-menu-divider" role="separator" />
+                <NavLink to="/itinerary-planner" onClick={closeMore}><Sparkles size={14} aria-hidden="true" /> AI Trip Planner</NavLink>
                 <button type="button" onClick={() => { closeMore(); openTripStudio(); }}><Sparkles size={14} aria-hidden="true" /> Trip Studio</button>
                 <button type="button" onClick={() => { closeMore(); openCommandPalette(); }}><Search size={14} aria-hidden="true" /> Search the site</button>
                 <div className="nav-menu-divider" role="separator" />

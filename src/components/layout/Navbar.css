@@ -404,3 +404,32 @@
   .mobile-nav-panel,
   .mobile-nav-scrim { animation: none; }
 }
+
+
+/* Currency Switcher in Header */
+.nav-currency-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.nav-currency-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: rgba(163, 112, 76, 0.08);
+  border: 1px solid rgba(163, 112, 76, 0.2);
+  color: var(--color-text-dark);
+  font: 700 0.8rem var(--font-family-base);
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.nav-currency-select:hover,
+.nav-currency-select:focus {
+  background: rgba(163, 112, 76, 0.15);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
