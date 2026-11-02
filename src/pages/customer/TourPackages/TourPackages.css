@@ -11,14 +11,18 @@
 
 /* ── Hero / Heading ───────────────────────────────────────────── */
 .package-heading {
-  padding: 105px max(5vw, 28px) 65px;
+  padding: 42px max(5vw, 28px) 28px;
   background: linear-gradient(135deg, var(--color-bg-main) 0%, var(--color-bg-white) 100%);
   color: var(--color-text-dark);
   display: flex;
   justify-content: space-between;
-  align-items: end;
+  align-items: center;
   gap: 30px;
   border-bottom: 1px solid rgba(163, 123, 92, 0.15);
+}
+
+.package-heading-content {
+  max-width: 650px;
 }
 
 .market-eyebrow {
@@ -31,10 +35,10 @@
 
 .package-heading h1 {
   font-family: var(--font-family-heading);
-  font-size: clamp(3.7rem, 6vw, 6rem);
-  line-height: 0.9;
-  letter-spacing: -0.025em; line-height: 1.08;
-  margin: 20px 0;
+  font-size: clamp(2.4rem, 4.2vw, 3.8rem);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  margin: 10px 0 14px;
   color: var(--color-text-dark);
 }
 
@@ -54,34 +58,89 @@
 }
 
 .package-trust {
-  display: flex;
-  gap: 10px;
+  display: inline-flex;
+  gap: 12px;
   align-items: center;
   color: var(--color-primary);
-  border-left: 1px solid rgba(0, 0, 0, 0.08);
-  padding-left: 20px;
-}
-
-.package-trust strong,
-.package-trust small {
-  display: block;
+  background: rgba(163, 123, 92, 0.08);
+  border: 1px solid rgba(163, 123, 92, 0.2);
+  border-radius: 12px;
+  padding: 12px 18px;
+  flex-shrink: 0;
 }
 
 .package-trust strong {
-  font-size: 12px;
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
   color: var(--color-text-dark);
 }
 
 .package-trust small {
-  font-size: 10px;
+  display: block;
+  font-size: 11px;
   color: var(--color-text-light);
-  margin-top: 4px;
+  margin-top: 2px;
+}
+
+/* ── AI Itinerary Promo Banner ────────────────────────────── */
+.package-ai-banner-wrap {
+  width: min(1180px, calc(100% - 56px));
+  margin: 20px auto 0;
+}
+
+.package-ai-banner {
+  background: linear-gradient(135deg, rgba(163, 112, 76, 0.09) 0%, rgba(163, 112, 76, 0.03) 100%);
+  border: 1.5px solid rgba(163, 112, 76, 0.22);
+  border-radius: 16px;
+  padding: 1.15rem 1.6rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.package-ai-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #a3704c;
+  font-weight: 800;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+}
+
+.package-ai-banner h3 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0;
+}
+
+.package-ai-banner p {
+  color: #64748b;
+  font-size: 0.86rem;
+  margin: 0.2rem 0 0;
+}
+
+.package-ai-btn {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.4rem;
+  font-size: 0.875rem;
+  border-radius: 999px;
+  white-space: nowrap;
 }
 
 /* ── Toolbar ──────────────────────────────────────────────────── */
 .package-toolbar {
   width: min(1180px, calc(100% - 56px));
-  margin: 28px auto 25px;
+  margin: 16px auto 24px;
   display: grid;
   grid-template-columns: 1.1fr 1.5fr auto;
   gap: 14px;

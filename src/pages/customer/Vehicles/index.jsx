@@ -5,6 +5,7 @@ import './Vehicles.css';
 import SmartImage from '../../../components/common/SmartImage';
 import RoundCarousel from '../../../components/common/RoundCarousel';
 import usePageTitle from '../../../hooks/usePageTitle';
+import { useCurrency } from '../../../context/useCurrency';
 
 const VEHICLES = [
     {
@@ -402,6 +403,7 @@ const itemVariants = { hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, 
 
 export default function VehiclesPage() {
   usePageTitle('Vehicles');
+  const { formatPrice, currency } = useCurrency();
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('All vehicles');
   const [type, setType] = useState('All types');
@@ -595,8 +597,8 @@ export default function VehiclesPage() {
                       <div className="vehicle-footer">
                         <div>
                           <small>From</small>
-                          <strong>${vehicle.price}</strong>
-                          <small>indicative / day</small>
+                          <strong>{formatPrice(vehicle.price)}</strong>
+                          <small>{currency} / day</small>
                         </div>
                         <button onClick={() => setSelected(vehicle)}>
                           Check live availability <ArrowRight size={16} />
@@ -620,7 +622,7 @@ export default function VehiclesPage() {
               <div className="vehicle-modal-body">
                 <span className="vehicle-eyebrow dark">{selected.category} · {selected.type}</span>
                 <h2>{selected.name}</h2>
-                <p>{selected.pickup} · indicative from ${selected.price} / day · final quote after availability check</p>
+                <p>{selected.pickup} · indicative from {formatPrice(selected.price)} / day · final quote after availability check</p>
                 <div className="vehicle-modal-safety">
                   <ShieldCheck size={16} /> {selected.safety} · {selected.family ? `up to ${selected.childSeats} child-seat fit checks on request` : 'Rider safety equipment required'}
                 </div>

@@ -149,32 +149,35 @@ export default function TourPackagesPage() {
   return (
     <div className="package-marketplace">
       <section className="package-heading">
-        <div>
+        <div className="package-heading-content">
           <span className="market-eyebrow">TRAVELSPHERE COLLECTION / 2026</span>
           <h1>Trips worth<br /><em>remembering.</em></h1>
           <p>Thoughtful itineraries, trusted local experts, and the little details already taken care of. Prices are general estimates and vary by dates, room type, and inclusions.</p>
         </div>
         <div className="package-trust">
-          <ShieldCheck size={20} />
-          <span><strong>Protected booking</strong><small>Flexible support before you go</small></span>
+          <ShieldCheck size={22} />
+          <div>
+            <strong>Protected booking</strong>
+            <small>Flexible support before you go</small>
+          </div>
         </div>
       </section>
 
       {/* AI TRIP PLANNER PROMO BANNER */}
-      <div style={{ maxWidth: '1240px', margin: '0 auto 1.75rem auto', padding: '0 1.5rem' }}>
-        <div style={{ background: 'linear-gradient(135deg, rgba(163, 112, 76, 0.1) 0%, rgba(163, 112, 76, 0.03) 100%)', border: '1.5px solid rgba(163, 112, 76, 0.22)', borderRadius: '20px', padding: '1.25rem 1.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+      <div className="package-ai-banner-wrap">
+        <div className="package-ai-banner">
           <div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: '#a3704c', fontWeight: 800, fontSize: '0.78rem', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
+            <div className="package-ai-eyebrow">
               <Sparkles size={14} /> AI-Powered Dynamic Itinerary Generator (Gemini 2026)
             </div>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#1e293b', margin: 0 }}>
+            <h3>
               Want a custom day-by-day itinerary tailored to your budget?
             </h3>
-            <p style={{ color: '#64748b', fontSize: '0.875rem', margin: '0.2rem 0 0' }}>
+            <p>
               Input your origin, vibe, and duration—get instant route maps, matched hotels, and split group costs.
             </p>
           </div>
-          <Link to="/itinerary-planner" className="package-book" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.5rem', fontSize: '0.875rem', borderRadius: '999px' }}>
+          <Link to="/itinerary-planner" className="package-book package-ai-btn">
             <Sparkles size={15} /> Launch AI Trip Planner ➔
           </Link>
         </div>
