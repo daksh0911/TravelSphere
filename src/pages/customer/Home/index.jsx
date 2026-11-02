@@ -8,6 +8,7 @@ import MagneticLink from '../../../components/common/MagneticLink';
 import DestinationGallery from './DestinationGallery';
 import { DESTINATIONS_BY_ID, FEATURED_DESTINATION_IDS } from '../../../data/destinations';
 import './Home.css';
+import { useCurrency } from '../../../context/useCurrency';
 
 const FEATURED = FEATURED_DESTINATION_IDS.map((id) => {
   const item = DESTINATIONS_BY_ID[id];
@@ -43,6 +44,7 @@ const headlineLineVariants = {
 
 export default function Home() {
   const prefersReducedMotion = useReducedMotion();
+  const { formatPrice } = useCurrency();
 
   return (
     <div className="new-home">
@@ -135,7 +137,7 @@ export default function Home() {
                 <div className="home-vehicle-body">
                   <div className="home-vehicle-header">
                     <span className="home-vehicle-cat">{vehicle.category}</span>
-                    <strong className="home-vehicle-price">${vehicle.price}<small>/day</small></strong>
+                    <strong className="home-vehicle-price">{formatPrice(vehicle.price)}<small>/day</small></strong>
                   </div>
                   <h3>{vehicle.name}</h3>
                   <div className="home-vehicle-meta">

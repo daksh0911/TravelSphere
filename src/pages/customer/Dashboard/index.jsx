@@ -25,9 +25,11 @@ import SmartImage from '../../../components/common/SmartImage';
 import { generateBookingPDF } from '../../../utils/pdfVoucher';
 
 import usePageTitle from '../../../hooks/usePageTitle';
+import { useCurrency } from '../../../context/useCurrency';
 const CustomerDashboard = () => {
   usePageTitle('My Dashboard');
   const { user, logout } = useAuth();
+  const { formatPrice } = useCurrency();
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -367,7 +369,7 @@ const CustomerDashboard = () => {
                     </div>
                     <div>
                       <div className="ts-metric-num">{liveBookings.length * 500} pts</div>
-                      <div className="ts-metric-label">${(liveBookings.length * 5).toFixed(2)} reward value</div>
+                      <div className="ts-metric-label">{formatPrice(liveBookings.length * 5)} reward value</div>
                     </div>
                   </div>
 
@@ -484,7 +486,7 @@ const CustomerDashboard = () => {
                           </div>
                           <div className="ts-detail-box">
                             <div className="ts-detail-label">Total Amount</div>
-                            <div className="ts-detail-val">${liveBookings[0].total_amount}</div>
+                            <div className="ts-detail-val">{formatPrice(liveBookings[0].total_amount)}</div>
                           </div>
                         </div>
                         <div style={{ marginTop: '1.25rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
@@ -677,7 +679,7 @@ const CustomerDashboard = () => {
                               <span style={{ background: '#f1f5f9', padding: '0.2rem 0.6rem', borderRadius: '12px', fontSize: '0.725rem', fontWeight: 700 }}>Tour Package</span>
                             </td>
                             <td style={{ fontSize: '0.825rem', color: '#64748b' }}>{new Date(b.start_date).toLocaleDateString()}</td>
-                            <td style={{ fontWeight: 800 }}>${b.total_amount}</td>
+                            <td style={{ fontWeight: 800 }}>{formatPrice(b.total_amount)}</td>
                             <td>
                               <span className={`ts-status-tag ${b.status === 'confirmed' ? 'completed' : 'pending'}`}>
                                 {b.status}
@@ -752,7 +754,7 @@ const CustomerDashboard = () => {
                         <div className="ts-adventure-body">
                           <h3 className="ts-adventure-title">{w.title}</h3>
                           <div className="ts-adventure-meta">
-                            <div className="ts-price-tag">${w.price} <span>/person</span></div>
+                            <div className="ts-price-tag">{formatPrice(w.price)} <span>/person</span></div>
                             <button onClick={() => handleBookPackage(w)} className="ts-btn-primary" style={{ padding: '0.45rem 1rem', fontSize: '0.8rem' }}>
                               Book Now
                             </button>
@@ -812,7 +814,7 @@ const CustomerDashboard = () => {
                             <span style={{ background: '#f1f5f9', padding: '0.2rem 0.6rem', borderRadius: '12px', fontSize: '0.725rem', fontWeight: 700 }}>Tour Package</span>
                           </td>
                           <td style={{ fontSize: '0.825rem', color: '#64748b' }}>{new Date(b.start_date).toLocaleDateString()}</td>
-                          <td style={{ fontWeight: 800 }}>${b.total_amount}</td>
+                          <td style={{ fontWeight: 800 }}>{formatPrice(b.total_amount)}</td>
                           <td>
                             <span className={`ts-status-tag ${b.status === 'confirmed' ? 'completed' : 'pending'}`}>
                               {b.status}
@@ -888,7 +890,7 @@ const CustomerDashboard = () => {
                       <div className="ts-adventure-body">
                         <h3 className="ts-adventure-title">{w.title}</h3>
                         <div className="ts-adventure-meta">
-                          <div className="ts-price-tag">${w.price} <span>/person</span></div>
+                          <div className="ts-price-tag">{formatPrice(w.price)} <span>/person</span></div>
                           <button onClick={() => handleBookPackage(w)} className="ts-btn-primary" style={{ padding: '0.45rem 1rem', fontSize: '0.8rem' }}>
                             Book Now
                           </button>
@@ -1064,7 +1066,7 @@ const CustomerDashboard = () => {
                         )}
 
                         <div className="ts-adventure-meta">
-                          <div className="ts-price-tag">${pkg.price} <span>/person</span></div>
+                          <div className="ts-price-tag">{formatPrice(pkg.price)} <span>/person</span></div>
                           <div style={{ display: 'flex', gap: '0.4rem' }}>
                             <button onClick={() => handleAddToWishlist(pkg)} className="ts-btn-outline" style={{ padding: '0.4rem 0.65rem', fontSize: '0.75rem' }} title="Save to Wishlist">
                               ❤️ Wishlist

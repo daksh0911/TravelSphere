@@ -20,6 +20,7 @@ import generateItinerary from '../../../utils/aiItineraryEngine';
 import { generateBookingPDF } from '../../../utils/pdfVoucher';
 import { useAuth } from '../../../context/useAuth';
 import usePageTitle from '../../../hooks/usePageTitle';
+import { useCurrency } from '../../../context/useCurrency';
 import './ItineraryPlanner.css';
 
 const VIBE_OPTIONS = [
@@ -38,6 +39,7 @@ const BUDGET_OPTIONS = [
 
 export default function ItineraryPlanner() {
   usePageTitle('AI Custom Trip Planner');
+  const { formatPrice } = useCurrency();
   const { user } = useAuth();
   const [isPending, startTransition] = useTransition();
 
@@ -285,9 +287,9 @@ export default function ItineraryPlanner() {
             </div>
 
             <div className="overview-price-block">
-              <div className="overview-total-price">${itinerary.costs.total.toLocaleString()}</div>
+              <div className="overview-total-price">{formatPrice(itinerary.costs.total)}</div>
               <div className="overview-per-person">
-                ~${itinerary.costs.perPerson.toLocaleString()} per person (all-inclusive estimate)
+                ~{formatPrice(itinerary.costs.perPerson)} per person (all-inclusive estimate)
               </div>
             </div>
           </div>
@@ -298,7 +300,7 @@ export default function ItineraryPlanner() {
               <div className="day-card" key={d.day}>
                 <div className="day-card-header">
                   <span className="day-card-title">{d.title}</span>
-                  <span className="day-est-cost">Est. ${d.dailyCostEst} / day</span>
+                  <span className="day-est-cost">Est. {formatPrice(d.dailyCostEst)} / day</span>
                 </div>
 
                 <div className="day-schedule-body">
@@ -364,11 +366,11 @@ export default function ItineraryPlanner() {
               <div className="split-numbers">
                 <div className="split-stat">
                   <span>Each Person Pays:</span>
-                  <strong>${Math.round(itinerary.costs.total / splitCount).toLocaleString()}</strong>
+                  <strong>{formatPrice(Math.round(itinerary.costs.total / splitCount))}</strong>
                 </div>
                 <div className="split-stat">
                   <span>Total Package:</span>
-                  <strong>${itinerary.costs.total.toLocaleString()}</strong>
+                  <strong>{formatPrice(itinerary.costs.total)}</strong>
                 </div>
               </div>
             </div>

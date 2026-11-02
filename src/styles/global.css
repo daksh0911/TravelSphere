@@ -18,6 +18,39 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+h1, h2, h3, h4, h5, h6 {
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+::selection {
+  background: rgba(163, 112, 76, 0.22);
+  color: var(--color-text-dark);
+}
+
+/* Custom luxury scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-alt);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(163, 112, 76, 0.35);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+
 a {
   text-decoration: none;
   color: inherit;
@@ -58,7 +91,6 @@ img {
     padding: 0 2rem;
   }
 }
-
 
 .route-transition-stage {
   min-height: 100vh;
