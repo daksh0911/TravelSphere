@@ -138,7 +138,7 @@ export default function TourPackagesPage() {
               </button>
             </div>
             <div className="package-card-body">
-              <div className="package-location"><MapPin size={14}/>{pkg.location}<span>Ã‚?</span><Clock3 size={14}/>{pkg.days} days</div>
+              <div className="package-location"><MapPin size={14}/>{pkg.location}<span>·</span><Clock3 size={14}/>{pkg.days} days</div>
               <h2>{pkg.title}</h2>
               <div className="package-rating"><Star size={14} fill="currentColor"/><strong>{pkg.rating}</strong><span>({pkg.reviews.toLocaleString()} reviews)</span></div>
               <ul>
@@ -242,7 +242,7 @@ export default function TourPackagesPage() {
               <button type="button" className="modal-close" onClick={() => setBooking(null)}><X size={18}/></button>
               <span className="market-eyebrow">REQUEST YOUR JOURNEY</span>
               <h2>{booking.title}</h2>
-              <p><MapPin size={14}/> {booking.location} Ã‚? {booking.days} days / {booking.nights} nights</p>
+              <p><MapPin size={14}/> {booking.location} · {booking.days} days / {booking.nights} nights</p>
               <label>Preferred departure date
                 <input type="date" name="date" required defaultValue="2026-10-15"/>
               </label>

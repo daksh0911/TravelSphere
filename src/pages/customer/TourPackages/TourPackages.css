@@ -33,7 +33,7 @@
   font-family: var(--font-family-heading);
   font-size: clamp(3.7rem, 6vw, 6rem);
   line-height: 0.9;
-  letter-spacing: -0.09em;
+  letter-spacing: -0.025em; line-height: 1.08;
   margin: 20px 0;
   color: var(--color-text-dark);
 }
