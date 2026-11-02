@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, readFileSync, unlinkSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const siteUrl = () => ({
@@ -10,28 +10,45 @@ const siteUrl = () => ({
     const url = (process.env.SITE_URL || '').replace(/\/$/, '');
     if (!url) return;
     for (const file of ['robots.txt', 'sitemap.xml']) {
-      const path = resolve('dist', file);
-      if (existsSync(path)) writeFileSync(path, readFileSync(path, 'utf8').replaceAll('https://YOUR-DOMAIN-HERE', url));
+      const path = resolve(file);
+      if (existsSync(path)) {
+        writeFileSync(path, readFileSync(path, 'utf8').replaceAll('https://YOUR-DOMAIN-HERE', url));
+      }
     }
   },
 });
 
+const rootEntry = () => ({
+  name: 'travelsphere-root-entry',
+  closeBundle() {
+    const builtEntry = resolve('app.html');
+    const rootEntryPath = resolve('index.html');
+    if (!existsSync(builtEntry)) throw new Error('Vite did not create the production app entry.');
+    copyFileSync(builtEntry, rootEntryPath);
+    unlinkSync(builtEntry);
+  },
+});
+
 export default defineConfig({
-  base: '/',
+  root: 'src',
+  publicDir: '../public',
+  base: './',
   build: {
-    outDir: 'dist',
     rollupOptions: {
+      input: resolve('src/app.html'),
       output: {
         manualChunks(id) {
           if (!id.includes('node_modules')) return;
           if (/react-router|@remix-run/.test(id)) return 'router';
           if (/framer-motion|motion-dom|motion-utils/.test(id)) return 'motion';
-          if (/node_modules\/(react|react-dom|scheduler)\//.test(id)) return 'react';
+          if (/node_modules[\\/]react(?:-dom)?[\\/]/.test(id)) return 'react';
         },
       },
     },
+    outDir: '..',
+    emptyOutDir: false,
   },
-  plugins: [react(), siteUrl()],
+  plugins: [react(), siteUrl(), rootEntry()],
   server: {
     host: '0.0.0.0',
     allowedHosts: true,
