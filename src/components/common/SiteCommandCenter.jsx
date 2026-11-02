@@ -82,9 +82,9 @@ const STUDIO_STEPS = [
     key: 'budget',
     options: [
       { label: 'Thoughtful value', detail: 'Spend wisely while keeping the best experiences', image: '/destination-images/rajasthan.webp', icon: '01' },
-      { label: 'Comfort with character', detail: 'Handpicked stays and details that make travel easy', image: '/hotel-images/aman-kyoto.jpg', icon: '02' },
-      { label: 'A little more special', detail: 'Beautiful upgrades and memorable extras along the way', image: '/hotel-images/canaves-oia.jpg', icon: '03' },
-      { label: 'Our most indulgent escape', detail: 'Exceptional stays, seamless service, and no compromises', image: '/hotel-images/al-maha.jpg', icon: '04' },
+      { label: 'Comfort with character', detail: 'Handpicked stays and details that make travel easy', image: '/hotel-images/aman-kyoto.webp', icon: '02' },
+      { label: 'A little more special', detail: 'Beautiful upgrades and memorable extras along the way', image: '/hotel-images/canaves-oia.webp', icon: '03' },
+      { label: 'Our most indulgent escape', detail: 'Exceptional stays, seamless service, and no compromises', image: '/hotel-images/al-maha.webp', icon: '04' },
     ],
   },
 ];

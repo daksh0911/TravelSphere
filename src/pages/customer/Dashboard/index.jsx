@@ -14,13 +14,15 @@ import {
   CheckCircle, 
   Star, 
   Plus, 
-  Edit, 
-  Check
+  Edit,
+  Check,
+  FileDown
 } from 'lucide-react';
 import { useAuth } from '../../../context/useAuth';
 import api from '../../../services/api';
 import './Dashboard.css';
 import SmartImage from '../../../components/common/SmartImage';
+import { generateBookingPDF } from '../../../utils/pdfVoucher';
 
 import usePageTitle from '../../../hooks/usePageTitle';
 const CustomerDashboard = () => {
@@ -485,6 +487,26 @@ const CustomerDashboard = () => {
                             <div className="ts-detail-val">${liveBookings[0].total_amount}</div>
                           </div>
                         </div>
+                        <div style={{ marginTop: '1.25rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                          <button
+                            type="button"
+                            className="ts-btn-primary"
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.65rem 1.25rem', fontSize: '0.85rem' }}
+                            onClick={() => generateBookingPDF({
+                              id: liveBookings[0].display_id || liveBookings[0].booking_id,
+                              title: liveBookings[0].package_title,
+                              amount: liveBookings[0].total_amount,
+                              status: liveBookings[0].status,
+                              startDate: liveBookings[0].start_date,
+                              endDate: liveBookings[0].end_date,
+                              guests: liveBookings[0].guests,
+                              guestName: liveUser?.name || 'Verified Traveler',
+                              email: liveUser?.email
+                            })}
+                          >
+                            <FileDown size={15} /> Download Official Voucher & Boarding Pass (PDF)
+                          </button>
+                        </div>
                       </div>
                     </>
                   ) : (
@@ -499,6 +521,28 @@ const CustomerDashboard = () => {
                       <Link to="/packages" className="ts-btn-primary" style={{ display: 'inline-flex', padding: '0.75rem 1.5rem', fontSize: '0.9rem' }}>
                         Explore Tour Packages to Book ➔
                       </Link>
+                      <div style={{ marginTop: '1rem' }}>
+                        <button
+                          type="button"
+                          onClick={() => generateBookingPDF({
+                            id: 'TS-DEMO-2026',
+                            title: 'Swiss Alps & Glacier Express Grand Tour',
+                            amount: 2450,
+                            status: 'CONFIRMED',
+                            startDate: '2026-11-15',
+                            endDate: '2026-11-22',
+                            guests: 2,
+                            origin: 'Zurich International',
+                            destination: 'Zermatt & Swiss Alps',
+                            guestName: liveUser?.name || 'Guest Traveler',
+                            email: liveUser?.email || 'traveler@travelsphere.com'
+                          })}
+                          className="ts-btn-outline"
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1.25rem', fontSize: '0.85rem' }}
+                        >
+                          <FileDown size={15} /> Preview Official Boarding Pass (PDF)
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -640,9 +684,30 @@ const CustomerDashboard = () => {
                               </span>
                             </td>
                             <td>
-                              <button className="ts-btn-outline" style={{ padding: '0.4rem 0.85rem', fontSize: '0.775rem' }}>
-                                Manage
-                              </button>
+                              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                <button
+                                  type="button"
+                                  className="ts-btn-primary"
+                                  title="Download Boarding Voucher PDF"
+                                  style={{ padding: '0.4rem 0.75rem', fontSize: '0.775rem', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
+                                  onClick={() => generateBookingPDF({
+                                    id: b.display_id || b.booking_id,
+                                    title: b.package_title,
+                                    amount: b.total_amount,
+                                    status: b.status,
+                                    startDate: b.start_date,
+                                    endDate: b.end_date,
+                                    guests: b.guests,
+                                    guestName: liveUser?.name || 'Verified Traveler',
+                                    email: liveUser?.email
+                                  })}
+                                >
+                                  <FileDown size={13} /> PDF Voucher
+                                </button>
+                                <button className="ts-btn-outline" style={{ padding: '0.4rem 0.75rem', fontSize: '0.775rem' }}>
+                                  Manage
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         ))
@@ -754,9 +819,30 @@ const CustomerDashboard = () => {
                             </span>
                           </td>
                           <td>
-                            <button className="ts-btn-outline" style={{ padding: '0.4rem 0.85rem', fontSize: '0.775rem' }}>
-                              Manage
-                            </button>
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                <button
+                                  type="button"
+                                  className="ts-btn-primary"
+                                  title="Download Boarding Voucher PDF"
+                                  style={{ padding: '0.4rem 0.75rem', fontSize: '0.775rem', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
+                                  onClick={() => generateBookingPDF({
+                                    id: b.display_id || b.booking_id,
+                                    title: b.package_title,
+                                    amount: b.total_amount,
+                                    status: b.status,
+                                    startDate: b.start_date,
+                                    endDate: b.end_date,
+                                    guests: b.guests,
+                                    guestName: liveUser?.name || 'Verified Traveler',
+                                    email: liveUser?.email
+                                  })}
+                                >
+                                  <FileDown size={13} /> PDF Voucher
+                                </button>
+                                <button className="ts-btn-outline" style={{ padding: '0.4rem 0.75rem', fontSize: '0.775rem' }}>
+                                  Manage
+                                </button>
+                              </div>
                           </td>
                         </tr>
                       ))
