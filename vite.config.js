@@ -29,6 +29,20 @@ const rootEntry = () => ({
   },
 });
 
+const devFallback = () => ({
+  name: 'travelsphere-dev-fallback',
+  configureServer(server) {
+    server.middlewares.use((req, res, next) => {
+      const url = req.url ? req.url.split('?')[0] : '';
+      if (url === '/' || url === '/index.html') {
+        const query = req.url.includes('?') ? '?' + req.url.split('?')[1] : '';
+        req.url = '/app.html' + query;
+      }
+      next();
+    });
+  },
+});
+
 export default defineConfig({
   root: 'src',
   publicDir: '../public',
@@ -48,7 +62,7 @@ export default defineConfig({
     outDir: '..',
     emptyOutDir: false,
   },
-  plugins: [react(), siteUrl(), rootEntry()],
+  plugins: [react(), siteUrl(), rootEntry(), devFallback()],
   server: {
     host: '0.0.0.0',
     allowedHosts: true,
