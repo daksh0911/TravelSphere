@@ -35,7 +35,7 @@ const CHANNELS = [
     id: 'hotel',
     name: 'Elena Rostova',
     role: 'Luxury Front Desk Manager',
-    sub: 'Partner Stays & Concierge Relations',
+    sub: 'Partner Stays & Guest Services',
     icon: Hotel,
     avatarBg: '#d97706',
     quickChips: [
@@ -44,13 +44,13 @@ const CHANNELS = [
       'Confirm king-size bed and quiet floor'
     ],
     initialMessages: [
-      { id: 'm1', sender: 'provider', text: 'Welcome! I am Elena from Guest Concierge. We handle early arrival check-in, baggage drop, room preferences, and dining reservations. How can we make your stay seamless?', time: '09:30 AM' }
+      { id: 'm1', sender: 'provider', text: 'Welcome! I am Elena from Guest Support. We handle early arrival check-in, baggage drop, room preferences, and dining reservations. How can we make your stay seamless?', time: '09:30 AM' }
     ]
   },
   {
     id: 'support',
     name: 'TravelSphere Global Desk',
-    role: '24/7 Concierge & Operations',
+    role: '24/7 Support & Help Desk',
     sub: 'Verified Platform Guarantee Hub',
     icon: Headphones,
     avatarBg: '#a3704c',
@@ -83,15 +83,15 @@ function getSimulatedReply(channelId, userText) {
 
   if (channelId === 'hotel') {
     if (t.includes('check-in') || t.includes('check in') || t.includes('early') || t.includes('arrival')) {
-      return "Early check-in request logged! Your priority suite will be pre-allocated. If arriving before 11:00 AM, our concierge luggage drop and welcome lounge are available immediately.";
+      return "Early check-in request logged! Your priority suite will be pre-allocated. If arriving before 11:00 AM, our luggage drop and welcome lounge are available immediately.";
     }
     if (t.includes('bag') || t.includes('luggage') || t.includes('store') || t.includes('storage')) {
-      return "Yes, complimentary secure luggage lockers and concierge porter service are available 24 hours a day for all TravelSphere guests.";
+      return "Yes, complimentary secure luggage lockers and porter service are available 24 hours a day for all TravelSphere guests.";
     }
     if (t.includes('bed') || t.includes('king') || t.includes('floor') || t.includes('room')) {
       return "Preference confirmed! We have marked your reservation for a quiet upper-floor wing with king bedding.";
     }
-    return "Your concierge request has been relayed directly to our front desk supervisor. We look forward to welcoming you upon arrival!";
+    return "Your request has been relayed directly to our front desk supervisor. We look forward to welcoming you upon arrival!";
   }
 
   // support
@@ -220,11 +220,11 @@ export default function LiveTravelMessenger() {
           type="button"
           className="ts-messenger-launcher"
           onClick={handleToggle}
-          aria-label="Open Live Travel Concierge & Provider Chat"
+          aria-label="Open Live Chat and Support"
         >
           <div className="launcher-pulse-dot" />
           <MessageSquare size={20} />
-          <span className="launcher-label">Live Concierge</span>
+          <span className="launcher-label">Live Chat</span>
           {unreadCount > 0 && <span className="launcher-badge">{unreadCount}</span>}
         </button>
       )}
@@ -293,7 +293,7 @@ export default function LiveTravelMessenger() {
                   }}
                 >
                   <Icon size={14} />
-                  <span>{ch.id === 'guide' ? 'Tour Guide' : ch.id === 'hotel' ? 'Hotel Concierge' : '24/7 Support'}</span>
+                  <span>{ch.id === 'guide' ? 'Tour Guide' : ch.id === 'hotel' ? 'Hotel Desk' : '24/7 Support'}</span>
                 </button>
               );
             })}
