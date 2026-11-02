@@ -139,3 +139,4 @@ export function generateBookingPDF(booking) {
 }
 
 export default generateBookingPDF;
+

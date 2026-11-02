@@ -318,3 +318,4 @@ export function generateItinerary({
 }
 
 export default generateItinerary;
+

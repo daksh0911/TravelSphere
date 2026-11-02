@@ -53,6 +53,34 @@ export default function TourPackagesPage() {
   const [compare, setCompare] = useState([]);
   const [wishlist, setWishlist] = useState(() => JSON.parse(localStorage.getItem('ts_package_wishlist') || '[]'));
   const [booking, setBooking] = useState(null);
+  const [checkInDate, setCheckInDate] = useState('2026-10-15');
+  const [checkOutDate, setCheckOutDate] = useState('2026-10-20');
+  const [filterCheckIn, setFilterCheckIn] = useState('');
+  const [filterCheckOut, setFilterCheckOut] = useState('');
+
+  const handleOpenBooking = (pkg) => {
+    const start = filterCheckIn ? new Date(filterCheckIn) : new Date();
+    if (!filterCheckIn) start.setDate(start.getDate() + 14);
+    const startStr = start.toISOString().split('T')[0];
+
+    const end = new Date(start);
+    end.setDate(end.getDate() + (pkg.nights || pkg.days || 5));
+    const endStr = end.toISOString().split('T')[0];
+
+    setCheckInDate(startStr);
+    setCheckOutDate(filterCheckOut || endStr);
+    setBooking(pkg);
+  };
+
+  const handleCheckInChange = (newCheckIn) => {
+    setCheckInDate(newCheckIn);
+    if (booking && newCheckIn) {
+      const start = new Date(newCheckIn);
+      const end = new Date(start);
+      end.setDate(end.getDate() + (booking.nights || booking.days || 5));
+      setCheckOutDate(end.toISOString().split('T')[0]);
+    }
+  };
   const [compareOpen, setCompareOpen] = useState(false);
   const [toast, setToast] = useState('');
   
@@ -98,6 +126,36 @@ export default function TourPackagesPage() {
         <div className="package-search">
           <Search size={18}/>
           <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Where do you want to go?"/>
+        </div>
+        <div className="package-dates-toolbar" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+          <label style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-text-medium)', margin: 0 }}>
+            Check-in:
+            <input
+              type="date"
+              value={filterCheckIn}
+              onChange={(e) => setFilterCheckIn(e.target.value)}
+              style={{ padding: '6px 10px', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.1)', fontSize: '0.8rem', background: '#fff', color: '#1e293b' }}
+            />
+          </label>
+          <label style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-text-medium)', margin: 0 }}>
+            Check-out:
+            <input
+              type="date"
+              value={filterCheckOut}
+              onChange={(e) => setFilterCheckOut(e.target.value)}
+              min={filterCheckIn}
+              style={{ padding: '6px 10px', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.1)', fontSize: '0.8rem', background: '#fff', color: '#1e293b' }}
+            />
+          </label>
+          {(filterCheckIn || filterCheckOut) && (
+            <button
+              type="button"
+              onClick={() => { setFilterCheckIn(''); setFilterCheckOut(''); }}
+              style={{ background: 'transparent', border: 'none', color: '#a3704c', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer', padding: '4px' }}
+            >
+              Clear
+            </button>
+          )}
         </div>
         <div className="category-scroll">
           {CATEGORIES.map(item => (
@@ -170,7 +228,7 @@ export default function TourPackagesPage() {
               </ul>
               <div className="package-card-footer">
                 <div><small>Typical estimate</small><strong>{currency === "USD" ? pkg.priceLabel : `${formatPrice(pkg.price)}`}</strong><small>{currency} / person</small></div>
-                <button className="package-book" onClick={() => setBooking(pkg)}>View trip <ArrowRight size={16}/></button>
+                <button className="package-book" onClick={() => handleOpenBooking(pkg)}>View trip <ArrowRight size={16}/></button>
               </div>
               <label className="compare-check">
                 <input type="checkbox" checked={compare.includes(pkg.id)} onChange={() => toggleCompare(pkg.id)}/> Compare
@@ -236,7 +294,7 @@ export default function TourPackagesPage() {
                     <b>{pkg.priceLabel} <small>/ person estimate</small></b>
                     <div><Check size={14}/> {pkg.days} days</div>
                     <div><Star size={14}/> {pkg.rating} guest rating</div>
-                    <button onClick={() => { setBooking(pkg); setCompareOpen(false); }}>View this trip <ArrowRight size={15}/></button>
+                    <button onClick={() => { handleOpenBooking(pkg); setCompareOpen(false); }}>View this trip <ArrowRight size={15}/></button>
                   </article>
                 ))}
               </div>
@@ -267,9 +325,30 @@ export default function TourPackagesPage() {
               <span className="market-eyebrow">REQUEST YOUR JOURNEY</span>
               <h2>{booking.title}</h2>
               <p><MapPin size={14}/> {booking.location} · {booking.days} days / {booking.nights} nights</p>
-              <label>Preferred departure date
-                <input type="date" name="date" required defaultValue="2026-10-15"/>
-              </label>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '16px' }}>
+                <label style={{ marginTop: 0 }}>Check-in date
+                  <input
+                    type="date"
+                    name="checkIn"
+                    required
+                    value={checkInDate}
+                    onChange={(e) => handleCheckInChange(e.target.value)}
+                  />
+                </label>
+                <label style={{ marginTop: 0 }}>Check-out date
+                  <input
+                    type="date"
+                    name="checkOut"
+                    required
+                    value={checkOutDate}
+                    min={checkInDate}
+                    onChange={(e) => setCheckOutDate(e.target.value)}
+                  />
+                </label>
+              </div>
+              <div style={{ fontSize: '0.78rem', color: '#64748b', marginTop: '6px', fontWeight: 600 }}>
+                🗓️ Package duration: {booking.days} days / {booking.nights} nights
+              </div>
               <label>Travellers
                 <select name="guests" defaultValue="2">
                   <option value="1">1 traveller</option>
