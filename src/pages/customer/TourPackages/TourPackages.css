@@ -82,8 +82,8 @@
 .package-toolbar {
   width: min(1180px, calc(100% - 56px));
   margin: 28px auto 25px;
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1.1fr 1.5fr auto;
   gap: 14px;
   align-items: center;
   position: sticky;
@@ -766,13 +766,3 @@
 .package-card-footer strong { font-size: 18px; letter-spacing: -.02em; }
 @media (max-width: 900px) { .package-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 620px) { .package-grid { grid-template-columns: 1fr; } .package-image-wrap { height: 225px; } }
-
-.package-search {
-  flex: 1 1 240px;
-}
-.package-dates-toolbar {
-  flex: 0 0 auto;
-}
-.category-scroll {
-  flex: 1 1 280px;
-}

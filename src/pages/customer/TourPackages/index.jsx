@@ -4,9 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import './TourPackages.css';
 import '../../../styles/showcase-skin.css';
 import './Compare.css';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useCurrency } from '../../../context/useCurrency';
-import { Sparkles } from 'lucide-react';
 import SmartImage from '../../../components/common/SmartImage';
 import { DESTINATIONS_BY_ID } from '../../../data/destinations';
 
@@ -55,12 +54,10 @@ export default function TourPackagesPage() {
   const [booking, setBooking] = useState(null);
   const [checkInDate, setCheckInDate] = useState('2026-10-15');
   const [checkOutDate, setCheckOutDate] = useState('2026-10-20');
-  const [filterCheckIn, setFilterCheckIn] = useState('');
-  const [filterCheckOut, setFilterCheckOut] = useState('');
 
   const handleOpenBooking = (pkg) => {
-    const start = filterCheckIn ? new Date(filterCheckIn) : new Date();
-    if (!filterCheckIn) start.setDate(start.getDate() + 14);
+    const start = new Date();
+    start.setDate(start.getDate() + 14);
     const startStr = start.toISOString().split('T')[0];
 
     const end = new Date(start);
@@ -68,7 +65,7 @@ export default function TourPackagesPage() {
     const endStr = end.toISOString().split('T')[0];
 
     setCheckInDate(startStr);
-    setCheckOutDate(filterCheckOut || endStr);
+    setCheckOutDate(endStr);
     setBooking(pkg);
   };
 
@@ -127,36 +124,6 @@ export default function TourPackagesPage() {
           <Search size={18}/>
           <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Where do you want to go?"/>
         </div>
-        <div className="package-dates-toolbar" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-          <label style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-text-medium)', margin: 0 }}>
-            Check-in:
-            <input
-              type="date"
-              value={filterCheckIn}
-              onChange={(e) => setFilterCheckIn(e.target.value)}
-              style={{ padding: '6px 10px', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.1)', fontSize: '0.8rem', background: '#fff', color: '#1e293b' }}
-            />
-          </label>
-          <label style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-text-medium)', margin: 0 }}>
-            Check-out:
-            <input
-              type="date"
-              value={filterCheckOut}
-              onChange={(e) => setFilterCheckOut(e.target.value)}
-              min={filterCheckIn}
-              style={{ padding: '6px 10px', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.1)', fontSize: '0.8rem', background: '#fff', color: '#1e293b' }}
-            />
-          </label>
-          {(filterCheckIn || filterCheckOut) && (
-            <button
-              type="button"
-              onClick={() => { setFilterCheckIn(''); setFilterCheckOut(''); }}
-              style={{ background: 'transparent', border: 'none', color: '#a3704c', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer', padding: '4px' }}
-            >
-              Clear
-            </button>
-          )}
-        </div>
         <div className="category-scroll">
           {CATEGORIES.map(item => (
             <button className={category === item ? 'active' : ''} key={item} onClick={() => setCategory(item)}>{item}</button>
@@ -174,7 +141,7 @@ export default function TourPackagesPage() {
           </label>
         </div>
       </section>
-      
+
       <AnimatePresence>
         {toast && (
           <motion.div 
@@ -187,28 +154,7 @@ export default function TourPackagesPage() {
           </motion.div>
         )}
       </AnimatePresence>
-      
-      
-      {/* AI TRIP PLANNER PROMO BANNER */}
-      <div style={{ maxWidth: '1240px', margin: '0 auto 2.5rem auto', padding: '0 1.5rem' }}>
-        <div style={{ background: 'linear-gradient(135deg, rgba(163, 112, 76, 0.12) 0%, rgba(163, 112, 76, 0.04) 100%)', border: '1.5px solid rgba(163, 112, 76, 0.25)', borderRadius: '20px', padding: '1.5rem 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.25rem' }}>
-          <div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: '#a3704c', fontWeight: 800, fontSize: '0.8rem', letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: '0.35rem' }}>
-              <Sparkles size={14} /> 2026 AI Trip Generator
-            </div>
-            <h3 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#1e293b', margin: 0 }}>
-              Want a custom day-by-day plan tailored to your budget?
-            </h3>
-            <p style={{ color: '#64748b', fontSize: '0.9rem', margin: '0.25rem 0 0' }}>
-              Generate complete schedules with matched hotels, rail transit, and group bill splitting in seconds.
-            </p>
-          </div>
-          <Link to="/itinerary-planner" className="package-book" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.6rem', fontSize: '0.9rem', borderRadius: '999px' }}>
-            <Sparkles size={16} /> Open AI Trip Planner ➔
-          </Link>
-        </div>
-      </div>
-  
+
       <motion.section className="package-grid" variants={containerVariants} initial="hidden" animate="show">
         {results.map(pkg => (
           <motion.article className="package-product-card" key={pkg.id} variants={itemVariants}>

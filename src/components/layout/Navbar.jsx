@@ -11,9 +11,9 @@ const PRIMARY_LINKS = [
   { name: 'Tour Packages', path: '/packages' },
   { name: 'Hotels', path: '/hotels' },
   { name: 'Vehicles', path: '/vehicles' },
-  { name: 'AI Planner', path: '/itinerary-planner' },
 ];
 const SECONDARY_LINKS = [
+  { name: 'AI Trip Planner', path: '/itinerary-planner' },
   { name: 'About', path: '/about' },
   { name: 'Contact', path: '/contact' },
 ];

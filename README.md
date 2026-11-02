@@ -2,30 +2,30 @@
 
 A premium travel booking front end: curated destinations, tour packages, hotels, vehicles and role-based dashboards.
 
-**Stack:** React 19, Vite, React Router (BrowserRouter), framer-motion, GSAP + ScrollTrigger, Lenis, lucide-react.
+**Stack:** React 19, Vite, React Router (HashRouter), framer-motion, GSAP + ScrollTrigger, Lenis, lucide-react.
 
 ## Getting started
 ```bash
 npm install
-npm run dev        # local dev server
-npm run build      # production build into dist/
+npm run dev        # local development server
+npm run build      # production build for the root Live Server page
 npm run preview    # serve the production build locally
 npm run lint
 ```
 Copy `.env.example` to `.env` and fill in values. `.env` is git-ignored.
 
 ## VS Code Go Live
-This is a Vite/React app, so VS Code Live Server must serve the compiled `dist/` folder rather than the JSX source files.
+The root `index.html` is a generated production entry. VS Code Live Server must serve this compiled root page rather than the JSX source files.
 
 1. Run `npm run build` after source changes.
 2. Open the `travel-management` folder in VS Code.
 3. Click **Go Live** in the status bar.
-4. Open `http://127.0.0.1:5501/`.
+4. Open `http://127.0.0.1:5501/index.html`.
 
-The workspace is already configured with `liveServer.settings.root` set to `/dist`. The build also creates `dist/404.html`, so refreshing nested routes such as `/support`, `/destinations/kyoto`, or `/packages` continues to load the React app in a static server. Local image assets are optimized and served from `public/`, so the first render does not depend on remote image hosts. Use `npm run dev` when you want automatic hot reload while editing.
+The build also creates a root `404.html` fallback and uses `HashRouter`, so routes remain available on static hosting without server-side route rewrites. Local image assets are copied beside the root entry, so the first render does not depend on remote image hosts. Use `npm run dev` when you want automatic hot reload while editing.
 
 ## Deployment
-- **Vercel:** `vercel.json` rewrites every path to `index.html` (needed for BrowserRouter deep links such as `/destinations/kyoto`), sets security headers and long-lived caching for hashed assets.
+- **Vercel:** `vercel.json` rewrites every path to `index.html`, sets security headers and long-lived caching for hashed assets.
 - **Netlify / Cloudflare Pages:** `public/_headers` carries the same security headers. Add an SPA fallback (`/* /index.html 200`).
 - **Before launch:** replace `https://YOUR-DOMAIN-HERE` in `public/robots.txt` and `public/sitemap.xml` with your real domain.
 
@@ -38,7 +38,7 @@ src/
   hooks/        usePageTitle
   layouts/      MainLayout (skip link, navbar, main landmark, footer)
   pages/        customer, auth, role dashboards, NotFound
-  routes/       AppRoutes (lazy routes, route transitions, protected routes)
+  routes/       AppRoutes (route transitions, protected routes)
   styles/       variables.css (design tokens), global.css
 public/         destination-images, vehicle-images (WebP), robots.txt, sitemap.xml, llms.txt
 server/         backend

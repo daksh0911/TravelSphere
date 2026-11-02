@@ -1,8 +1,7 @@
 import { copyFileSync, existsSync } from 'node:fs';
 
-if (!existsSync('index.html')) {
-  throw new Error('index.html was not created by Vite.');
+if (existsSync('dist/index.html')) {
+  copyFileSync('dist/index.html', 'dist/404.html');
+  console.log('Created dist/404.html for SPA fallback.');
 }
 
-copyFileSync('index.html', '404.html');
-console.log('Created 404.html for static hosting SPA fallback.');

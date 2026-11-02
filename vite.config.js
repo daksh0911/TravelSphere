@@ -1,20 +1,14 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import { existsSync, readFileSync, writeFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
-// https://vite.dev/config/
-// Replaces the YOUR-DOMAIN-HERE placeholder in robots.txt / sitemap.xml at build time.
-// Set SITE_URL (e.g. https://travelsphere.example) in your host's build environment.
 const siteUrl = () => ({
   name: 'travelsphere-site-url',
   apply: 'build',
   closeBundle() {
     const url = (process.env.SITE_URL || '').replace(/\/$/, '');
-    if (!url) {
-      console.warn('\n[site-url] SITE_URL is not set; robots.txt and sitemap.xml still contain YOUR-DOMAIN-HERE.\n');
-      return;
-    }
+    if (!url) return;
     for (const file of ['robots.txt', 'sitemap.xml']) {
       const path = resolve('dist', file);
       if (existsSync(path)) writeFileSync(path, readFileSync(path, 'utf8').replaceAll('https://YOUR-DOMAIN-HERE', url));
@@ -25,6 +19,7 @@ const siteUrl = () => ({
 export default defineConfig({
   base: '/',
   build: {
+    outDir: 'dist',
     rollupOptions: {
       output: {
         manualChunks(id) {
@@ -41,5 +36,4 @@ export default defineConfig({
     host: '0.0.0.0',
     allowedHosts: true,
   },
-})
-
+});
