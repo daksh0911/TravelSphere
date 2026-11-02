@@ -11,14 +11,19 @@
 
 /* ── Hero ──────────────────────────────────────────────────────── */
 .hotel-hero {
-  padding: 105px max(5vw, 28px) 65px;
+  padding: 50px 0 35px;
   background: linear-gradient(135deg, var(--color-bg-main) 0%, var(--color-bg-white) 100%);
   color: var(--color-text-dark);
+  border-bottom: 1px solid rgba(163, 123, 92, 0.15);
+}
+
+.hotel-hero-inner {
+  width: min(1180px, calc(100% - 56px));
+  margin: 0 auto;
   display: flex;
   justify-content: space-between;
-  align-items: end;
+  align-items: center;
   gap: 30px;
-  border-bottom: 1px solid rgba(163, 123, 92, 0.15);
 }
 
 .hotel-eyebrow {
@@ -150,14 +155,14 @@
 /* ── Results Section ──────────────────────────────────────────── */
 .hotel-results {
   width: min(1180px, calc(100% - 56px));
-  margin: 70px auto 90px;
+  margin: 24px auto 90px;
 }
 
 .hotel-results-head {
   display: flex;
   justify-content: space-between;
-  align-items: end;
-  margin-bottom: 25px;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
 .hotel-results-head h2 {

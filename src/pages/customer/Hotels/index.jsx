@@ -77,14 +77,16 @@ export default function HotelsPage() {
   return (
     <div className="hotel-market">
       <section className="hotel-hero">
-        <div>
-          <span className="hotel-eyebrow">STAYS WITH A SENSE OF PLACE</span>
+        <div className="hotel-hero-inner">
+          <div>
+            <span className="hotel-eyebrow">STAYS WITH A SENSE OF PLACE</span>
           <h1>Stay somewhere<br /><em>you'll talk about.</em></h1>
           <p>From quiet ryokans to skyline retreats, find the right base for your next chapter.</p>
         </div>
         <div className="hotel-hero-stat">
           <strong>Indicative rates</strong>
           <span>General {currency} ranges<br />{currency === 'USD' ? 'Indicative USD ranges' : `Live converted to ${currency}`} · 2 adults</span>
+        </div>
         </div>
       </section>
 
@@ -114,9 +116,11 @@ export default function HotelsPage() {
 
       <section className="hotel-results">
         <div className="hotel-results-head">
-          <div>
-            <span className="hotel-eyebrow dark">THE COLLECTION</span>
-            <h2>Places that feel <em>like yours.</em></h2>
+          <div className="hotel-count-badge">
+            <span className="hotel-eyebrow dark">CURATED STAYS</span>
+            <strong style={{ display: 'block', fontSize: '1.2rem', fontWeight: 800, color: 'var(--color-text-dark)', marginTop: '2px' }}>
+              {hotels.length} Luxury Properties
+            </strong>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
             <div className="ts-view-mode-toggle">
@@ -135,7 +139,6 @@ export default function HotelsPage() {
                 <Globe size={14} /> World Stays Map
               </button>
             </div>
-            <span>{hotels.length} luxury hotel references</span>
           </div>
         </div>
 

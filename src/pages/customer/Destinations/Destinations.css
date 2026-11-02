@@ -11,17 +11,22 @@
 
 /* ── Hero ──────────────────────────────────────────────────────── */
 .destination-hero {
-  min-height: 520px;
-  padding: 110px max(5vw, 28px) 70px;
+  min-height: auto;
+  padding: 50px 0 35px;
   background: linear-gradient(135deg, var(--color-bg-main) 0%, var(--color-bg-white) 100%);
   color: var(--color-text-dark);
-  display: flex;
-  justify-content: space-between;
-  gap: 50px;
-  align-items: end;
   position: relative;
   overflow: hidden;
   border-bottom: 1px solid rgba(163, 123, 92, 0.15);
+}
+
+.destination-hero-inner {
+  width: min(1180px, calc(100% - 56px));
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+  align-items: center;
 }
 
 .destination-hero::after {
@@ -163,8 +168,8 @@
 .section-heading-row {
   display: flex;
   justify-content: space-between;
-  align-items: end;
-  margin-bottom: 28px;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
 .section-heading-row h2 {

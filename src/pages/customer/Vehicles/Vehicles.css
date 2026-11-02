@@ -11,14 +11,19 @@
 
 /* ── Hero ──────────────────────────────────────────────────────── */
 .vehicle-hero {
-  padding: 105px max(5vw, 28px) 65px;
+  padding: 48px 0 32px;
   background: linear-gradient(135deg, var(--color-bg-main) 0%, var(--color-bg-white) 100%);
   color: var(--color-text-dark);
+  border-bottom: 1px solid rgba(163, 123, 92, 0.15);
+}
+
+.vehicle-hero-inner {
+  width: min(1180px, calc(100% - 56px));
+  margin: 0 auto;
   display: flex;
   justify-content: space-between;
-  align-items: end;
+  align-items: center;
   gap: 30px;
-  border-bottom: 1px solid rgba(163, 123, 92, 0.15);
 }
 
 .vehicle-eyebrow {
@@ -35,10 +40,10 @@
 
 .vehicle-hero h1 {
   font-family: var(--font-family-heading);
-  font-size: clamp(3.5rem, 6vw, 6rem);
-  line-height: 0.9;
-  letter-spacing: -0.025em; line-height: 1.08;
-  margin: 20px 0;
+  font-size: clamp(2.4rem, 4.2vw, 3.8rem);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  margin: 10px 0 14px;
   color: var(--color-text-dark);
 }
 
@@ -194,7 +199,7 @@
 /* ── Results Section ──────────────────────────────────────────── */
 .vehicle-results {
   width: min(1180px, calc(100% - 56px));
-  margin: 70px auto 90px;
+  margin: 24px auto 90px;
 }
 
 .vehicle-data-note {
@@ -225,8 +230,8 @@
 .vehicle-results-head {
   display: flex;
   justify-content: space-between;
-  align-items: end;
-  margin-bottom: 25px;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
 .vehicle-results-head h2 {

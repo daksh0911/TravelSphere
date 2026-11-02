@@ -462,8 +462,9 @@ export default function VehiclesPage() {
   return (
     <div className="vehicle-market">
       <section className="vehicle-hero">
-        <div>
-          <span className="vehicle-eyebrow">MOVE YOUR WAY</span>
+        <div className="vehicle-hero-inner">
+          <div>
+            <span className="vehicle-eyebrow">MOVE YOUR WAY</span>
           <h1>Your route.<br /><em>Your rules.</em></h1>
           <p>Browse 24 vehicle models across 3 categories, then request a live quote for your dates and pickup location.</p>
         </div>
@@ -472,14 +473,14 @@ export default function VehiclesPage() {
           <strong>Live confirmation required</strong>
           <small>No booking or payment is created from this catalog.</small>
         </div>
+        </div>
       </section>
 
       <section className="vehicle-showcase" aria-label="Fleet showcase">
         <div className="vehicle-showcase-head">
           <div>
-            <span className="vehicle-eyebrow">FLEET IN MOTION</span>
-            <h2>Choose the right <em>way to go.</em></h2>
-            <p>Browse a focused collection of sedans, SUVs, and touring bikes.</p>
+            <span className="vehicle-eyebrow">FLEET SHOWCASE</span>
+            <p style={{ margin: '4px 0 0', color: 'var(--color-text-medium)', fontSize: '0.92rem' }}>Browse sedans, SUVs, and adventure touring bikes.</p>
           </div>
           <div className="vehicle-showcase-legend">
             <span><b>{VEHICLES.length}</b> models</span>
@@ -549,11 +550,13 @@ export default function VehiclesPage() {
           <span><strong>Simple and clear:</strong> real vehicle model references across Sedans, SUVs, and Motorcycles. Full vehicle photos, typical specs, and an easy request form. Pickup, availability, child-seat fit, and final price are confirmed after your dates are submitted.</span>
         </div>
         <div className="vehicle-results-head">
-          <div>
-            <span className="vehicle-eyebrow dark">THE FLEET</span>
-            <h2>More ways<br /><em>to go together.</em></h2>
+          <div className="vehicle-count-badge">
+            <span className="vehicle-eyebrow dark">CURATED FLEET</span>
+            <strong style={{ display: 'block', fontSize: '1.2rem', fontWeight: 800, color: 'var(--color-text-dark)', marginTop: '2px' }}>
+              {vehicles.length} Vehicle Models
+            </strong>
           </div>
-          <span>{vehicles.length} model references · live availability on request</span>
+          <span style={{ fontSize: '0.85rem', color: 'var(--color-text-light)' }}>Live availability on request</span>
         </div>
 
         {groupedVehicles.length === 0 ? (

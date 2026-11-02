@@ -50,7 +50,8 @@ export default function DestinationsPage() {
   return (
     <div className="destination-explorer">
       <section className="destination-hero">
-        <div className="destination-hero-copy">
+        <div className="destination-hero-inner">
+          <div className="destination-hero-copy">
           <span className="eyebrow"><Sparkles size={15}/> Curated by TravelSphere editors</span>
           <h1>Go where your<br/><em>story begins.</em></h1>
           <p>Explore handpicked places, local moments, and journeys designed around how you want to travel.</p>
@@ -65,13 +66,16 @@ export default function DestinationsPage() {
           <strong>Journeys with<br/>a point of view.</strong>
           <small>Personalized planning, trusted local partners, and support when you need it.</small>
         </div>
+        </div>
       </section>
       
       <section className="destination-content section-wrap">
         <div className="section-heading-row">
-          <div>
-            <span className="eyebrow dark">Start with a feeling</span>
-            <h2>Choose your next <em>destination.</em></h2>
+          <div className="destination-count-badge">
+            <span className="eyebrow dark">CURATED DESTINATIONS</span>
+            <strong style={{ display: 'block', fontSize: '1.2rem', fontWeight: 800, color: 'var(--color-text-dark)', marginTop: '2px' }}>
+              {filtered.length} Handpicked Places
+            </strong>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
             <div className="ts-view-mode-toggle">
