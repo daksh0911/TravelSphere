@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin-dashboard
+Disallow: /agent-dashboard
+Disallow: /hotel-dashboard
+Disallow: /transport-dashboard
+Disallow: /guide-dashboard
+Disallow: /user-dashboard
+Disallow: /customer-dashboard
+
+Sitemap: https://YOUR-DOMAIN-HERE/sitemap.xml

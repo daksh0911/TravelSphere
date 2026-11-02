@@ -1,0 +1,12 @@
+# TravelSphere
+
+TravelSphere is a premium travel planning platform for curated destinations, tour packages, hotels, vehicles, and human trip support. The site focuses on thoughtful itineraries, trusted local partners, and flexible assistance before, during, and after a journey.
+
+## Public sections
+- Destinations: curated destination guides and detail pages at `/destinations/:id`
+- Tour packages: multi-day journeys at `/packages`
+- Hotels: stays and reservation requests at `/hotels`
+- Vehicles: transport options at `/vehicles`
+- About, contact, FAQs, support, terms, and privacy pages
+
+TravelSphere does not expose protected dashboards, account data, or private booking information to crawlers.

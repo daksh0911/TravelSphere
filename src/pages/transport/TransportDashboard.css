@@ -1,0 +1,850 @@
+/* ==========================================================================
+   TravelSphere Transport Dashboard CSS - Modern Slate & Steel Blue-Grey Palette
+   Matches Luxury Editorial Design Language (Playfair Display + Plus Jakarta Sans)
+   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap');
+
+:root {
+  --trans-slate-dark: #0f172a;
+  --trans-slate: #1e293b;
+  --trans-steel: #334155;
+  --trans-cyan: #0284c7;
+  --trans-cyan-light: #38bdf8;
+  --trans-cyan-soft: rgba(2, 132, 199, 0.12);
+  --trans-surface: #ffffff;
+  --trans-canvas: #f1f5f9;
+  --trans-border: rgba(15, 23, 42, 0.08);
+}
+
+.transport-dashboard-container {
+  width: 100%;
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #f8fafc 0%, var(--trans-canvas) 100%);
+  color: var(--color-text-dark, #0f172a);
+  font-family: var(--font-family-base, 'Plus Jakarta Sans', system-ui, sans-serif);
+  padding-bottom: 4rem;
+}
+
+/* 1. HEADER: Deep Slate / Steel Blue-Grey Gradient with Cyan Accents */
+.transport-header {
+  background: linear-gradient(135deg, #0b1120 0%, #0f172a 60%, #1e293b 100%);
+  color: #ffffff;
+  padding: 1.85rem 2.2rem 1.35rem;
+  box-shadow: 0 16px 36px -10px rgba(15, 23, 42, 0.45);
+  border-bottom: 1px solid rgba(56, 189, 248, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+.transport-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 480px;
+  height: 480px;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.transport-header-content {
+  max-width: 1380px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  position: relative;
+  z-index: 1;
+}
+
+.transport-title-badge {
+  display: flex;
+  align-items: center;
+  gap: 1.15rem;
+}
+
+.transport-logo-icon {
+  color: #38bdf8;
+  padding: 0.65rem;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2);
+}
+
+.transport-title-badge h2 {
+  font-family: var(--font-family-heading, 'Playfair Display', Georgia, serif);
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.transport-title-badge p {
+  color: #94a3b8;
+  font-size: 0.88rem;
+  letter-spacing: 0.02em;
+  font-weight: 500;
+  margin: 0.25rem 0 0;
+}
+
+.transport-user-profile {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  padding: 0.55rem 1.15rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.transport-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.transport-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.transport-name {
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.transport-role-tag {
+  font-size: 0.72rem;
+  color: #38bdf8;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.transport-logout-btn {
+  background: rgba(239, 68, 68, 0.16);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  padding: 0.45rem 0.95rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.transport-logout-btn:hover {
+  background: #ef4444;
+  color: #ffffff;
+  border-color: #ef4444;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* Toast alert notification */
+.transport-toast-message {
+  max-width: 1380px;
+  margin: 1.25rem auto 0;
+  padding: 0.9rem 1.4rem;
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-weight: 600;
+  font-size: 0.92rem;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+  animation: slideInDown 0.3s ease-out;
+}
+
+@keyframes slideInDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 2. TABS BAR: Sleek slate tabs */
+.transport-tabs-bar {
+  max-width: 1380px;
+  margin: 1.5rem auto 0;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  overflow-x: auto;
+  border-bottom: 2px solid rgba(15, 23, 42, 0.08);
+  scrollbar-width: thin;
+}
+
+.transport-tabs-bar .tab-btn {
+  background: transparent;
+  border: none;
+  padding: 0.85rem 1.25rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.transport-tabs-bar .tab-btn:hover {
+  color: #0284c7;
+}
+
+.transport-tabs-bar .tab-btn.active {
+  color: #0f172a;
+  border-bottom: 2px solid #0284c7;
+  font-weight: 700;
+}
+
+/* 3. CONTENT AREA & HEADERS */
+.transport-content-area {
+  max-width: 1380px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+}
+
+.transport-loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1rem;
+  color: #64748b;
+  gap: 1rem;
+}
+
+.spin-icon {
+  animation: spin 1.5s linear infinite;
+  color: #0284c7;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.pane-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.85rem;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+}
+
+.pane-header-row h3 {
+  font-family: var(--font-family-heading, 'Playfair Display', Georgia, serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 0.35rem;
+  letter-spacing: -0.01em;
+}
+
+.pane-header-row p {
+  color: #64748b;
+  font-size: 0.92rem;
+  margin: 0;
+}
+
+.btn-add-service {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  border: none;
+  padding: 0.75rem 1.45rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.92rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  box-shadow: 0 8px 18px -4px rgba(2, 132, 199, 0.4);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-add-service:hover {
+  background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -6px rgba(2, 132, 199, 0.5);
+}
+
+/* 4. ROUTE CARDS: Origin -> Destination flow, times & duration */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 1.75rem;
+}
+
+.service-card {
+  background: #ffffff;
+  border-radius: 20px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  padding: 1.65rem;
+  box-shadow: 0 8px 24px -6px rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.svc-card-img-wrap {
+  margin: -1.65rem -1.65rem 1.25rem -1.65rem;
+  height: 180px;
+  overflow: hidden;
+  background: #0f172a;
+}
+
+.svc-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.service-card:hover .svc-thumb {
+  transform: scale(1.04);
+}
+
+.service-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px -8px rgba(15, 23, 42, 0.12);
+  border-color: rgba(2, 132, 199, 0.3);
+}
+
+.svc-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.85rem;
+}
+
+.svc-type-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #334155;
+}
+
+.type-icon {
+  color: #0284c7;
+}
+
+.svc-status-tag {
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.service-card h4 {
+  font-family: var(--font-family-heading, 'Playfair Display', Georgia, serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 0.25rem;
+}
+
+.vehicle-info-text {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0 0 1.25rem;
+}
+
+/* Origin -> Destination Flow Stepper */
+.route-flow-box {
+  background: #f8fafc;
+  padding: 1.15rem 1.25rem;
+  border-radius: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.route-point {
+  display: flex;
+  flex-direction: column;
+}
+
+.route-point.align-right {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.point-label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 0.05em;
+}
+
+.route-point strong {
+  font-size: 0.95rem;
+  color: #0f172a;
+  margin: 0.15rem 0;
+}
+
+.time-text {
+  font-size: 0.82rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.route-arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 0.75rem;
+  flex: 1;
+}
+
+.route-arrow span {
+  font-size: 0.75rem;
+  color: #0284c7;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.route-arrow .line {
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #cbd5e1, #0284c7, #cbd5e1);
+  position: relative;
+}
+
+.route-arrow .line::after {
+  content: '▶';
+  position: absolute;
+  right: -2px;
+  top: -6px;
+  font-size: 0.65rem;
+  color: #0284c7;
+}
+
+/* Fleet Seat & Pricing */
+.seat-pricing-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 0;
+  border-top: 1px dashed rgba(15, 23, 42, 0.1);
+  margin-bottom: 1.25rem;
+}
+
+.price-label {
+  font-size: 0.72rem;
+  color: #64748b;
+  text-transform: uppercase;
+  font-weight: 600;
+  display: block;
+}
+
+.ticket-price {
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.1;
+}
+
+.seat-count {
+  font-size: 0.92rem;
+  color: #334155;
+}
+
+.seat-count strong {
+  color: #0284c7;
+}
+
+.svc-card-actions {
+  display: flex;
+  gap: 0.65rem;
+  margin-top: auto;
+}
+
+.btn-edit-svc {
+  flex: 1;
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  padding: 0.65rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  transition: all 0.2s ease;
+}
+
+.btn-edit-svc:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.btn-delete-svc {
+  background: #fef2f2;
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  padding: 0.65rem 1rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  transition: all 0.2s ease;
+}
+
+.btn-delete-svc:hover {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+/* 5. SCHEDULES TAB: Row-based layout */
+.schedules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.schedule-row-item {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  padding: 1.25rem 1.65rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+  transition: transform 0.2s;
+}
+
+.schedule-row-item:hover {
+  transform: translateY(-2px);
+  border-color: rgba(2, 132, 199, 0.3);
+}
+
+.sch-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0284c7;
+  flex-shrink: 0;
+}
+
+.sch-details {
+  flex: 1;
+}
+
+.sch-details h4 {
+  font-family: var(--font-family-heading, 'Playfair Display', Georgia, serif);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 0.2rem;
+}
+
+.sch-details p {
+  font-size: 0.88rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.sch-times {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.88rem;
+  color: #334155;
+}
+
+.sch-times span strong {
+  color: #0f172a;
+}
+
+/* 6. BOOKINGS TABLE: Polished ticket/seat display */
+.transport-table-container {
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  overflow-x: auto;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+}
+
+.transport-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.transport-table th {
+  background: #f8fafc;
+  padding: 1.05rem 1.35rem;
+  font-weight: 700;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #334155;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.transport-table td {
+  padding: 1.15rem 1.35rem;
+  border-top: 1px solid rgba(15, 23, 42, 0.05);
+  font-size: 0.9rem;
+  color: #334155;
+}
+
+.transport-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.seat-badge {
+  background: #e0f2fe;
+  color: #0369a1;
+  font-weight: 700;
+  font-size: 0.82rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 6px;
+  font-family: monospace;
+}
+
+.status-pill {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.status-pill.confirmed,
+.status-pill.active { background: #d1fae5; color: #047857; border: 1px solid #a7f3d0; }
+.status-pill.cancelled { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+.status-pill.pending { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+
+.btn-confirm-bk {
+  background: #d1fae5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+  padding: 0.45rem 0.95rem;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-confirm-bk:hover {
+  background: #059669;
+  color: #ffffff;
+}
+
+.btn-cancel-bk {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  padding: 0.45rem 0.95rem;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-cancel-bk:hover {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+/* 7. MODALS */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.transport-modal-card {
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 2.25rem;
+  width: 100%;
+  max-width: 620px;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.transport-modal-card h3 {
+  font-family: var(--font-family-heading, 'Playfair Display', Georgia, serif);
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.15rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 0.4rem;
+}
+
+.form-group input, 
+.form-group select {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  padding: 0.75rem 0.95rem;
+  border-radius: 10px;
+  box-sizing: border-box;
+  outline: none;
+  font-size: 0.92rem;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: #ffffff;
+}
+
+.form-group input:focus, 
+.form-group select:focus {
+  border-color: #0284c7;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+}
+
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.15rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.85rem;
+  margin-top: 1.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.btn-cancel {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  padding: 0.7rem 1.35rem;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-cancel:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.btn-save {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  border: none;
+  padding: 0.7rem 1.65rem;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 6px 14px -3px rgba(2, 132, 199, 0.4);
+  transition: all 0.2s;
+}
+
+.btn-save:hover {
+  background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
+  transform: translateY(-1px);
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .transport-header {
+    padding: 1.25rem 1rem;
+  }
+
+  .transport-header-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .transport-user-profile {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .schedule-row-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .sch-times {
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .form-row-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+}

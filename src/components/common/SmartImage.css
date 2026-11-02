@@ -1,0 +1,15 @@
+﻿.smart-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: var(--color-bg-alt, #f4efe6);
+}
+
+.smart-image[width] {
+  height: auto;
+}
+
+.smart-image:not([height]) {
+  min-height: 100%;
+}

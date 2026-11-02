@@ -1,0 +1,6 @@
+/* Calm, consistent card style shared by Destinations, Tour Packages and Hotels */
+.destination-explorer .destination-tile,
+.package-grid .package-product-card,
+.hotel-market .hotel-grid .hotel-card { border-radius: 22px; box-shadow: 0 14px 34px -22px rgba(41,37,36,.45); transition: transform .35s ease, box-shadow .35s ease; }
+.package-grid .package-product-card:hover,
+.hotel-market .hotel-grid .hotel-card:hover { transform: translateY(-4px); box-shadow: 0 22px 44px -22px rgba(41,37,36,.5); }
