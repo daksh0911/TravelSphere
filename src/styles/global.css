@@ -14,8 +14,16 @@ body {
   color: var(--color-text-dark);
   background-color: var(--color-bg-main);
   line-height: 1.5;
+  margin: 0;
+  padding: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+#root,
+.main-layout {
+  margin: 0;
+  padding: 0;
 }
 
 h1, h2, h3, h4, h5, h6 {
