@@ -1,28 +1,18 @@
 import { useState } from 'react';
-import { AlertCircle, ArrowRight, Award, Building2, Check, CheckCircle2, Eye, EyeOff, MapPin, Plane, ShieldCheck, Sparkles, Truck, UserRound } from 'lucide-react';
+import { AlertCircle, ArrowRight, CheckCircle2, Eye, EyeOff, MapPin, ShieldCheck, Sparkles } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/useAuth';
 import { motion, AnimatePresence } from 'framer-motion';
 import './Register.css';
 
 import usePageTitle from '../../../hooks/usePageTitle';
-const ROLES = [
-  { key: 'CUSTOMER', label: 'Traveller', short: 'Plan your next escape', icon: <UserRound size={18} />, color: 'var(--color-primary)' },
-  { key: 'TRAVEL_AGENT', label: 'Travel agent', short: 'Build journeys for guests', icon: <Plane size={18} />, color: '#8865d7' },
-  { key: 'HOTEL_MANAGER', label: 'Hotel partner', short: 'Showcase your property', icon: <Building2 size={18} />, color: '#d58b32' },
-  { key: 'TRANSPORT_PROVIDER', label: 'Transport', short: 'Move travellers well', icon: <Truck size={18} />, color: '#d46378' },
-  { key: 'TOUR_GUIDE', label: 'Tour guide', short: 'Share your local eye', icon: <Award size={18} />, color: '#3e89bd' },
-  { key: 'ADMIN', label: 'System admin', short: 'Operate the platform', icon: <ShieldCheck size={18} />, color: '#334e67' }
-];
-
 export default function RegisterPage() {
   usePageTitle('Create account');
   const navigate = useNavigate();
   const { register } = useAuth();
   
-  const [role, setRole] = useState('CUSTOMER');
   const [formData, setFormData] = useState({
-    fullName: '', email: '', country: '', phone: '', company: '', password: '', confirmPassword: '', agreeTerms: false
+    fullName: '', email: '', country: '', phone: '', password: '', confirmPassword: '', agreeTerms: false
   });
   
   const [showPassword, setShowPassword] = useState(false);
@@ -31,8 +21,6 @@ export default function RegisterPage() {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [errors, setErrors] = useState({});
-
-  const activeRole = ROLES.find(item => item.key === role) || ROLES[0];
 
   const change = e => {
     const { name, value } = e.target;
@@ -77,13 +65,11 @@ export default function RegisterPage() {
         email: formData.email,
         country: formData.country,
         phone: formData.phone,
-        company: formData.company,
-        role,
         password: formData.password
       });
       
-      setSuccessMessage(result.message || `${role.replace('_', ' ')} account created successfully! Redirecting...`);
-      setTimeout(() => navigate('/login', { state: { registeredEmail: formData.email, selectedRole: role } }), 1500);
+      setSuccessMessage(result.message || 'Traveller account created successfully! Redirecting...');
+      setTimeout(() => navigate('/login', { state: { registeredEmail: formData.email } }), 1500);
     } catch (err) {
       setErrorMessage(err.message || 'Failed to create account. Please try again.');
     } finally {
@@ -128,25 +114,9 @@ export default function RegisterPage() {
           <div className="register-form-head">
             <div>
               <span className="register-eyebrow dark">CREATE YOUR ACCOUNT</span>
-              <h2>Choose your<br /><em>travel mode.</em></h2>
+              <h2>Start your<br /><em>next journey.</em></h2>
             </div>
             <span className="form-step">01 <i /> 02</span>
-          </div>
-          
-          <div className="role-grid">
-            {ROLES.map(item => (
-              <button 
-                type="button" 
-                key={item.key} 
-                className={`role-tile ${role === item.key ? 'active' : ''}`} 
-                style={{ '--role-color': item.color }} 
-                onClick={() => setRole(item.key)}
-              >
-                <span className="role-icon">{item.icon}</span>
-                <span><strong>{item.label}</strong><small>{item.short}</small></span>
-                {role === item.key && <Check size={15} className="role-check" />}
-              </button>
-            ))}
           </div>
           
           {errorMessage && (
@@ -165,21 +135,14 @@ export default function RegisterPage() {
               <span>02</span>
               <div>
                 <strong>Your details</strong>
-                <small>{activeRole.label} account · you can change this later</small>
+                <small>Traveller account · plan and manage your journeys</small>
               </div>
             </div>
             
             <label className="register-field">
               <span>Full name</span>
-              <input type="text" name="fullName" placeholder={role === 'CUSTOMER' ? 'What should we call you?' : 'Account manager full name'} value={formData.fullName} onChange={change} required />
+              <input type="text" name="fullName" placeholder="What should we call you?" value={formData.fullName} onChange={change} required />
             </label>
-            
-            {role !== 'CUSTOMER' && (
-              <label className="register-field">
-                <span>{role === 'HOTEL_MANAGER' ? 'Property name' : role === 'TRAVEL_AGENT' ? 'Agency name' : role === 'TRANSPORT_PROVIDER' ? 'Company name' : 'Organisation name'}</span>
-                <input type="text" name="company" placeholder="Your organisation" value={formData.company} onChange={change} required />
-              </label>
-            )}
             
             <label className={`register-field ${errors.email ? 'error-field' : ''}`}>
               <span>Email address</span>
@@ -274,7 +237,7 @@ export default function RegisterPage() {
             </label>
             
             <button className="register-submit-new" type="submit" disabled={loading}>
-              {loading ? 'Creating your account' : <>Create my {activeRole.label.toLowerCase()} account <ArrowRight size={17} /></>}
+              {loading ? 'Creating your account' : <>Create my traveller account <ArrowRight size={17} /></>}
             </button>
           </form>
           
