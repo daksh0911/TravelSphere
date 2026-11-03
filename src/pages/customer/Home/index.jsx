@@ -58,11 +58,6 @@ export default function Home() {
         </div>
         <div className="hero-scrim" aria-hidden="true" />
 
-        <div className="hero-mini-nav">
-          <span className="hero-kicker"><span className="pulse-dot" /> Travel, re-cut for you</span>
-          <span>Lago di Braies · Italian Dolomites</span>
-        </div>
-
         <div className="hero-layout">
           <div className="hero-copy">
             <Reveal direction="right"><span className="new-eyebrow"><Sparkles size={14} /> The new way to wander</span></Reveal>
