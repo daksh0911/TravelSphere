@@ -7,8 +7,6 @@ import {
   ArrowLeft, 
   CheckCircle2, 
   Hand, 
-  Volume2, 
-  VolumeX, 
   Printer, 
   Download, 
   CreditCard, 
@@ -144,7 +142,6 @@ export default function TicketShowcase() {
 
   const [activePresetId, setActivePresetId] = useState('swiss');
   const [passengerName, setPassengerName] = useState(user?.name || 'Alexander Wright');
-  const [isSoundOn, setIsSoundOn] = useState(true);
   const [tornTickets, setTornTickets] = useState({});
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [verificationTime, setVerificationTime] = useState({});
@@ -198,7 +195,7 @@ export default function TicketShowcase() {
             Grab the perforated stub on the right and pull to detach your travel pass.
           </p>
 
-          {/* PASSENGER NAME CUSTOMIZER & SOUND TOGGLE */}
+          {/* PASSENGER NAME CUSTOMIZER */}
           <div className="ticket-customizer-bar">
             <div className="customizer-field">
               <User size={15} className="field-icon" />
@@ -213,15 +210,6 @@ export default function TicketShowcase() {
               />
             </div>
 
-            <button
-              type="button"
-              className={`btn-sound-toggle ${isSoundOn ? 'active' : ''}`}
-              onClick={() => setIsSoundOn(!isSoundOn)}
-              title={isSoundOn ? 'Sound Effects Enabled (Click to Mute)' : 'Sound Effects Muted (Click to Unmute)'}
-            >
-              {isSoundOn ? <Volume2 size={16} /> : <VolumeX size={16} />}
-              <span>{isSoundOn ? 'Paper SFX: On' : 'Paper SFX: Off'}</span>
-            </button>
           </div>
 
           {/* PRESET CATEGORY SELECTOR TABS */}
@@ -287,7 +275,6 @@ export default function TicketShowcase() {
               imageRadius={8}
               onTear={() => handleTear(activeTicket.id)}
               torn={isCurrentTorn}
-              sound={isSoundOn}
               width={480}
               height={260}
               stubSize={160}

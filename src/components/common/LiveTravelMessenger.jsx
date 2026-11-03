@@ -9,8 +9,6 @@ import {
   Headphones, 
   CheckCheck, 
   Sparkles, 
-  Volume2, 
-  VolumeX
 } from 'lucide-react';
 import './LiveTravelMessenger.css';
 
@@ -126,7 +124,6 @@ export default function LiveTravelMessenger() {
 
   const [inputVal, setInputVal] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [isSoundOn, setIsSoundOn] = useState(true);
   const [unreadCount, setUnreadCount] = useState(1);
   const [, startTransition] = useTransition();
 
@@ -193,22 +190,6 @@ export default function LiveTravelMessenger() {
         [activeChannelId]: [...(prev[activeChannelId] || []), replyMsg]
       }));
 
-      // Audio notification if sound is on
-      if (isSoundOn && typeof window !== 'undefined' && window.AudioContext) {
-        try {
-          const ctx = new (window.AudioContext || window.webkitAudioContext)();
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.frequency.setValueAtTime(587.33, ctx.currentTime);
-          osc.frequency.setValueAtTime(880, ctx.currentTime + 0.08);
-          gain.gain.setValueAtTime(0.04, ctx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
-          osc.start();
-          osc.stop(ctx.currentTime + 0.2);
-        } catch { /* audio context blocked */ }
-      }
     }, 1200);
   };
 
@@ -248,14 +229,6 @@ export default function LiveTravelMessenger() {
             </div>
 
             <div className="header-actions">
-              <button
-                type="button"
-                className="header-icon-btn"
-                onClick={() => setIsSoundOn(!isSoundOn)}
-                title={isSoundOn ? 'Mute notification sound' : 'Unmute sound'}
-              >
-                {isSoundOn ? <Volume2 size={16} /> : <VolumeX size={16} />}
-              </button>
               <button
                 type="button"
                 className="header-icon-btn"

@@ -954,7 +954,6 @@ const CustomerDashboard = () => {
                         confetti({ particleCount: 75, spread: 65, origin: { y: 0.6 } });
                       }}
                       torn={ticketTorn}
-                      sound={true}
                       width={480}
                       height={260}
                       stubSize={160}

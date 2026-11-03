@@ -100,32 +100,6 @@
   border-color: #e2b17a;
 }
 
-.btn-sound-toggle {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #a1a1aa;
-  padding: 0.35rem 0.75rem;
-  border-radius: 999px;
-  font-size: 0.78rem;
-  font-weight: 600;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  transition: all 0.2s ease;
-}
-
-.btn-sound-toggle.active {
-  background: rgba(34, 197, 94, 0.12);
-  border-color: rgba(34, 197, 94, 0.35);
-  color: #86efac;
-}
-
-.btn-sound-toggle:hover {
-  transform: translateY(-1px);
-  border-color: rgba(255, 255, 255, 0.3);
-}
-
 /* CATEGORY TABS */
 .ticket-tabs-row {
   display: flex;
