@@ -275,6 +275,7 @@ export default function TicketShowcase() {
               imageRadius={8}
               onTear={() => handleTear(activeTicket.id)}
               torn={isCurrentTorn}
+              sound
               width={480}
               height={260}
               stubSize={160}

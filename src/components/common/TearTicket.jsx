@@ -3,6 +3,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { motion, useMotionTemplate, useReducedMotion, useSpring, useTransform } from 'framer-motion';
 
+import { playTearSound } from '../../utils/ticketAudio';
 import './TearTicket.css';
 
 const TILT_SPRING = { stiffness: 220, damping: 24, mass: 0.6 };
@@ -108,6 +109,7 @@ export default function TearTicket({
   stubBackground = '',
   recenter = true,
   disabled = false,
+  sound = true,
   ariaLabel = 'Tear off the stub',
   className = ''
 }) {
@@ -130,7 +132,7 @@ export default function TearTicket({
   );
   const cfg = useRef({});
   // eslint-disable-next-line react-hooks/refs
-  cfg.current = { geo, tearAngle, stretch, resistance, height, notch, reduce, onTear, controlled };
+  cfg.current = { geo, tearAngle, stretch, resistance, height, notch, reduce, onTear, controlled, sound };
   const sim = useRef({
     raf: 0,
     last: 0,
@@ -263,6 +265,9 @@ export default function TearTicket({
   const finish = () => {
     const c = cfg.current;
     if (stubRef.current) stubRef.current.style.visibility = 'hidden';
+    if (c.sound) {
+      playTearSound();
+    }
     if (!c.controlled) setInner(true);
     c.onTear?.();
   };
