@@ -8,8 +8,8 @@
   }
 
   .footer-reveal > .footer {
-    transform: none;
-    will-change: auto;
+    transform: translate3d(0, calc(-28% + 28% * var(--progress)), 0);
+    will-change: transform;
   }
 
   .footer-reveal::after {
