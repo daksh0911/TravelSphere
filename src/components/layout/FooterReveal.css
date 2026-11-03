@@ -1,57 +1,94 @@
+@property --progress {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
 .footer-reveal {
   --progress: 0;
   position: relative;
   z-index: 1;
   overflow: hidden;
-}
-
-.footer-reveal > .footer {
-  transform: translate3d(0, calc(-28% + 28% * var(--progress)), 0);
-  will-change: transform;
-}
-
-.footer-reveal::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: #292524;
-  opacity: calc(1 - var(--progress));
-  pointer-events: none;
-  z-index: 2;
+  background-color: var(--color-bg-main, #fbf9f5);
 }
 
 .main-layout > main {
   position: relative;
   z-index: 20;
-  background: var(--color-bg-main);
+  background: var(--color-bg-main, #fbf9f5);
+  box-shadow: 0 16px 36px -12px rgba(28, 25, 23, 0.08);
 }
 
-/* Mobile Slide-in Feature: smoothly glides in from bottom once section above ends */
+/* =========================================================
+   FOOTER SHIFTING (PC / DESKTOP VIEW)
+   Parallax glide up from beneath main content as user scrolls
+   All text and elements remain 100% crisp and readable
+========================================================= */
+.footer-reveal > .footer {
+  position: relative;
+  z-index: 2;
+  transform: translate3d(0, calc(-32% + 32% * var(--progress)), 0);
+  will-change: transform;
+}
+
+/* High-contrast content layer ensuring crystal-clear readability */
+.footer-reveal .footer .container,
+.footer-reveal .footer .newsletter-section,
+.footer-reveal .footer .footer-links-grid,
+.footer-reveal .footer .footer-bottom {
+  position: relative;
+  z-index: 5;
+  opacity: calc(0.85 + 0.15 * var(--progress));
+  transition: opacity 0.15s ease-out;
+}
+
+/* Subtle ambient depth shadow under main edge - never overlaying text */
+.footer-reveal::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 36px;
+  background: linear-gradient(180deg, rgba(28, 25, 23, 0.05) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* =========================================================
+   FOOTER SHIFTING (MOBILE VIEW)
+   Gentle touch-friendly glide up with safe margins & clear text
+========================================================= */
 @media (max-width: 768px) {
   .footer-reveal {
-    overflow: visible;
+    overflow: hidden;
     position: relative;
-    z-index: 21;
+    z-index: 1;
   }
 
   .footer-reveal > .footer {
-    transform: translate3d(0, calc(42px * (1 - var(--progress))), 0);
-    opacity: calc(0.5 + 0.5 * var(--progress));
-    will-change: transform, opacity;
+    transform: translate3d(0, calc(-20% + 20% * var(--progress)), 0);
+    will-change: transform;
   }
 
-  .footer-reveal::after {
-    display: none;
+  .footer-reveal .footer .container,
+  .footer-reveal .footer .newsletter-section,
+  .footer-reveal .footer .footer-links-grid,
+  .footer-reveal .footer .footer-bottom {
+    opacity: calc(0.9 + 0.1 * var(--progress));
   }
 }
 
+/* Reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
   .footer-reveal > .footer {
     transform: none !important;
-    opacity: 1 !important;
   }
 
-  .footer-reveal::after {
-    display: none;
+  .footer-reveal .footer .container,
+  .footer-reveal .footer .newsletter-section,
+  .footer-reveal .footer .footer-links-grid,
+  .footer-reveal .footer .footer-bottom {
+    opacity: 1 !important;
   }
 }
