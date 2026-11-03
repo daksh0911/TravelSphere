@@ -170,6 +170,7 @@
 @media (max-width: 640px) {
   .footer-links-grid {
     grid-template-columns: 1fr;
+    gap: 1.75rem;
   }
   
   .newsletter-form {
@@ -180,5 +181,6 @@
     flex-direction: column;
     gap: 1rem;
     text-align: center;
+    padding-bottom: max(96px, calc(76px + env(safe-area-inset-bottom)));
   }
 }
