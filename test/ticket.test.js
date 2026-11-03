@@ -39,3 +39,4 @@ describe('VIP Boarding Passes & Tear Ticket Feature', () => {
     assert.ok(presets.includes('spectrum'));
   });
 });
+

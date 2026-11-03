@@ -30,7 +30,10 @@ const TicketShowcase = lazy(() => import('../pages/customer/TicketShowcase'));
 function ProtectedRoute({ children, allowedRoles }) {
   const { isAuthenticated, user } = useAuth();
   if (!isAuthenticated) return <Navigate to="/login" replace />;
-  if (allowedRoles && !allowedRoles.includes(user?.role)) return <Navigate to="/" replace />;
+  const userRole = (user?.role || '').toUpperCase();
+  if (allowedRoles && !allowedRoles.map(r => r.toUpperCase()).includes(userRole)) {
+    return <Navigate to="/" replace />;
+  }
   return children;
 }
 

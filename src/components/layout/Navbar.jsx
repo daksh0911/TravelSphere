@@ -191,6 +191,7 @@ const Navbar = () => {
               {[...PRIMARY_LINKS, ...SECONDARY_LINKS].map((link) => (
                 <li key={link.path}><NavLink to={link.path} onClick={closeMobile} className={linkClass}>{link.name}</NavLink></li>
               ))}
+              <li><NavLink to="/ticket" onClick={closeMobile} className={linkClass}>VIP Ticket Studio</NavLink></li>
             </ul>
             <div className="mobile-nav-currency">
               <label htmlFor="mobile-currency-select">Currency</label>

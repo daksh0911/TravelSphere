@@ -25,7 +25,7 @@ export default class ErrorBoundary extends Component {
           <p>This page hit an unexpected problem. Your data is safe. Try again, or head back home.</p>
           <div className="error-boundary-actions">
             <button type="button" onClick={this.handleRetry}>Try again</button>
-            <a href="/">Back to home</a>
+            <a href="#/">Back to home</a>
           </div>
         </div>
       </main>
