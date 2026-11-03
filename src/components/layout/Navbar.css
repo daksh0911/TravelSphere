@@ -379,12 +379,18 @@
 @media (max-width: 1000px) {
   .navbar-links,
   .nav-menu-wrap { display: none; }
-  .mobile-menu-toggle { display: inline-flex; }
+  .mobile-menu-toggle {
+    display: inline-flex !important;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 2;
+  }
 }
 
 @media (max-width: 768px) {
   .navbar-right {
-    flex-shrink: 0;
+    flex: 0 0 auto;
+    margin-left: auto;
   }
 
   .nav-currency-wrap {
@@ -392,6 +398,7 @@
   }
 
   .navbar-logo {
+    flex: 1 1 auto;
     min-width: 0;
   }
 
@@ -408,7 +415,7 @@
     gap: 0.75rem;
   }
   .navbar-logo { font-size: 1.2rem; }
-  .nav-account-button { padding: 0.5rem 0.85rem; max-width: 130px; }
+  .nav-account-button { padding: 0.5rem 0.65rem; max-width: 100px; }
 }
 
 @media (max-width: 380px) {
