@@ -24,6 +24,7 @@ const HotelDashboard = lazy(() => import('../pages/hotel/HotelDashboard'));
 const TransportDashboard = lazy(() => import('../pages/transport/TransportDashboard'));
 const GuideDashboard = lazy(() => import('../pages/guide/GuideDashboard'));
 const ItineraryPlanner = lazy(() => import('../pages/customer/ItineraryPlanner'));
+const TicketShowcase = lazy(() => import('../pages/customer/TicketShowcase'));
 
 // Protected Route Guard: checks auth status and role permissions
 function ProtectedRoute({ children, allowedRoles }) {
@@ -137,6 +138,9 @@ export default function AppRoutes() {
               <Route path="packages" element={<TourPackages />} />
               <Route path="itinerary-planner" element={<ItineraryPlanner />} />
               <Route path="trip-planner" element={<ItineraryPlanner />} />
+              <Route path="ticket" element={<TicketShowcase />} />
+              <Route path="tickets" element={<TicketShowcase />} />
+              <Route path="boarding-pass" element={<TicketShowcase />} />
               <Route path="hotels" element={<Hotels />} />
               <Route path="vehicles" element={<Vehicles />} />
               <Route path="about" element={<About />} />

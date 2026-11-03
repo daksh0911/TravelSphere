@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
-import { ChevronDown, LogOut, Menu, Search, Sparkles, X } from 'lucide-react';
+import { ChevronDown, LogOut, Menu, Search, Sparkles, Ticket, X } from 'lucide-react';
 import { useAuth } from '../../context/useAuth';
 import { useCurrency } from '../../context/useCurrency';
 import { openCommandPalette, openTripStudio } from '../common/siteCommandCenterActions';
@@ -146,6 +146,7 @@ const Navbar = () => {
                 {SECONDARY_LINKS.map((link) => <NavLink key={link.path} to={link.path} onClick={closeMore}>{link.name}</NavLink>)}
                 <div className="nav-menu-divider" role="separator" />
                 <NavLink to="/itinerary-planner" onClick={closeMore}><Sparkles size={14} aria-hidden="true" /> AI Trip Planner</NavLink>
+                <NavLink to="/ticket" onClick={closeMore}><Ticket size={14} aria-hidden="true" /> VIP Ticket Studio</NavLink>
                 <button type="button" onClick={() => { closeMore(); openTripStudio(); }}><Sparkles size={14} aria-hidden="true" /> Trip Studio</button>
                 <button type="button" onClick={() => { closeMore(); openCommandPalette(); }}><Search size={14} aria-hidden="true" /> Search the site</button>
                 <div className="nav-menu-divider" role="separator" />
