@@ -1315,7 +1315,7 @@ const CustomerDashboard = () => {
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '1rem' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
                   <button type="submit" className="ts-btn-primary" disabled={isSavingProfile}>
                     <Check size={16} /> {isSavingProfile ? 'Saving...' : 'Save MySQL Profile'}
                   </button>

@@ -287,3 +287,113 @@
 .admin-modal-card {
   animation: tsFadeInUp 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* ==========================================================================
+   10. Universal Responsive Arrangement Rules for All Dashboards (Mobile View)
+   Ensures seamless, unclipped, touch-friendly layouts across 320px–768px screens
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* Prevent horizontal container overflow */
+  .ts-dashboard-page,
+  .admin-dashboard-container,
+  .agent-dashboard-container,
+  .hotel-dashboard-container,
+  .transport-dashboard-container,
+  .guide-dashboard-container {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  /* Universal horizontal pill navigation tabs */
+  .admin-tabs-bar,
+  .agent-tabs-bar,
+  .hotel-tabs-bar,
+  .transport-tabs-bar,
+  .guide-tabs-bar {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 0.5rem 0.85rem !important;
+    gap: 0.45rem !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .admin-tabs-bar::-webkit-scrollbar,
+  .agent-tabs-bar::-webkit-scrollbar,
+  .hotel-tabs-bar::-webkit-scrollbar,
+  .transport-tabs-bar::-webkit-scrollbar,
+  .guide-tabs-bar::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .admin-tabs-bar .tab-btn,
+  .agent-tabs-bar .tab-btn,
+  .hotel-tabs-bar .tab-btn,
+  .transport-tabs-bar .tab-btn,
+  .guide-tabs-bar .tab-btn {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+    padding: 0.55rem 0.95rem !important;
+    font-size: 0.82rem !important;
+    min-height: 38px !important;
+  }
+
+  /* Universal Responsive Table Wrapper & Cells */
+  .admin-table-container,
+  .agent-table-container,
+  .hotel-table-container,
+  .transport-table-container,
+  .guide-table-container,
+  .ts-table-section div[style*="overflow"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: thin !important;
+    border-radius: 14px !important;
+    box-sizing: border-box !important;
+  }
+
+  .admin-table,
+  .agent-table,
+  .hotel-table,
+  .transport-table,
+  .guide-table,
+  .ts-custom-table {
+    min-width: 620px !important;
+  }
+
+  /* Universal Responsive Modal Layout */
+  .agent-modal-card,
+  .hotel-modal-card,
+  .transport-modal-card,
+  .guide-modal-card,
+  .admin-modal-card {
+    width: min(94vw, 560px) !important;
+    max-width: 94vw !important;
+    max-height: 88vh !important;
+    padding: 1.35rem 1.15rem !important;
+    border-radius: 18px !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Modal Form Rows */
+  .form-row-2,
+  .form-row-3 {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+
+  /* Form Inputs on Mobile (16px font-size to prevent iOS zoom) */
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    font-size: 16px !important;
+  }
+}
+

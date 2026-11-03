@@ -672,7 +672,8 @@
   box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
 }
 
-.btn-send-reply {
+.btn-send-reply,
+.btn-reply-send {
   background: #059669;
   color: #ffffff;
   border: none;
@@ -687,7 +688,8 @@
   transition: all 0.2s ease;
 }
 
-.btn-send-reply:hover {
+.btn-send-reply:hover,
+.btn-reply-send:hover {
   background: #047857;
   transform: translateY(-1px);
 }
@@ -928,6 +930,47 @@
     flex-direction: column;
     align-items: stretch;
     gap: 0.75rem;
+  }
+  .btn-create-pkg {
+    width: 100%;
+    justify-content: center;
+  }
+  .agent-card {
+    border-radius: 18px;
+  }
+  .agent-card-image-wrap {
+    height: 185px;
+  }
+  .duration-capacity-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
+  .itinerary-card {
+    padding: 1.25rem 1rem;
+    border-radius: 16px;
+  }
+  .itinerary-days {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+  }
+  .inquiry-card {
+    padding: 1.25rem 1rem;
+    border-radius: 16px;
+  }
+  .inq-form {
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+  }
+  .inq-form input {
+    font-size: 16px;
+    min-width: 0;
+  }
+  .btn-send-reply,
+  .btn-reply-send {
+    padding: 0.65rem 0.95rem;
+    white-space: nowrap;
   }
   .search-box {
     max-width: 100%;

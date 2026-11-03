@@ -1194,34 +1194,67 @@
 @media (max-width: 1200px) {
   .ts-dashboard-body {
     flex-direction: column;
+    padding: 0 1rem 80px;
+    gap: 0.85rem;
   }
 
   .ts-sidebar {
     position: static;
     width: 100%;
-    flex-direction: row;
+    display: flex !important;
+    flex-direction: row !important;
     align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-    padding: 0.75rem 1rem;
-  }
-
-  .ts-sidebar-menu {
-    flex-direction: row;
-    overflow-x: auto;
-    scrollbar-width: none;
+    justify-content: flex-start !important;
+    overflow-x: auto !important;
     -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
     gap: 0.5rem;
+    padding: 0.4rem 0.2rem;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    margin: 0.4rem 0 0.8rem;
   }
 
-  .ts-sidebar-menu::-webkit-scrollbar {
+  .ts-sidebar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ts-sidebar > div:first-child {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .ts-sidebar > div:first-child > .ts-sidebar-menu,
+  .ts-sidebar > .ts-sidebar-menu {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    overflow: visible;
+  }
+
+  .ts-sidebar-title {
     display: none;
   }
 
   .ts-sidebar-item {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+    padding: 0.55rem 0.95rem;
+    font-size: 0.82rem;
+    border-radius: 9999px;
+    border: 1px solid var(--border-light);
+    background: #ffffff;
     width: auto;
-    flex-shrink: 0;
-    white-space: nowrap;
+  }
+
+  .ts-sidebar-item.active {
+    background: radial-gradient(circle at top, #b98a5a, var(--primary-copper));
+    color: #ffffff;
+    border-color: transparent;
   }
 
   .ts-main-grid-2col {
@@ -1248,13 +1281,17 @@
 @media (max-width: 768px) {
   .ts-top-nav {
     height: 60px;
-    padding: 0 1rem;
+    padding: 0 0.85rem;
     position: sticky;
     top: 0;
     z-index: 100;
     display: flex;
     align-items: center;
     justify-content: space-between;
+  }
+
+  .ts-logo-wrap span {
+    font-size: clamp(1.05rem, 4.2vw, 1.25rem);
   }
 
   .ts-notif-btn {
@@ -1300,49 +1337,13 @@
     gap: 0.85rem;
   }
 
-  .ts-sidebar {
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    padding: 0.25rem 0;
-    margin: 0.5rem 0;
-  }
-
-  .ts-sidebar-title {
-    display: none;
-  }
-
-  .ts-sidebar-menu {
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    gap: 0.45rem;
-    width: 100%;
-    padding: 0.2rem 0;
-  }
-
-  .ts-sidebar-menu::-webkit-scrollbar {
-    display: none;
-  }
-
-  .ts-sidebar-item {
-    flex-shrink: 0 !important;
-    white-space: nowrap !important;
-    padding: 0.55rem 0.95rem;
-    font-size: 0.84rem;
-    border-radius: 999px;
-  }
-
   .ts-hero-card {
-    padding: 1.25rem 1rem;
+    padding: 1.15rem 0.85rem;
     border-radius: 16px;
   }
 
   .ts-hero-heading {
-    font-size: clamp(1.35rem, 5vw, 1.75rem);
+    font-size: clamp(1.3rem, 5vw, 1.65rem);
     line-height: 1.2;
   }
 
@@ -1359,14 +1360,18 @@
 
   .ts-hero-actions {
     width: 100%;
-    flex-direction: column;
+    display: flex;
+    flex-direction: row;
     gap: 0.5rem;
   }
 
   .ts-hero-actions button,
   .ts-hero-actions a {
-    width: 100%;
+    flex: 1;
     justify-content: center;
+    text-align: center;
+    padding: 0.65rem 0.75rem;
+    font-size: 0.82rem;
   }
 
   .ts-metrics-grid {
@@ -1377,10 +1382,26 @@
   .ts-metric-box {
     padding: 0.85rem;
     border-radius: 14px;
+    gap: 0.65rem;
+    min-width: 0;
   }
 
-  .ts-metric-value {
+  .ts-metric-icon-wrap {
+    width: 38px;
+    height: 38px;
+    font-size: 1.1rem;
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+
+  .ts-metric-num {
     font-size: 1.35rem;
+    line-height: 1.1;
+  }
+
+  .ts-metric-label {
+    font-size: 0.72rem;
+    overflow-wrap: anywhere;
   }
 
   .ts-gateway-card {
@@ -1394,17 +1415,18 @@
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
     padding-bottom: 4px;
+    gap: 0.35rem;
   }
 
   .ts-gateway-tabs::-webkit-scrollbar {
     display: none;
   }
 
-  .ts-gateway-tab {
+  .ts-tab-pill {
     flex-shrink: 0;
     white-space: nowrap;
-    padding: 0.55rem 0.85rem;
-    font-size: 0.82rem;
+    padding: 0.45rem 0.85rem;
+    font-size: 0.8rem;
   }
 
   .ts-search-grid-bar {
@@ -1415,6 +1437,23 @@
   .ts-search-submit-btn {
     width: 100%;
     justify-content: center;
+    height: 44px;
+  }
+
+  .ts-stepper-wrap {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.4rem;
+    padding-bottom: 0.75rem;
+    text-align: center;
+  }
+
+  .ts-step-item {
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.72rem;
+    gap: 0.25rem;
+    text-align: center;
   }
 
   .ts-booking-card {
@@ -1423,14 +1462,32 @@
     border-radius: 16px;
   }
 
-  .ts-booking-img {
-    width: 100%;
-    height: 175px;
+  .ts-tour-banner-img {
+    height: 200px;
+    padding: 1rem;
+  }
+
+  .ts-tour-hero-title {
+    font-size: 1.3rem;
   }
 
   .ts-details-4grid {
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 0.45rem;
+  }
+
+  .ts-detail-box {
+    padding: 0.65rem 0.5rem;
+    border-radius: 12px;
+    text-align: center;
+  }
+
+  .ts-detail-label {
+    font-size: 0.68rem;
+  }
+
+  .ts-detail-val {
+    font-size: 0.86rem;
   }
 
   .ts-wishlist-cards-grid {
@@ -1440,6 +1497,43 @@
 
   .ts-custom-table {
     min-width: 650px;
+  }
+
+  .mmt-category-bar {
+    overflow-x: auto !important;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 0.45rem;
+    padding-bottom: 0.4rem;
+  }
+
+  .mmt-category-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mmt-cat-pill {
+    padding: 0.45rem 0.85rem;
+    font-size: 0.8rem;
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+  }
+
+  .mmt-controls-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.65rem;
+    padding: 0.75rem 0.85rem;
+  }
+
+  .mmt-search-input-wrap {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .mmt-sort-wrap {
+    width: 100%;
+    justify-content: space-between;
   }
 }
 

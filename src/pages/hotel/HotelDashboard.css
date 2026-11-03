@@ -851,6 +851,48 @@
     align-items: stretch;
     gap: 0.75rem;
   }
+  .btn-edit-hotel,
+  .btn-add-room {
+    width: 100%;
+    justify-content: center;
+  }
+  .hotel-profile-card {
+    border-radius: 18px;
+  }
+  .hotel-hero-img {
+    height: 200px;
+    min-height: 200px;
+  }
+  .hotel-profile-details {
+    padding: 1.25rem 1rem !important;
+  }
+  .prop-contact-box {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.75rem 0.85rem;
+    font-size: 0.82rem;
+  }
+  .facilities-tags {
+    gap: 0.45rem;
+  }
+  .facility-pill {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.78rem;
+  }
+  .room-card {
+    border-radius: 18px;
+    overflow: hidden;
+  }
+  .room-img {
+    height: 180px;
+  }
+  .room-card-body {
+    padding: 1.15rem 1rem;
+  }
+  .room-footer-row {
+    justify-content: space-between;
+    align-items: center;
+  }
   .form-row-2 {
     grid-template-columns: 1fr;
   }
