@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import TearTicket from '../../../components/common/TearTicket';
+import { TicketBoardingPassBody, TicketBoardingPassStub } from '../../../components/common/TicketBoardingPass';
 import { useAuth } from '../../../context/useAuth';
 import api from '../../../services/api';
 import './Dashboard.css';
@@ -879,103 +880,143 @@ const CustomerDashboard = () => {
             </div>
           )}
 
-          {/* TAB: VIP PASSES WITH TEAR TICKET */}
-          {activeTab === 'passes' && (
-            <div className="ts-table-section">
-              <div className="ts-panel-header">
-                <div>
-                  <div className="ts-section-tag">VIP ACCESS</div>
-                  <div className="ts-section-title">Interactive Excursion & Boarding Passes</div>
+                    {/* TAB: VIP PASSES WITH TEAR TICKET */}
+          {activeTab === 'passes' && (() => {
+            const firstBooking = liveBookings[0];
+            const dashPass = {
+              transportType: 'plane',
+              carrier: 'TRAVELSPHERE VIP EXPRESS',
+              classType: 'CONFIRMED VIP PASS',
+              title: firstBooking?.package_title || 'Swiss Alps Glacier Pass',
+              fromCode: firstBooking?.departure_city ? firstBooking.departure_city.slice(0, 3).toUpperCase() : 'ZRH',
+              fromCity: firstBooking?.departure_city || 'Zurich Intl, CH',
+              toCode: firstBooking?.destination_name ? firstBooking.destination_name.slice(0, 3).toUpperCase() : 'ALP',
+              toCity: firstBooking?.destination_name || 'Alpine Peak, Switzerland',
+              date: firstBooking?.travel_date || '18 Nov 2026',
+              time: '09:00 AM Priority',
+              gate: 'Gate B12',
+              seat: 'VIP Suite · 01A',
+              pnr: firstBooking?.display_id || 'TS-772918',
+              accentColor: '#a3704c',
+              background: '#18181b',
+              image: firstBooking?.package_image || '/destination-images/swiss-alps.webp'
+            };
+
+            return (
+              <div className="ts-table-section">
+                <div className="ts-panel-header">
+                  <div>
+                    <div className="ts-section-tag">VIP ACCESS</div>
+                    <div className="ts-section-title">Interactive Excursion & Boarding Passes</div>
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+                    <button 
+                      type="button" 
+                      className="ts-btn-outline" 
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer' }}
+                      onClick={() => setTicketTorn(false)}
+                    >
+                      <RotateCcw size={14} /> Reset Pass
+                    </button>
+                    <button 
+                      type="button" 
+                      className="ts-btn-outline" 
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer' }}
+                      onClick={() => navigate('/ticket')}
+                    >
+                      <Ticket size={14} /> VIP Ticket Studio
+                    </button>
+                  </div>
                 </div>
-                <button 
-                  type="button" 
-                  className="ts-btn-outline" 
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', cursor: 'pointer' }}
-                  onClick={() => setTicketTorn(false)}
-                >
-                  <RotateCcw size={14} /> Reset Pass
-                </button>
-              </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', margin: '2rem auto' }}>
-                <p style={{ color: '#64748b', fontSize: '0.9rem', textAlign: 'center', maxWidth: '520px' }}>
-                  Grab and pull the perforated stub on the right to tear off your ticket when boarding or checking in at your tour gate.
-                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.25rem', margin: '1.5rem auto' }}>
+                  <p style={{ color: '#64748b', fontSize: '0.9rem', textAlign: 'center', maxWidth: '540px', margin: 0 }}>
+                    Grab and pull the perforated stub on the right to tear off your ticket when boarding or checking in at your tour gate.
+                  </p>
 
-                <div style={{ width: '100%', maxWidth: '460px', display: 'flex', justifyContent: 'center' }}>
-                  <TearTicket
-                    key={`dash-ticket-${ticketTorn}`}
-                    image={liveBookings[0]?.package_image || "/destination-images/swiss-alps.webp"}
-                    imageAlt={liveBookings[0]?.package_title || "Swiss Alps Glacier Pass"}
-                    stub={
-                      <div style={{ padding: '1.25rem 1rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%', textAlign: 'left' }}>
-                        <span style={{ display: 'inline-block', background: '#a3704c', color: '#fff', fontSize: '0.65rem', fontWeight: 800, padding: '0.2rem 0.5rem', borderRadius: '4px', letterSpacing: '0.08em', alignSelf: 'flex-start' }}>
-                          BOARDING PASS
-                        </span>
-                        <div>
-                          <h3 style={{ fontSize: '0.95rem', fontWeight: 700, margin: '0.4rem 0 0.2rem', color: '#ffffff' }}>Gate B12</h3>
-                          <p style={{ fontSize: '0.72rem', color: '#a1a1aa', margin: 0 }}>Priority Access · 09:00 AM</p>
-                        </div>
-                        <span style={{ fontFamily: 'monospace', fontSize: '0.7rem', color: '#71717a' }}>
-                          {liveBookings[0]?.display_id || '#TS-284619'}
-                        </span>
+                  <div style={{ width: '100%', maxWidth: '480px', display: 'flex', justifyContent: 'center' }}>
+                    <TearTicket
+                      key={`dash-ticket-${ticketTorn}-${dashPass.pnr}`}
+                      image={dashPass.image}
+                      imageAlt={dashPass.title}
+                      stub={
+                        <TicketBoardingPassStub
+                          ticket={dashPass}
+                          passengerName={user?.name || 'Alexander Wright'}
+                          isTorn={ticketTorn}
+                        />
+                      }
+                      orientation="horizontal"
+                      scrim
+                      imageRadius={8}
+                      onTear={() => {
+                        setTicketTorn(true);
+                        confetti({ particleCount: 75, spread: 65, origin: { y: 0.6 } });
+                      }}
+                      torn={ticketTorn}
+                      sound={true}
+                      width={480}
+                      height={260}
+                      stubSize={160}
+                      radius={16}
+                      holes={13}
+                      holeSize={6}
+                      notch={3}
+                      roughness={0}
+                      tearAngle={30}
+                      stretch={30}
+                      resistance={0.45}
+                      rotate={4}
+                      tilt
+                      tiltMax={9}
+                      tiltReach={260}
+                      parallax={6}
+                      perspective={1000}
+                      background="#18181b"
+                      color="#fbf9f5"
+                      border
+                      borderWidth={1}
+                      recenter
+                    >
+                      <TicketBoardingPassBody
+                        ticket={dashPass}
+                        passengerName={user?.name || 'Alexander Wright'}
+                        isTorn={ticketTorn}
+                      />
+                    </TearTicket>
+                  </div>
+
+                  {ticketTorn ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem', marginTop: '0.5rem', width: '100%', maxWidth: '480px' }}>
+                      <div style={{ background: '#dcfce7', color: '#15803d', padding: '0.75rem 1.25rem', borderRadius: '12px', fontWeight: 700, fontSize: '0.86rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', width: '100%', justifyContent: 'center' }}>
+                        ✓ Ticket Stub Torn & Boarding Verified! Gate B12 · Zone 1 Priority
                       </div>
-                    }
-                    orientation="horizontal"
-                    scrim
-                    imageRadius={8}
-                    onTear={() => {
-                      setTicketTorn(true);
-                      confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
-                    }}
-                    torn={ticketTorn}
-                    width={460}
-                    height={250}
-                    stubSize={150}
-                    radius={16}
-                    holes={12}
-                    holeSize={6}
-                    notch={3}
-                    roughness={0}
-                    tearAngle={30}
-                    stretch={30}
-                    resistance={0.45}
-                    rotate={4}
-                    tilt
-                    tiltMax={9}
-                    tiltReach={260}
-                    parallax={6}
-                    perspective={1000}
-                    background="#1c1917"
-                    color="#fbf9f5"
-                    border
-                    borderWidth={1}
-                    recenter
-                  >
-                    <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', height: '100%' }}>
-                      <div style={{ fontSize: '0.7rem', fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.75)' }}>
-                        TRAVELSPHERE VIP
-                      </div>
-                      <div>
-                        <div style={{ fontFamily: 'var(--font-heading, serif)', fontSize: '1.85rem', fontWeight: 700, color: '#ffffff', textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
-                          {liveBookings[0]?.package_title?.split(' ')[0] || 'Spectrum'}
-                        </div>
-                        <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.85)', margin: '0.2rem 0 0' }}>
-                          {liveBookings[0]?.package_title || 'VIP Travel & Excursion Pass'}
-                        </p>
+                      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+                        {firstBooking && (
+                          <button
+                            type="button"
+                            className="ts-btn-outline"
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', padding: '0.4rem 0.8rem' }}
+                            onClick={() => generateBookingPDF(firstBooking)}
+                          >
+                            <FileDown size={14} /> Download PDF Voucher
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          className="ts-btn-outline"
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.8rem', padding: '0.4rem 0.8rem' }}
+                          onClick={() => window.print()}
+                        >
+                          Print Boarding Pass
+                        </button>
                       </div>
                     </div>
-                  </TearTicket>
+                  ) : null}
                 </div>
-
-                {ticketTorn && (
-                  <div style={{ background: '#dcfce7', color: '#15803d', padding: '0.75rem 1.5rem', borderRadius: '999px', fontWeight: 700, fontSize: '0.88rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.5rem' }}>
-                    ✓ Ticket Stub Torn & Boarding Verified! Have a wonderful journey!
-                  </div>
-                )}
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* TAB 3: WISHLIST TAB */}
           {activeTab === 'wishlist' && (

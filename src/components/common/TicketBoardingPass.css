@@ -1,0 +1,449 @@
+/* TICKET BOARDING PASS TYPOGRAPHY & LAYOUT */
+
+.ticket-full-body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  padding: 1.15rem 1.25rem 1rem 1.25rem;
+  box-sizing: border-box;
+  overflow: hidden;
+  font-family: var(--font-body, system-ui, -apple-system, sans-serif);
+  color: #fbf9f5;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+/* TOP BAR */
+.ticket-body-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.ticket-carrier-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.ticket-carrier-badge .carrier-icon {
+  color: #e2b17a;
+}
+
+.ticket-class-pill {
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid #a3704c;
+  color: #fef08a;
+  backdrop-filter: blur(4px);
+}
+
+/* HERO ROUTE */
+.ticket-hero-route {
+  margin: 0.4rem 0 0.5rem;
+}
+
+.route-codes-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.route-station {
+  display: flex;
+  flex-direction: column;
+}
+
+.station-code {
+  font-family: var(--font-heading, serif);
+  font-size: 1.85rem;
+  font-weight: 800;
+  line-height: 1;
+  color: #ffffff;
+  letter-spacing: 0.02em;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+.station-city {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 0.2rem;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.route-connector {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex: 1;
+  max-width: 90px;
+}
+
+.connector-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.15));
+}
+
+.connector-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+/* GALLERY TITLE */
+.gallery-title-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.gallery-pretitle {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.gallery-main-title {
+  font-family: var(--font-heading, serif);
+  font-size: 1.95rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0.15rem 0;
+  line-height: 1.1;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+}
+
+.gallery-subtitle {
+  font-size: 0.76rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
+}
+
+/* DATA GRID */
+.ticket-data-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 0.9fr 0.8fr 0.8fr;
+  gap: 0.6rem;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 0.5rem 0.65rem;
+  margin: 0.25rem 0;
+}
+
+.ticket-data-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.data-label {
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 0.15rem;
+}
+
+.data-value {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.passenger-name {
+  color: #fef08a;
+  letter-spacing: 0.02em;
+}
+
+.highlight-gold {
+  color: #fbbf24;
+}
+
+.highlight-seat {
+  color: #67e8f9;
+}
+
+/* SECURITY STRIP */
+.ticket-security-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.62rem;
+  color: rgba(255, 255, 255, 0.65);
+  padding-top: 0.35rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.strip-item {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+/* RUBBER STAMP OVERLAY */
+.ticket-torn-stamp-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(1.5px);
+  z-index: 10;
+  animation: stampPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes stampPop {
+  0% {
+    transform: scale(1.6) rotate(10deg);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) rotate(-8deg);
+    opacity: 1;
+  }
+}
+
+.rubber-stamp-seal {
+  padding: 0.35rem;
+  border: 3px double #22c55e;
+  border-radius: 8px;
+  background: rgba(6, 78, 59, 0.85);
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
+}
+
+.stamp-inner-border {
+  border: 1px dashed rgba(34, 197, 94, 0.6);
+  border-radius: 4px;
+  padding: 0.4rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.stamp-star {
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  color: #86efac;
+}
+
+.stamp-main-text {
+  font-family: var(--font-heading, serif);
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #4ade80;
+  text-shadow: 0 0 10px rgba(34, 197, 94, 0.6);
+}
+
+.stamp-sub-text {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #bbf7d0;
+  margin-top: 0.1rem;
+}
+
+/* STUB STYLING */
+.ticket-full-stub {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  padding: 1.15rem 1rem 0.9rem;
+  box-sizing: border-box;
+  font-family: var(--font-body, system-ui, -apple-system, sans-serif);
+  color: #fbf9f5;
+  text-align: left;
+}
+
+.stub-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.35rem;
+}
+
+.stub-class-tag {
+  display: inline-block;
+  font-size: 0.62rem;
+  font-weight: 800;
+  padding: 0.2rem 0.45rem;
+  border-radius: 4px;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+.stub-pnr-micro {
+  font-family: monospace;
+  font-size: 0.65rem;
+  color: #a1a1aa;
+}
+
+.stub-route-mini {
+  margin: 0.25rem 0;
+}
+
+.mini-route-badges {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #ffffff;
+}
+
+.mini-arrow {
+  color: #e2b17a;
+}
+
+.mini-event-title {
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #ffffff;
+}
+
+.stub-passenger-initials {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #e4e4e7;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 0.15rem;
+}
+
+.stub-seat-gate-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  padding: 0.35rem 0.4rem;
+}
+
+.seat-gate-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.cell-lbl {
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: #a1a1aa;
+  letter-spacing: 0.06em;
+}
+
+.cell-val {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.cell-val.highlight {
+  color: #67e8f9;
+}
+
+.cell-divider {
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.stub-barcode-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0.15rem 0;
+}
+
+.ticket-barcode-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  color: #f4f4f5;
+}
+
+.ticket-barcode-svg {
+  width: 100%;
+  max-width: 125px;
+  height: 30px;
+}
+
+.ticket-barcode-num {
+  font-family: monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  color: #a1a1aa;
+  margin-top: 0.1rem;
+}
+
+.stub-detach-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.25rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px dashed rgba(255, 255, 255, 0.25);
+  margin-top: 0.2rem;
+}
+
+.hint-pull {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  color: #fbbf24;
+}
+
+.pull-arrow-anim {
+  animation: pullNudge 1.2s infinite ease-in-out;
+}
+
+@keyframes pullNudge {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(3px);
+  }
+}
+
+.hint-torn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #4ade80;
+}
