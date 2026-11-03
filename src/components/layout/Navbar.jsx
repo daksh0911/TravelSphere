@@ -191,6 +191,23 @@ const Navbar = () => {
                 <li key={link.path}><NavLink to={link.path} onClick={closeMobile} className={linkClass}>{link.name}</NavLink></li>
               ))}
             </ul>
+            <div className="mobile-nav-currency">
+              <label htmlFor="mobile-currency-select">Currency</label>
+              <select
+                id="mobile-currency-select"
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value)}
+                className="mobile-currency-select"
+                aria-label="Select display currency"
+              >
+                <option value="USD">USD ($)</option>
+                <option value="EUR">EUR (€)</option>
+                <option value="GBP">GBP (£)</option>
+                <option value="INR">INR (₹)</option>
+                <option value="JPY">JPY (¥)</option>
+                <option value="AED">AED (د.إ)</option>
+              </select>
+            </div>
             <div className="mobile-nav-secondary">
               <button type="button" onClick={() => { closeMobile(); openTripStudio(); }}><Sparkles size={15} aria-hidden="true" /> Open Trip Studio</button>
               <button type="button" onClick={() => { closeMobile(); openCommandPalette(); }}><Search size={15} aria-hidden="true" /> Search the site</button>

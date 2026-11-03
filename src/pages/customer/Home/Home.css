@@ -177,13 +177,24 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: var(--color-text-dark);
+  padding: 13px 18px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 9px;
+  color: #ffffff;
   font-size: 13px;
   font-weight: 600;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .hero-secondary:hover {
-  color: var(--color-primary);
+  background: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.45);
+  color: #ffffff;
+  transform: translateY(-2px);
 }
 
 .hero-proof {
@@ -755,14 +766,19 @@
     gap: 22px;
   }
   .hero-copy h1 {
-    font-size: clamp(3.25rem, 16vw, 5rem);
+    font-size: clamp(2.1rem, 8.5vw, 2.85rem);
+    line-height: 1.12;
   }
   .hero-lede {
     font-size: 14px;
+    line-height: 1.55;
   }
   .hero-actions {
-    display: grid;
-    gap: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-top: 24px;
   }
   .hero-primary {
     justify-content: center;
@@ -1068,7 +1084,8 @@
   }
 
   .hero-copy h1 {
-    font-size: clamp(3.1rem, 15vw, 4.7rem);
+    font-size: clamp(2.1rem, 8.5vw, 2.85rem);
+    line-height: 1.12;
   }
 
   .hero-orbit-wrap {
