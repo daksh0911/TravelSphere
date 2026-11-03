@@ -29,6 +29,16 @@ const saveLocalUsers = (users) => {
   }
 };
 
+const DEMO_PASSWORD = 'Demo@12345';
+const BUILT_IN_DEMO_ACCOUNTS = {
+  'admin@travel.com': { id: 'admin-1', name: 'Global Administrator', role: 'ADMIN' },
+  'agent@travel.com': { id: 'agent-1', name: 'Sarah Jenkins', role: 'TRAVEL_AGENT' },
+  'hotel@travel.com': { id: 'hotel-1', name: 'Kenji Sato', role: 'HOTEL_MANAGER' },
+  'transport@travel.com': { id: 'transport-1', name: 'Michael Chang', role: 'TRANSPORT_PROVIDER' },
+  'guide@travel.com': { id: 'guide-1', name: 'Marco Rossi', role: 'TOUR_GUIDE' },
+  'customer@travel.com': { id: 'customer-1', name: 'Alice Walker', role: 'CUSTOMER' }
+};
+
 export const registerUser = async (userData) => {
   try {
     const response = await api.post('/auth/register', userData);
@@ -84,6 +94,17 @@ export const registerUser = async (userData) => {
 };
 
 export const loginUser = async (credentials) => {
+  const cleanEmail = (credentials.email || '').trim().toLowerCase();
+  const demoProfile = BUILT_IN_DEMO_ACCOUNTS[cleanEmail];
+  if (demoProfile && credentials.password === DEMO_PASSWORD) {
+    return {
+      success: true,
+      message: 'Demo account signed in.',
+      user: { ...demoProfile, email: cleanEmail },
+      token: `demo-token-${demoProfile.id}`
+    };
+  }
+
   try {
     const response = await api.post('/auth/login', credentials);
     return response.data;
@@ -91,8 +112,6 @@ export const loginUser = async (credentials) => {
     if (error.response?.data) {
       throw new Error(error.response.data.message || 'Login failed.', { cause: error });
     }
-
-    const cleanEmail = (credentials.email || '').trim().toLowerCase();
 
     // Local DB fallback search for registered accounts
     const localUsers = getLocalUsers();
