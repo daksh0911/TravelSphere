@@ -35,7 +35,8 @@ export default function GlobalExperienceLayer() {
     const syncLenisPreference = async () => {
       const request = ++lenisRequest;
       stopLenis();
-      if (motionPreference.matches || useNativeHomepageScroll) return;
+      const isMobileOrTouch = window.innerWidth <= 768 || window.matchMedia('(pointer: coarse)').matches || (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0);
+      if (motionPreference.matches || useNativeHomepageScroll || isMobileOrTouch) return;
 
       try {
         const { default: Lenis } = await import('lenis');

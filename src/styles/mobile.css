@@ -8,6 +8,8 @@ html,
 body,
 #root {
   max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
   overflow-x: clip;
   -webkit-text-size-adjust: 100%;
 }
@@ -116,10 +118,43 @@ body,
 
   main {
     width: 100%;
+    min-width: 0;
+    overflow-x: clip;
   }
 
   .container {
+    width: 100%;
+    max-width: 100%;
     padding-inline: 16px;
+  }
+
+  .main-layout,
+  .route-transition-stage,
+  main > * {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  img,
+  video,
+  canvas,
+  svg {
+    max-width: 100%;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p {
+    overflow-wrap: anywhere;
+  }
+
+  .navbar-container {
+    width: 100%;
+    min-width: 0;
   }
 
   /* Universal Touch Targets: Ensure min 44px on mobile */
@@ -427,6 +462,20 @@ body,
     align-items: stretch;
     width: 100%;
     gap: 0.75rem;
+  }
+
+  .newsletter-section,
+  .newsletter-content,
+  .newsletter-form,
+  .footer,
+  .footer-links-grid,
+  .footer-bottom {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .newsletter-content {
+    width: 100%;
   }
 
   /* Filter pill scroll container on mobile */

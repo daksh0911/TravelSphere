@@ -34,6 +34,27 @@ const getDashboardPath = (role) => {
   }
 };
 
+const PRELOAD_MAP = {
+  '/destinations': () => import('../../pages/customer/Destinations'),
+  '/packages': () => import('../../pages/customer/TourPackages'),
+  '/hotels': () => import('../../pages/customer/Hotels'),
+  '/vehicles': () => import('../../pages/customer/Vehicles'),
+  '/ticket': () => import('../../pages/customer/TicketShowcase'),
+  '/about': () => import('../../pages/customer/About'),
+  '/contact': () => import('../../pages/customer/Contact'),
+  '/itinerary-planner': () => import('../../pages/customer/ItineraryPlanner'),
+  '/support': () => import('../../pages/customer/Support'),
+  '/user-dashboard': () => import('../../pages/customer/Dashboard')
+};
+
+const handlePreload = (path) => {
+  try {
+    PRELOAD_MAP[path]?.();
+  } catch {
+    /* ignore */
+  }
+};
+
 const linkClass = ({ isActive }) => (isActive ? 'nav-link active' : 'nav-link');
 
 const Navbar = () => {
@@ -108,7 +129,7 @@ const Navbar = () => {
 
         <ul className="navbar-links">
           {PRIMARY_LINKS.map((link) => (
-            <li key={link.path}><NavLink to={link.path} className={linkClass}>{link.name}</NavLink></li>
+            <li key={link.path}><NavLink to={link.path} onMouseEnter={() => handlePreload(link.path)} onTouchStart={() => handlePreload(link.path)} className={linkClass}>{link.name}</NavLink></li>
           ))}
         </ul>
 
@@ -189,7 +210,7 @@ const Navbar = () => {
             <ul className="mobile-nav-links">
               <li><NavLink to="/" end onClick={closeMobile} className={linkClass}>Home</NavLink></li>
               {[...PRIMARY_LINKS, ...SECONDARY_LINKS].map((link) => (
-                <li key={link.path}><NavLink to={link.path} onClick={closeMobile} className={linkClass}>{link.name}</NavLink></li>
+                <li key={link.path}><NavLink to={link.path} onTouchStart={() => handlePreload(link.path)} onClick={closeMobile} className={linkClass}>{link.name}</NavLink></li>
               ))}
               <li><NavLink to="/ticket" onClick={closeMobile} className={linkClass}>VIP Ticket Studio</NavLink></li>
             </ul>

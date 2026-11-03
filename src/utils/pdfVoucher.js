@@ -1,10 +1,10 @@
-import { jsPDF } from 'jspdf';
-
 /**
  * Generates an official, print-ready TravelSphere Booking Voucher & Boarding Pass.
+ * Dynamically imports jsPDF on demand to optimize initial mobile bundle performance.
  * @param {object} booking - Booking details object
  */
-export function generateBookingPDF(booking) {
+export async function generateBookingPDF(booking) {
+  const { jsPDF } = await import('jspdf');
   const doc = new jsPDF({
     orientation: 'portrait',
     unit: 'mm',

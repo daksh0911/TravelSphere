@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { lazy, Suspense, useMemo, useState } from 'react';
 import { ArrowRight, Check, ChevronDown, Clock3, FileDown, Globe, Heart, LayoutGrid, MapPin, Search, ShieldCheck, Star, Users, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
@@ -7,7 +7,7 @@ import '../../../styles/showcase-skin.css';
 import './Compare.css';
 import { useCurrency } from '../../../context/useCurrency';
 import SmartImage from '../../../components/common/SmartImage';
-import InteractiveWorldMap from '../../../components/common/InteractiveWorldMap';
+const InteractiveWorldMap = lazy(() => import('../../../components/common/InteractiveWorldMap'));
 import { generateBookingPDF } from '../../../utils/pdfVoucher';
 import { DESTINATIONS_BY_ID } from '../../../data/destinations';
 import usePageTitle from '../../../hooks/usePageTitle';
@@ -232,12 +232,14 @@ export default function TourPackagesPage() {
       {/* INTERACTIVE WORLD MAP VIEW */}
       {viewMode === 'map' && (
         <div style={{ maxWidth: '1240px', margin: '0 auto 2.5rem auto', padding: '0 1.5rem' }}>
-          <InteractiveWorldMap
-            items={results}
-            type="packages"
-            onSelect={(pkg) => handleOpenBooking(pkg)}
-            height="580px"
-          />
+          <Suspense fallback={<div style={{ height: '580px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f1f5f9', borderRadius: '16px', color: '#64748b', fontWeight: 600 }}>Loading World Map...</div>}>
+            <InteractiveWorldMap
+              items={results}
+              type="packages"
+              onSelect={(pkg) => handleOpenBooking(pkg)}
+              height="580px"
+            />
+          </Suspense>
         </div>
       )}
 

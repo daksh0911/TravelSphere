@@ -749,24 +749,148 @@
 /* RESPONSIVE DESIGN */
 @media (max-width: 680px) {
   .ticket-showcase-page {
-    padding: 3rem 1rem 5rem;
+    padding: 2rem 0.75rem 4rem;
   }
+
+  .ticket-header-block {
+    margin-bottom: 1.5rem;
+  }
+
+  .ticket-tag {
+    max-width: 100%;
+    justify-content: center;
+    text-align: center;
+    font-size: 0.68rem;
+  }
+
+  .ticket-header-block h1 {
+    font-size: clamp(1.7rem, 8vw, 2.25rem);
+  }
+
+  .ticket-header-block p {
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .ticket-customizer-bar {
+    align-items: stretch;
+    padding: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .customizer-field {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .customizer-field input {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .ticket-tabs-row {
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    max-width: 100%;
+    padding: 0.15rem 0.1rem 0.5rem;
+    scrollbar-width: none;
+  }
+
+  .ticket-tabs-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ticket-nav-tab {
+    flex: 0 0 auto;
+    min-height: 44px;
+    padding: 0.55rem 0.9rem;
+    font-size: 0.78rem;
+  }
+
   .ticket-hero-stage {
-    padding: 1.5rem 1rem;
+    width: 100%;
+    padding: 1rem 0.65rem;
+    border-radius: 14px;
   }
+
   .ticket-status-ribbon {
     flex-direction: column;
     align-items: flex-start;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
   }
+
+  .ribbon-left {
+    width: 100%;
+    min-width: 0;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    line-height: 1.35;
+  }
+
+  .ribbon-carrier,
+  .ribbon-category {
+    overflow-wrap: anywhere;
+  }
+
+  .ticket-status-pill {
+    max-width: 100%;
+    line-height: 1.3;
+    text-align: left;
+  }
+
+  .ticket-canvas-frame {
+    min-width: 0;
+    margin: 0.25rem 0 1rem;
+    overflow: visible;
+  }
+
   .ticket-controls-panel {
     flex-direction: column;
     align-items: stretch;
+    margin-top: 1rem;
+    padding-top: 1rem;
   }
+
   .controls-left, .controls-right {
-    justify-content: center;
+    width: 100%;
+    justify-content: stretch;
   }
+
+  .control-btn {
+    flex: 1 1 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
   .ticket-customizer-bar {
     width: 100%;
     border-radius: 16px;
+  }
+
+  .ticket-verified-card {
+    padding: 1rem;
+  }
+
+  .verified-card-header {
+    align-items: flex-start;
+    gap: 0.7rem;
+  }
+
+  .verified-card-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .btn-pass-download,
+  .btn-pass-explore {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .passes-mini-grid {
+    grid-template-columns: 1fr;
   }
 }

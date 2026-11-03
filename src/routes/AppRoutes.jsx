@@ -37,6 +37,14 @@ function ProtectedRoute({ children, allowedRoles }) {
   return children;
 }
 
+function RouteLoadingBar() {
+  return (
+    <div className="ts-route-loading-bar" role="progressbar" aria-label="Loading page">
+      <div className="ts-route-loading-progress" />
+    </div>
+  );
+}
+
 export default function AppRoutes() {
   const location = useLocation();
 
@@ -53,9 +61,9 @@ export default function AppRoutes() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.18, ease: 'easeOut' }}
         >
-          <Suspense fallback={null}>
+          <Suspense fallback={<RouteLoadingBar />}>
             <Routes location={location}>
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />

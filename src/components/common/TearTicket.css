@@ -17,6 +17,8 @@
 
   position: relative;
   width: min(var(--tt-w), 100%);
+  max-width: 100%;
+  overflow: visible;
   color: var(--tt-ink);
   user-select: none;
   -webkit-user-select: none;

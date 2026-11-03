@@ -1,9 +1,9 @@
-import { useMemo, useState } from 'react';
+import { lazy, Suspense, useMemo, useState } from 'react';
 import { ArrowRight, BedDouble, Check, ChevronDown, Globe, Heart, LayoutGrid, MapPin, Search, ShieldCheck, Star, X } from 'lucide-react';
 import './Hotels.css';
 import '../../../styles/showcase-skin.css';
 import SmartImage from '../../../components/common/SmartImage';
-import InteractiveWorldMap from '../../../components/common/InteractiveWorldMap';
+const InteractiveWorldMap = lazy(() => import('../../../components/common/InteractiveWorldMap'));
 import usePageTitle from '../../../hooks/usePageTitle';
 import { useCurrency } from '../../../context/useCurrency';
 
@@ -143,12 +143,14 @@ export default function HotelsPage() {
         </div>
 
         {viewMode === 'map' && (
-          <InteractiveWorldMap
-            items={hotels}
-            type="hotels"
-            onSelect={(hotel) => setSelected(hotel)}
-            height="580px"
-          />
+          <Suspense fallback={<div style={{ height: '580px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f1f5f9', borderRadius: '16px', color: '#64748b', fontWeight: 600 }}>Loading Stays Map...</div>}>
+            <InteractiveWorldMap
+              items={hotels}
+              type="hotels"
+              onSelect={(hotel) => setSelected(hotel)}
+              height="580px"
+            />
+          </Suspense>
         )}
 
         <div className="hotel-grid" style={{ display: viewMode === 'grid' ? 'grid' : 'none' }}>

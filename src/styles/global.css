@@ -169,3 +169,55 @@ html { scroll-padding-top: 96px; }
   border-radius: 4px;
 }
 main:focus { outline: none; }
+
+/* Route Suspense Top Loading Progress Bar */
+.ts-route-loading-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(163, 112, 76, 0.15);
+  z-index: 999999;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.ts-route-loading-progress {
+  height: 100%;
+  background: linear-gradient(90deg, #a3704c 0%, #e2b17a 50%, #38bdf8 100%);
+  box-shadow: 0 0 10px rgba(163, 112, 76, 0.8);
+  width: 100%;
+  animation: routeProgressAnim 0.75s infinite cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes routeProgressAnim {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(0%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Mobile Performance Optimizations */
+@media (max-width: 768px) {
+  /* Reduce heavy GPU gaussian blurs on sticky navbar for 60/120fps scrolling */
+  .navbar,
+  .navbar.scrolled {
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    background: rgba(253, 251, 248, 0.96) !important;
+  }
+
+  /* Content visibility for off-screen footer to eliminate render blocking */
+  .footer {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 500px;
+  }
+
+  /* Instant hardware momentum scrolling for touch viewports */
+  body,
+  .main-layout,
+  .route-transition-stage {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: auto !important;
+  }
+}
