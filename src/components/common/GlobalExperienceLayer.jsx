@@ -14,7 +14,11 @@ export default function GlobalExperienceLayer() {
     let disposed = false;
     let lenisRequest = 0;
     const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const useNativeHomepageScroll = window.location.pathname === '/';
+    const isHomepage = () => {
+      const p = window.location.pathname;
+      const h = window.location.hash;
+      return (p === '/' || p.endsWith('/index.html')) && (!h || h === '#/' || h === '#' || h === '');
+    };
 
     const updateScroll = () => {
       cancelAnimationFrame(frame);
@@ -36,7 +40,7 @@ export default function GlobalExperienceLayer() {
       const request = ++lenisRequest;
       stopLenis();
       const isMobileOrTouch = window.innerWidth <= 768 || window.matchMedia('(pointer: coarse)').matches || (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0);
-      if (motionPreference.matches || useNativeHomepageScroll || isMobileOrTouch) return;
+      if (motionPreference.matches || isHomepage() || isMobileOrTouch) return;
 
       try {
         const { default: Lenis } = await import('lenis');
@@ -66,6 +70,7 @@ export default function GlobalExperienceLayer() {
 
     window.addEventListener('scroll', updateScroll, { passive: true });
     window.addEventListener('resize', updateScroll, { passive: true });
+    window.addEventListener('hashchange', handleMotionPreferenceChange);
     motionPreference.addEventListener('change', handleMotionPreferenceChange);
     updateScroll();
     void syncLenisPreference();
@@ -76,6 +81,7 @@ export default function GlobalExperienceLayer() {
       cancelAnimationFrame(frame);
       window.removeEventListener('scroll', updateScroll);
       window.removeEventListener('resize', updateScroll);
+      window.removeEventListener('hashchange', handleMotionPreferenceChange);
       motionPreference.removeEventListener('change', handleMotionPreferenceChange);
       stopLenis();
     };

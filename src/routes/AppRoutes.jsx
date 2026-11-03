@@ -3,8 +3,8 @@ import { AnimatePresence, LayoutGroup, motion } from 'framer-motion';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
 import { useAuth } from '../context/useAuth';
+import Home from '../pages/customer/Home';
 
-const Home = lazy(() => import('../pages/customer/Home'));
 const Destinations = lazy(() => import('../pages/customer/Destinations'));
 const DestinationDetail = lazy(() => import('../pages/customer/DestinationDetail'));
 const TourPackages = lazy(() => import('../pages/customer/TourPackages'));

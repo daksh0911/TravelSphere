@@ -6,6 +6,17 @@ import './DestinationGallery.css';
 
 const padIndex = (index) => String(index + 1).padStart(2, '0');
 
+let gsapModulePromise = null;
+const loadGsapModules = () => {
+  if (!gsapModulePromise) {
+    gsapModulePromise = Promise.all([
+      import('gsap'),
+      import('gsap/ScrollTrigger'),
+    ]);
+  }
+  return gsapModulePromise;
+};
+
 export default function DestinationGallery({ destinations }) {
   const sectionRef = useRef(null);
   const viewportRef = useRef(null);
@@ -53,10 +64,7 @@ export default function DestinationGallery({ destinations }) {
       if (!desktopPointer.matches || reducedMotion.matches) return;
 
       try {
-        const [{ gsap }, { ScrollTrigger }] = await Promise.all([
-          import('gsap'),
-          import('gsap/ScrollTrigger'),
-        ]);
+        const [{ gsap }, { ScrollTrigger }] = await loadGsapModules();
         if (disposed || version !== requestVersion || !desktopPointer.matches || reducedMotion.matches) return;
 
         gsap.registerPlugin(ScrollTrigger);

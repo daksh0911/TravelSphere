@@ -1,4 +1,4 @@
-﻿import { ArrowRight, Compass, Headphones, Heart, MapPin, Plane, ShieldCheck, Sparkles, WandSparkles } from 'lucide-react';
+import { ArrowRight, Compass, Headphones, Heart, MapPin, Plane, ShieldCheck, Sparkles, WandSparkles } from 'lucide-react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Reveal from './Reveal';
@@ -70,14 +70,14 @@ export default function Home() {
               <motion.span className="hero-title-line" variants={headlineLineVariants}>of the world that</motion.span>
               <motion.span className="hero-title-line" variants={headlineLineVariants}><em>feels like yours.</em></motion.span>
             </motion.h1>
-            <Reveal direction="right" delay={220}><p className="hero-lede">Thoughtful trips, beautiful stays, and local moments—shaped around your pace, not a template.</p></Reveal>
-            <Reveal direction="right" delay={300}>
+            <Reveal direction="right"><p className="hero-lede">Thoughtful trips, beautiful stays, and local moments—shaped around your pace, not a template.</p></Reveal>
+            <Reveal direction="right">
               <div className="hero-actions">
                 <MagneticLink to="/destinations" className="hero-primary">Start exploring <ArrowRight size={17} /></MagneticLink>
                 <Link to="/packages" className="hero-secondary"><Compass size={16} /> See curated trips</Link>
               </div>
             </Reveal>
-            <Reveal direction="right" delay={380}>
+            <Reveal direction="right">
               <div className="hero-proof">
                 <span className="hero-proof-mark"><Compass size={17} /></span>
                 <div>
@@ -88,7 +88,7 @@ export default function Home() {
             </Reveal>
           </div>
 
-          <Reveal direction="left" delay={160} className="hero-orbit-wrap">
+          <Reveal direction="left" className="hero-orbit-wrap">
             <div className="hero-orbit-card">
               <div className="orbit-image">
                 <ImageReveal className="orbit-image-reveal">

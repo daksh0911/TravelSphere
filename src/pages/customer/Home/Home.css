@@ -1,4 +1,4 @@
-﻿/* Timeless Elegance - Home.css */
+/* Timeless Elegance - Home.css */
 
 .new-home {
   background: var(--color-bg-main);
@@ -49,6 +49,13 @@
   opacity: 0.3;
   z-index: -2;
   animation: hero-float 15s ease-in-out infinite alternate;
+}
+
+@media (max-width: 768px), (prefers-reduced-motion: reduce) {
+  .hero-aurora {
+    display: none !important;
+    animation: none !important;
+  }
 }
 
 .aurora-one {
