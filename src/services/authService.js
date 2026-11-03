@@ -83,16 +83,6 @@ export const registerUser = async (userData) => {
   }
 };
 
-// Built-in verified demo accounts
-const BUILT_IN_DEMO_ACCOUNTS = {
-  'admin@travel.com': { id: 'admin-1', name: 'Global Administrator', role: 'ADMIN' },
-  'agent@travel.com': { id: 'agent-1', name: 'Sarah Jenkins', role: 'TRAVEL_AGENT' },
-  'hotel@travel.com': { id: 'hotel-1', name: 'Kenji Sato', role: 'HOTEL_MANAGER' },
-  'transport@travel.com': { id: 'transport-1', name: 'Michael Chang', role: 'TRANSPORT_PROVIDER' },
-  'guide@travel.com': { id: 'guide-1', name: 'Marco Rossi', role: 'TOUR_GUIDE' },
-  'customer@travel.com': { id: 'customer-1', name: 'Alice Walker', role: 'CUSTOMER' }
-};
-
 export const loginUser = async (credentials) => {
   try {
     const response = await api.post('/auth/login', credentials);
@@ -104,18 +94,7 @@ export const loginUser = async (credentials) => {
 
     const cleanEmail = (credentials.email || '').trim().toLowerCase();
 
-    // 1. Check built-in demo accounts (accepts demo password or any 6+ char password)
-    if (BUILT_IN_DEMO_ACCOUNTS[cleanEmail]) {
-      const demoProfile = BUILT_IN_DEMO_ACCOUNTS[cleanEmail];
-      return {
-        success: true,
-        message: 'Welcome back!',
-        user: { ...demoProfile, email: cleanEmail },
-        token: `demo-token-${demoProfile.id}`
-      };
-    }
-
-    // 2. Local DB fallback search for registered accounts
+    // Local DB fallback search for registered accounts
     const localUsers = getLocalUsers();
     const foundUser = localUsers.find(
       u => (u.email || '').trim().toLowerCase() === cleanEmail

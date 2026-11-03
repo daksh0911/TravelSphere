@@ -6,32 +6,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import './Login.css';
 
 import usePageTitle from '../../../hooks/usePageTitle';
-const DEMOS = [
-  { label: 'Admin', email: 'admin@travel.com', role: 'ADMIN', color: '#334e67' },
-  { label: 'Travel agent', email: 'agent@travel.com', role: 'TRAVEL_AGENT', color: '#8865d7' },
-  { label: 'Hotel manager', email: 'hotel@travel.com', role: 'HOTEL_MANAGER', color: '#d58b32' },
-  { label: 'Transport', email: 'transport@travel.com', role: 'TRANSPORT_PROVIDER', color: '#d46378' },
-  { label: 'Tour guide', email: 'guide@travel.com', role: 'TOUR_GUIDE', color: '#3e89bd' },
-  { label: 'Customer', email: 'customer@travel.com', role: 'CUSTOMER', color: 'var(--color-primary)' }
-];
-
-const SIMPLE_ROLE_MAP = {
-  admin: 'admin@travel.com',
-  administrator: 'admin@travel.com',
-  agent: 'agent@travel.com',
-  travelagent: 'agent@travel.com',
-  'travel agent': 'agent@travel.com',
-  hotel: 'hotel@travel.com',
-  hotelmanager: 'hotel@travel.com',
-  'hotel manager': 'hotel@travel.com',
-  transport: 'transport@travel.com',
-  guide: 'guide@travel.com',
-  tourguide: 'guide@travel.com',
-  'tour guide': 'guide@travel.com',
-  customer: 'customer@travel.com',
-  user: 'customer@travel.com'
-};
-
 export default function LoginPage() {
   usePageTitle('Sign in');
   const navigate = useNavigate();
@@ -59,13 +33,7 @@ export default function LoginPage() {
   };
 
   const resolveEmail = (input) => {
-    const raw = (input || '').trim().toLowerCase();
-    if (SIMPLE_ROLE_MAP[raw]) return SIMPLE_ROLE_MAP[raw];
-    if (raw.endsWith('.com') && !raw.includes('@')) {
-      const prefix = raw.replace('.com', '');
-      if (SIMPLE_ROLE_MAP[prefix]) return SIMPLE_ROLE_MAP[prefix];
-    }
-    return raw;
+    return (input || '').trim().toLowerCase();
   };
 
   const validateEmail = (val) => {
@@ -85,7 +53,7 @@ export default function LoginPage() {
     const finalEmail = resolveEmail(email);
 
     if (!validateEmail(email)) {
-      setEmailError('Please enter a valid role name or email address.');
+      setEmailError('Please enter a valid email address.');
       valid = false;
     } else {
       setEmailError('');
@@ -107,28 +75,6 @@ export default function LoginPage() {
       navigate(target(userRole), { replace: true });
     } catch (err) {
       setErrorMessage(err.message || 'Login failed. Please check your credentials.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const quick = async demo => {
-    setEmail(demo.email);
-    setPassword('password123');
-    setLoading(true);
-    setErrorMessage('');
-    setEmailError('');
-    setPasswordError('');
-    try {
-      const res = await login({ email: demo.email, password: 'password123' }).catch(() => null);
-      if (res?.user) navigate(target(res.user.role));
-      else {
-        const demoUser = { id: demo.email, name: demo.email.split('@')[0].toUpperCase(), email: demo.email, role: demo.role };
-        localStorage.setItem('travelsphere_active_user', JSON.stringify(demoUser));
-        window.location.assign(target(demo.role));
-      }
-    } catch {
-      navigate(target(demo.role));
     } finally {
       setLoading(false);
     }
@@ -232,15 +178,6 @@ export default function LoginPage() {
                 {loading ? 'Opening your workspace' : <>Continue to TravelSphere <ArrowRight size={17} /></>}
               </button>
             </form>
-            
-            <div className="demo-divider"><span>or explore a demo workspace</span></div>
-            <div className="demo-grid">
-              {DEMOS.map(demo => (
-                <button key={demo.role} type="button" onClick={() => quick(demo)} style={{ '--demo-color': demo.color }}>
-                  <i /><span>{demo.label}</span>
-                </button>
-              ))}
-            </div>
             
             <div className="login-security">
               <ShieldCheck size={14} />

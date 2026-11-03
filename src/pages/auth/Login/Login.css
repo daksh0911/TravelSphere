@@ -492,10 +492,13 @@
     margin-top: 28px;
   }
   .login-story-stamp {
+    position: relative;
     width: 88px;
     height: 88px;
-    right: 14px;
-    bottom: 18px;
+    right: auto;
+    bottom: auto;
+    margin: 24px auto 0;
+    opacity: 0.9;
   }
   .login-story-stamp strong {
     font-size: 21px;
