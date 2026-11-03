@@ -92,7 +92,7 @@ export default function Home() {
             <div className="hero-orbit-card">
               <div className="orbit-image">
                 <ImageReveal className="orbit-image-reveal">
-                  <SmartImage src="/destination-images/kyoto.webp" alt="Kyoto garden and traditional architecture" sizes="(max-width: 900px) 92vw, 420px" />
+                  <SmartImage src="/destination-images/kyoto.webp" alt="Kyoto garden and traditional architecture" sizes="(max-width: 900px) 92vw, 420px" priority />
                 </ImageReveal>
                 <div className="orbit-image-label"><MapPin size={13} /> Kyoto, Japan <span>·</span> A slower kind of journey</div>
               </div>
