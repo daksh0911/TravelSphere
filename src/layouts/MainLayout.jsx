@@ -9,7 +9,7 @@ const MainLayout = () => {
     <div className="main-layout">
       <a href="#main-content" className="skip-link">Skip to main content</a>
       <Navbar />
-      <main id="main-content" tabIndex={-1} style={{ paddingTop: '80px', minHeight: 'calc(100vh - 400px)' }}>
+      <main id="main-content" tabIndex={-1} style={{ paddingTop: '76px', minHeight: 'calc(100vh - 400px)' }}>
         <Outlet />
       </main>
       <FooterReveal><Footer /></FooterReveal>
