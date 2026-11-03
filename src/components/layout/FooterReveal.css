@@ -2,4 +2,18 @@
 .footer-reveal > .footer { transform: translate3d(0, calc(-28% + 28% * var(--progress)), 0); will-change: transform; }
 .footer-reveal::after { content: ''; position: absolute; inset: 0; background: #292524; opacity: calc(1 - var(--progress)); pointer-events: none; z-index: 2; }
 .main-layout > main { position: relative; z-index: 20; background: var(--color-bg-main); }
+@media (max-width: 768px) {
+  .footer-reveal {
+    overflow: visible;
+  }
+
+  .footer-reveal > .footer {
+    transform: none;
+    will-change: auto;
+  }
+
+  .footer-reveal::after {
+    display: none;
+  }
+}
 @media (prefers-reduced-motion: reduce) { .footer-reveal > .footer { transform: none; } .footer-reveal::after { display: none; } }
