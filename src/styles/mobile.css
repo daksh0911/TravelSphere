@@ -128,30 +128,6 @@ body,
     padding-inline: 16px;
   }
 
-  .main-layout,
-  .route-transition-stage,
-  main > * {
-    min-width: 0;
-    max-width: 100%;
-  }
-
-  img,
-  video,
-  canvas,
-  svg {
-    max-width: 100%;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6,
-  p {
-    overflow-wrap: anywhere;
-  }
-
   .navbar-container {
     width: 100%;
     min-width: 0;
