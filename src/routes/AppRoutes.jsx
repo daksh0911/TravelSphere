@@ -51,7 +51,7 @@ export default function AppRoutes() {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
         >
-          <Suspense fallback={<div className="route-loading" role="status">Loading TravelSphere...</div>}>
+          <Suspense fallback={null}>
             <Routes location={location}>
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
@@ -83,6 +83,14 @@ export default function AppRoutes() {
             />
             <Route
               path="/customer-dashboard"
+              element={
+                <ProtectedRoute allowedRoles={['CUSTOMER', 'USER']}>
+                  <CustomerDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/dashboard"
               element={
                 <ProtectedRoute allowedRoles={['CUSTOMER', 'USER']}>
                   <CustomerDashboard />
