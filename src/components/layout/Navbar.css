@@ -382,6 +382,26 @@
   .mobile-menu-toggle { display: inline-flex; }
 }
 
+@media (max-width: 768px) {
+  .navbar-right {
+    flex-shrink: 0;
+  }
+
+  .nav-currency-wrap {
+    display: none;
+  }
+
+  .navbar-logo {
+    min-width: 0;
+  }
+
+  .logo-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
 @media (max-width: 520px) {
   .navbar-container {
     padding: 0 max(1rem, env(safe-area-inset-right)) 0 max(1rem, env(safe-area-inset-left));
