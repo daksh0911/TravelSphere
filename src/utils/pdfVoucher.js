@@ -125,7 +125,7 @@ export function generateBookingPDF(booking) {
   doc.setFontSize(8.5);
   doc.setTextColor(...slateColor);
   doc.text('Present this voucher upon arrival at your partner hotel and vehicle pickup hub.', 26, qrY + 18);
-  doc.text('Verified under TravelSphere Guarantee with 24/7 Concierge Hotline access.', 26, qrY + 25);
+  doc.text('Verified under TravelSphere Guarantee with 24/7 Support Hotline access.', 26, qrY + 25);
   doc.text(`Security Hash: SHA256-${Math.random().toString(36).substring(2, 12).toUpperCase()}`, 26, qrY + 31);
 
   // Footer

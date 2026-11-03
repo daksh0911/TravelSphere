@@ -224,7 +224,7 @@ export default function LiveTravelMessenger() {
         >
           <div className="launcher-pulse-dot" />
           <MessageSquare size={20} />
-          <span className="launcher-label">Live Chat</span>
+          <span className="launcher-label">Chat</span>
           {unreadCount > 0 && <span className="launcher-badge">{unreadCount}</span>}
         </button>
       )}

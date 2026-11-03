@@ -432,8 +432,13 @@
 
 @media (max-width: 600px) {
   .ts-messenger-wrapper {
-    bottom: 16px;
-    right: 16px;
+    bottom: max(16px, env(safe-area-inset-bottom));
+    right: max(16px, env(safe-area-inset-right));
+  }
+  .ts-messenger-launcher {
+    padding: 0.65rem 1rem;
+    font-size: 0.82rem;
+    gap: 0.5rem;
   }
   .ts-messenger-window {
     width: calc(100vw - 32px);

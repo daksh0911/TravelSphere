@@ -33,8 +33,10 @@ const devFallback = () => ({
   name: 'travelsphere-dev-fallback',
   configureServer(server) {
     server.middlewares.use((req, res, next) => {
-      const url = req.url ? req.url.split('?')[0] : '';
-      if (url === '/' || url === '/index.html') {
+      const pathname = req.url ? req.url.split('?')[0] : '';
+      const hasFileExt = pathname.includes('.') && !pathname.endsWith('.html');
+      const isInternal = pathname.startsWith('/@') || pathname.startsWith('/node_modules') || pathname.startsWith('/api') || pathname.startsWith('/src');
+      if (!hasFileExt && !isInternal) {
         const query = req.url.includes('?') ? '?' + req.url.split('?')[1] : '';
         req.url = '/app.html' + query;
       }

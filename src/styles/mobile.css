@@ -176,7 +176,25 @@ body,
   .hotel-header,
   .transport-header,
   .guide-header {
-    padding: 1.25rem 1rem;
+    padding: 1rem 0.85rem;
+  }
+
+  .admin-header-content,
+  .agent-header-content,
+  .hotel-header-content,
+  .transport-header-content,
+  .guide-header-content {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.75rem !important;
+  }
+
+  .admin-title-badge,
+  .agent-title-badge,
+  .hotel-title-badge,
+  .transport-title-badge,
+  .guide-title-badge {
+    gap: 0.75rem !important;
   }
 
   .admin-title-badge h2,
@@ -184,7 +202,18 @@ body,
   .hotel-title-badge h2,
   .transport-title-badge h2,
   .guide-title-badge h2 {
-    font-size: 1.35rem;
+    font-size: clamp(1.2rem, 5vw, 1.45rem) !important;
+    line-height: 1.25 !important;
+  }
+
+  .admin-user-profile,
+  .agent-user-profile,
+  .hotel-user-profile,
+  .transport-user-profile,
+  .guide-user-profile {
+    width: 100% !important;
+    justify-content: space-between !important;
+    padding: 0.35rem 0.85rem !important;
   }
 
   /* Tabs Bar Horizontal Scroll on Mobile */
@@ -193,10 +222,13 @@ body,
   .hotel-tabs-bar,
   .transport-tabs-bar,
   .guide-tabs-bar {
-    padding: 0 1rem;
-    gap: 0.5rem;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    padding: 0.5rem 0.85rem !important;
+    gap: 0.45rem !important;
   }
 
   .admin-tabs-bar::-webkit-scrollbar,
@@ -204,7 +236,7 @@ body,
   .hotel-tabs-bar::-webkit-scrollbar,
   .transport-tabs-bar::-webkit-scrollbar,
   .guide-tabs-bar::-webkit-scrollbar {
-    display: none;
+    display: none !important;
   }
 
   .admin-tabs-bar .tab-btn,
@@ -212,9 +244,11 @@ body,
   .hotel-tabs-bar .tab-btn,
   .transport-tabs-bar .tab-btn,
   .guide-tabs-bar .tab-btn {
-    padding: 0.75rem 1rem;
-    font-size: 0.88rem;
-    flex-shrink: 0;
+    padding: 0.55rem 0.95rem !important;
+    font-size: 0.82rem !important;
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+    border-radius: 999px !important;
   }
 
   /* Content Padding */
@@ -223,15 +257,15 @@ body,
   .hotel-content-area,
   .transport-content-area,
   .guide-content-area {
-    padding: 0 1rem;
-    margin: 1.25rem auto;
+    padding: 0 0.85rem 80px !important;
+    margin: 1rem auto !important;
   }
 
   /* Metrics & Grids */
   .ts-metrics-grid,
   .kpi-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.65rem !important;
   }
 
   .ts-hero-card {
@@ -296,7 +330,8 @@ body,
   .agent-table,
   .hotel-table,
   .transport-table,
-  .guide-table {
+  .guide-table,
+  .ts-custom-table {
     min-width: 680px;
   }
 

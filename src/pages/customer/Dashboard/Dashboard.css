@@ -184,8 +184,10 @@
 }
 
 .ts-user-profile-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  flex-shrink: 0;
+  width: auto;
   gap: 0.7rem;
   background: linear-gradient(180deg, #ffffff, var(--surface-subtle));
   border: 1px solid var(--border-light);
@@ -201,13 +203,19 @@
   transform: translateY(-1px);
 }
 
+.ts-user-avatar.smart-image,
 .ts-user-avatar {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  object-fit: cover;
+  width: 38px !important;
+  height: 38px !important;
+  max-width: 38px !important;
+  max-height: 38px !important;
+  min-width: 38px !important;
+  min-height: 38px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  flex-shrink: 0 !important;
   border: 2px solid rgba(255, 255, 255, 0.9);
-  box-shadow: 0 16px 30px -22px rgba(41, 37, 36, 0.9);
+  box-shadow: 0 4px 12px rgba(41, 37, 36, 0.15);
 }
 
 .ts-user-info-text {
@@ -1192,19 +1200,28 @@
     position: static;
     width: 100%;
     flex-direction: row;
-    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
   }
 
   .ts-sidebar-menu {
     flex-direction: row;
-    flex-wrap: wrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    gap: 0.5rem;
+  }
+
+  .ts-sidebar-menu::-webkit-scrollbar {
+    display: none;
   }
 
   .ts-sidebar-item {
     width: auto;
+    flex-shrink: 0;
+    white-space: nowrap;
   }
 
   .ts-main-grid-2col {
@@ -1228,36 +1245,201 @@
   }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 768px) {
   .ts-top-nav {
-    flex-wrap: wrap;
-    height: auto;
-    gap: 0.8rem;
-    padding: 0.8rem clamp(1rem, 4vw, 1.6rem);
+    height: 60px;
+    padding: 0 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .ts-notif-btn {
+    width: 36px !important;
+    height: 36px !important;
+    flex-shrink: 0;
   }
 
   .ts-nav-links {
-    order: 3;
+    display: none !important;
+  }
+
+  .ts-search-pill {
+    display: none;
+  }
+
+  .ts-user-info-text {
+    display: none;
+  }
+
+  .ts-user-profile-btn {
+    padding: 0.2rem;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    gap: 0.35rem;
+    display: inline-flex !important;
+    align-items: center;
+    flex-shrink: 0;
+    width: auto;
+  }
+
+  .ts-header-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-shrink: 0;
+    gap: 0.65rem;
+  }
+
+  .ts-dashboard-body {
+    padding: 0 0.85rem 80px;
+    gap: 0.85rem;
+  }
+
+  .ts-sidebar {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0.25rem 0;
+    margin: 0.5rem 0;
+  }
+
+  .ts-sidebar-title {
+    display: none;
+  }
+
+  .ts-sidebar-menu {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 0.45rem;
     width: 100%;
-    overflow-x: auto;
-    justify-content: flex-start;
+    padding: 0.2rem 0;
   }
 
-  .ts-metrics-grid,
-  .ts-wishlist-cards-grid {
-    grid-template-columns: 1fr;
+  .ts-sidebar-menu::-webkit-scrollbar {
+    display: none;
   }
 
-  .ts-search-grid-bar {
-    grid-template-columns: 1fr;
+  .ts-sidebar-item {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+    padding: 0.55rem 0.95rem;
+    font-size: 0.84rem;
+    border-radius: 999px;
   }
 
-  .ts-search-submit-btn {
-    width: 100%;
+  .ts-hero-card {
+    padding: 1.25rem 1rem;
+    border-radius: 16px;
+  }
+
+  .ts-hero-heading {
+    font-size: clamp(1.35rem, 5vw, 1.75rem);
+    line-height: 1.2;
   }
 
   .ts-hero-top-row {
     flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .ts-hero-right-meta {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .ts-hero-actions {
+    width: 100%;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .ts-hero-actions button,
+  .ts-hero-actions a {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .ts-metrics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.65rem;
+  }
+
+  .ts-metric-box {
+    padding: 0.85rem;
+    border-radius: 14px;
+  }
+
+  .ts-metric-value {
+    font-size: 1.35rem;
+  }
+
+  .ts-gateway-card {
+    padding: 1.15rem 0.85rem;
+    border-radius: 16px;
+  }
+
+  .ts-gateway-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+  }
+
+  .ts-gateway-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ts-gateway-tab {
+    flex-shrink: 0;
+    white-space: nowrap;
+    padding: 0.55rem 0.85rem;
+    font-size: 0.82rem;
+  }
+
+  .ts-search-grid-bar {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+  }
+
+  .ts-search-submit-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .ts-booking-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: 16px;
+  }
+
+  .ts-booking-img {
+    width: 100%;
+    height: 175px;
+  }
+
+  .ts-details-4grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .ts-wishlist-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+
+  .ts-custom-table {
+    min-width: 650px;
   }
 }
 
