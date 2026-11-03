@@ -5,6 +5,8 @@
   padding-bottom: 5rem;
   font-family: 'Plus Jakarta Sans', sans-serif;
   color: var(--color-text-dark);
+  overflow-x: clip;
+  touch-action: pan-y;
 }
 
 /* Hero */
@@ -384,10 +386,113 @@
 }
 
 @media (max-width: 768px) {
+  .about-hero {
+    min-height: 330px;
+    padding: 4.5rem 1rem 3.5rem;
+  }
+
+  .about-hero-title {
+    font-size: clamp(1.8rem, 8vw, 2.2rem);
+  }
+
+  .about-hero-desc {
+    font-size: 0.95rem;
+  }
+
+  .about-container {
+    padding: 0 1rem;
+  }
+
+  .about-stats-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin: -2rem auto 3rem;
+  }
+
+  .about-stat-card {
+    min-width: 0;
+    padding: 1.25rem 0.65rem;
+    border-radius: 14px;
+  }
+
+  .about-stat-value {
+    font-size: 1.65rem;
+  }
+
+  .about-stat-label {
+    font-size: 0.68rem;
+    line-height: 1.35;
+  }
+
   .about-story-grid {
     grid-template-columns: 1fr;
+    gap: 2rem;
+    margin-bottom: 4rem;
   }
-  .about-hero-title {
-    font-size: 2rem;
+
+  .about-section-title {
+    font-size: 1.55rem;
+  }
+
+  .about-story-para {
+    font-size: 0.95rem;
+  }
+
+  .about-story-img {
+    height: 280px;
+    border-radius: 18px;
+  }
+
+  .about-story-badge-float {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    justify-content: center;
+    padding: 0.65rem 0.75rem;
+    font-size: 0.74rem;
+    text-align: center;
+  }
+
+  .about-values-section,
+  .about-team-section {
+    margin-bottom: 4rem;
+  }
+
+  .about-values-grid,
+  .about-team-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .about-value-card,
+  .about-team-card {
+    padding: 1.5rem 1rem;
+  }
+
+  .about-section-title.center {
+    margin-bottom: 2rem;
+  }
+
+  .about-cta-banner {
+    padding: 2.5rem 1rem;
+    border-radius: 20px;
+  }
+
+  .about-cta-title {
+    font-size: 1.55rem;
+  }
+
+  .about-cta-desc {
+    font-size: 0.9rem;
+  }
+
+  .about-cta-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .about-btn-primary,
+  .about-btn-secondary {
+    width: 100%;
   }
 }
