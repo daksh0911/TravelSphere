@@ -8,7 +8,7 @@
   }
 
   .footer-reveal > .footer {
-    transform: translate3d(0, calc(-28% + 28% * var(--progress)), 0);
+    transform: translate3d(0, calc(-10% + 10% * var(--progress)), 0);
     will-change: transform;
   }
 
