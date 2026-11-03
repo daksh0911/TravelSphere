@@ -24,8 +24,8 @@ const FOOTER_LINKS = [
 ];
 
 const getDashboardPath = (role) => {
-  switch (role) {
-    case 'ADMIN': case 'ADMINISTRATOR': return '/admin-dashboard';
+  switch ((role || '').toUpperCase()) {
+    case 'ADMIN': case 'ADMINISTRATOR': case 'SUPER_ADMIN': return '/admin-dashboard';
     case 'TRAVEL_AGENT': return '/agent-dashboard';
     case 'HOTEL_MANAGER': return '/hotel-dashboard';
     case 'TRANSPORT_PROVIDER': return '/transport-dashboard';

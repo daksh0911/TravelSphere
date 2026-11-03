@@ -68,9 +68,17 @@ export default function AppRoutes() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
 
-            {/* Separate protected role dashboards */}
+            {/* Separate protected role dashboards with slash and hyphen aliases */}
             <Route
               path="/admin"
+              element={
+                <ProtectedRoute allowedRoles={['ADMIN', 'ADMINISTRATOR', 'SUPER_ADMIN']}>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/dashboard"
               element={
                 <ProtectedRoute allowedRoles={['ADMIN', 'ADMINISTRATOR', 'SUPER_ADMIN']}>
                   <AdminDashboard />
@@ -88,7 +96,7 @@ export default function AppRoutes() {
             <Route
               path="/user-dashboard"
               element={
-                <ProtectedRoute allowedRoles={['CUSTOMER', 'USER']}>
+                <ProtectedRoute allowedRoles={['CUSTOMER', 'USER', 'ADMIN', 'SUPER_ADMIN']}>
                   <CustomerDashboard />
                 </ProtectedRoute>
               }
@@ -96,7 +104,15 @@ export default function AppRoutes() {
             <Route
               path="/customer-dashboard"
               element={
-                <ProtectedRoute allowedRoles={['CUSTOMER', 'USER']}>
+                <ProtectedRoute allowedRoles={['CUSTOMER', 'USER', 'ADMIN', 'SUPER_ADMIN']}>
+                  <CustomerDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/customer/dashboard"
+              element={
+                <ProtectedRoute allowedRoles={['CUSTOMER', 'USER', 'ADMIN', 'SUPER_ADMIN']}>
                   <CustomerDashboard />
                 </ProtectedRoute>
               }
@@ -104,7 +120,7 @@ export default function AppRoutes() {
             <Route
               path="/dashboard"
               element={
-                <ProtectedRoute allowedRoles={['CUSTOMER', 'USER']}>
+                <ProtectedRoute allowedRoles={['CUSTOMER', 'USER', 'ADMIN', 'SUPER_ADMIN']}>
                   <CustomerDashboard />
                 </ProtectedRoute>
               }
@@ -112,7 +128,15 @@ export default function AppRoutes() {
             <Route
               path="/agent-dashboard"
               element={
-                <ProtectedRoute allowedRoles={['TRAVEL_AGENT']}>
+                <ProtectedRoute allowedRoles={['TRAVEL_AGENT', 'ADMIN', 'SUPER_ADMIN']}>
+                  <AgentDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/agent/dashboard"
+              element={
+                <ProtectedRoute allowedRoles={['TRAVEL_AGENT', 'ADMIN', 'SUPER_ADMIN']}>
                   <AgentDashboard />
                 </ProtectedRoute>
               }
@@ -120,7 +144,15 @@ export default function AppRoutes() {
             <Route
               path="/hotel-dashboard"
               element={
-                <ProtectedRoute allowedRoles={['HOTEL_MANAGER']}>
+                <ProtectedRoute allowedRoles={['HOTEL_MANAGER', 'ADMIN', 'SUPER_ADMIN']}>
+                  <HotelDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/hotel/dashboard"
+              element={
+                <ProtectedRoute allowedRoles={['HOTEL_MANAGER', 'ADMIN', 'SUPER_ADMIN']}>
                   <HotelDashboard />
                 </ProtectedRoute>
               }
@@ -128,7 +160,15 @@ export default function AppRoutes() {
             <Route
               path="/transport-dashboard"
               element={
-                <ProtectedRoute allowedRoles={['TRANSPORT_PROVIDER']}>
+                <ProtectedRoute allowedRoles={['TRANSPORT_PROVIDER', 'ADMIN', 'SUPER_ADMIN']}>
+                  <TransportDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/transport/dashboard"
+              element={
+                <ProtectedRoute allowedRoles={['TRANSPORT_PROVIDER', 'ADMIN', 'SUPER_ADMIN']}>
                   <TransportDashboard />
                 </ProtectedRoute>
               }
@@ -136,7 +176,15 @@ export default function AppRoutes() {
             <Route
               path="/guide-dashboard"
               element={
-                <ProtectedRoute allowedRoles={['TOUR_GUIDE']}>
+                <ProtectedRoute allowedRoles={['TOUR_GUIDE', 'ADMIN', 'SUPER_ADMIN']}>
+                  <GuideDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/guide/dashboard"
+              element={
+                <ProtectedRoute allowedRoles={['TOUR_GUIDE', 'ADMIN', 'SUPER_ADMIN']}>
                   <GuideDashboard />
                 </ProtectedRoute>
               }
