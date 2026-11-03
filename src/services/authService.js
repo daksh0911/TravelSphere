@@ -29,14 +29,13 @@ const saveLocalUsers = (users) => {
   }
 };
 
-const DEMO_PASSWORD = 'Demo@12345';
 const BUILT_IN_DEMO_ACCOUNTS = {
-  'admin@travel.com': { id: 'admin-1', name: 'Global Administrator', role: 'ADMIN' },
-  'agent@travel.com': { id: 'agent-1', name: 'Sarah Jenkins', role: 'TRAVEL_AGENT' },
-  'hotel@travel.com': { id: 'hotel-1', name: 'Kenji Sato', role: 'HOTEL_MANAGER' },
-  'transport@travel.com': { id: 'transport-1', name: 'Michael Chang', role: 'TRANSPORT_PROVIDER' },
-  'guide@travel.com': { id: 'guide-1', name: 'Marco Rossi', role: 'TOUR_GUIDE' },
-  'customer@travel.com': { id: 'customer-1', name: 'Alice Walker', role: 'CUSTOMER' }
+  'admin@travel.com': { id: 'admin-1', name: 'Global Administrator', role: 'ADMIN', password: 'admin@123' },
+  'agent@travel.com': { id: 'agent-1', name: 'Sarah Jenkins', role: 'TRAVEL_AGENT', password: 'agent@123' },
+  'hotel@travel.com': { id: 'hotel-1', name: 'Kenji Sato', role: 'HOTEL_MANAGER', password: 'hotel@123' },
+  'transport@travel.com': { id: 'transport-1', name: 'Michael Chang', role: 'TRANSPORT_PROVIDER', password: 'transport@123' },
+  'guide@travel.com': { id: 'guide-1', name: 'Marco Rossi', role: 'TOUR_GUIDE', password: 'guide@123' },
+  'customer@travel.com': { id: 'customer-1', name: 'Alice Walker', role: 'CUSTOMER', password: 'customer@123' }
 };
 
 export const registerUser = async (userData) => {
@@ -96,11 +95,11 @@ export const registerUser = async (userData) => {
 export const loginUser = async (credentials) => {
   const cleanEmail = (credentials.email || '').trim().toLowerCase();
   const demoProfile = BUILT_IN_DEMO_ACCOUNTS[cleanEmail];
-  if (demoProfile && credentials.password === DEMO_PASSWORD) {
+  if (demoProfile && credentials.password === demoProfile.password) {
     return {
       success: true,
       message: 'Demo account signed in.',
-      user: { ...demoProfile, email: cleanEmail },
+      user: { id: demoProfile.id, name: demoProfile.name, role: demoProfile.role, email: cleanEmail },
       token: `demo-token-${demoProfile.id}`
     };
   }
