@@ -18,7 +18,12 @@ import {
   Check,
   FileDown,
   Ticket,
-  RotateCcw
+  RotateCcw,
+  Trash2,
+  MessageSquare,
+  AlertCircle,
+  ExternalLink,
+  X
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import TearTicket from '../../../components/common/TearTicket';
@@ -28,6 +33,7 @@ import api from '../../../services/api';
 import './Dashboard.css';
 import SmartImage from '../../../components/common/SmartImage';
 import { generateBookingPDF } from '../../../utils/pdfVoucher';
+import { COUNTRIES, sanitizeFullName, sanitizePhoneDigits } from '../../../utils/countryPhoneConfig';
 
 import usePageTitle from '../../../hooks/usePageTitle';
 import { useCurrency } from '../../../context/useCurrency';
@@ -57,6 +63,14 @@ const createFallbackWishlistItem = (pkg) => ({
   image_url: pkg?.image_url || pkg?.imageUrl || '/destination-images/santorini.webp'
 });
 
+const createFallbackReview = (pkgTitle, rating, comment) => ({
+  review_id: Date.now(),
+  package_title: pkgTitle,
+  rating,
+  comment,
+  created_at: new Date().toISOString()
+});
+
 const CustomerDashboard = () => {
   usePageTitle('My Dashboard');
   const { user, logout } = useAuth();
@@ -70,16 +84,32 @@ const CustomerDashboard = () => {
   const [liveWishlist, setLiveWishlist] = useState([]);
   const [, setLiveStats] = useState({ totalBookings: 0, activeBookings: 0, wishlistCount: 0 });
   const [, setLoadingDashboard] = useState(true);
-  const [rating, setRating] = useState(5);
-  const [feedbackText, setFeedbackText] = useState('');
-  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
-  const [isSavingProfile, setIsSavingProfile] = useState(false);
   
+  // Reviews state
+  const [reviews, setReviews] = useState([]);
+  const [editingReview, setEditingReview] = useState(null);
+  const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '', packageId: '' });
+  const [reviewStatusMsg, setReviewStatusMsg] = useState('');
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+
+  // Quick feedback on dashboard overview
+  const [overviewRating, setOverviewRating] = useState(5);
+  const [overviewComment, setOverviewComment] = useState('');
+  const [overviewSubmitted, setOverviewSubmitted] = useState(false);
+
+  // Notifications state
+  const [notifications, setNotifications] = useState([]);
+  const [showNotifDropdown, setShowNotifDropdown] = useState(false);
+
+  // Profile edit state
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [profileCountryCode, setProfileCountryCode] = useState('+91');
   const [profileData, setProfileData] = useState({
     name: user?.name || '',
-    phone: user?.phone || ''
+    phone: ''
   });
   const [profileSavedMsg, setProfileSavedMsg] = useState('');
+  const [profileError, setProfileError] = useState('');
 
   const [allPackages, setAllPackages] = useState([]);
   const [bookingMsg, setBookingMsg] = useState('');
@@ -90,6 +120,7 @@ const CustomerDashboard = () => {
   const [pkgSearch, setPkgSearch] = useState('');
   const [sortBy, setSortBy] = useState('recommended');
 
+  const activeCountry = COUNTRIES.find(c => c.code === profileCountryCode) || COUNTRIES[0];
 
   // Working Logout handler
   const handleLogout = () => {
@@ -97,7 +128,7 @@ const CustomerDashboard = () => {
     navigate('/login');
   };
 
-  // Fetch live user profile and dashboard data from MySQL travel_db via API
+  // Fetch live user profile and dashboard data from backend API
   const fetchLiveDashboard = useCallback(async () => {
     if (!user?.email) { 
       setLoadingDashboard(false); 
@@ -110,10 +141,17 @@ const CustomerDashboard = () => {
         setLiveBookings(data.bookings || []);
         setLiveWishlist(data.wishlist || []);
         setAllPackages(data.allPackages || []);
+        setReviews(data.reviews || []);
+        setNotifications(data.notifications || []);
         setLiveStats(data.stats || { totalBookings: 0, activeBookings: 0, wishlistCount: 0 });
+
+        // Parse country code and phone number
+        const rawPhone = data.user.phone || user?.phone || '';
+        const matchedCountry = COUNTRIES.find(c => rawPhone.startsWith(c.code)) || COUNTRIES[0];
+        setProfileCountryCode(matchedCountry.code);
         setProfileData({
           name: data.user.name || user?.name || '',
-          phone: data.user.phone || user?.phone || '+1 (555) 234-8901'
+          phone: rawPhone ? rawPhone.replace(matchedCountry.code, '').replace(/\D/g, '').slice(0, matchedCountry.digits) : '9876543210'
         });
       }
     } catch (err) {
@@ -167,8 +205,9 @@ const CustomerDashboard = () => {
   }, [fetchLiveDashboard]);
 
   const liveUser = dbUser || user;
+  const unreadNotifCount = notifications.filter(n => !n.is_read).length;
 
-  // Instant In-Dashboard Booking Handler (Works live with MySQL + Instant Offline Cache Fallback)
+  // In-Dashboard Booking Handler
   const handleBookPackage = async (pkg) => {
     setBookingMsg('');
     const newBooking = createFallbackBooking(pkg);
@@ -183,7 +222,7 @@ const CustomerDashboard = () => {
         totalAmount: pkg.price || 1200
       });
       if (data.success) {
-        setBookingMsg(`🎉 Successfully booked "${pkg.title}"! Saved live to your account.`);
+        setBookingMsg(`🎉 Successfully booked "${pkg.title}"! Saved to your account.`);
         await fetchLiveDashboard();
         setTimeout(() => setActiveTab('bookings'), 1200);
         return;
@@ -214,62 +253,237 @@ const CustomerDashboard = () => {
     setTimeout(() => setBookingMsg(''), 5000);
   };
 
-  // Instant In-Dashboard Wishlist Handler (Works live with MySQL + Instant Offline Cache Fallback)
+  // Wishlist Handlers (Add & Remove)
   const handleAddToWishlist = async (pkg) => {
+    const pkgId = pkg.package_id || pkg.id;
+    const isAlready = liveWishlist.some(w => (w.package_id || w.id) === pkgId);
+    if (isAlready) {
+      await handleRemoveFromWishlist(pkgId);
+      return;
+    }
+
     const newWish = createFallbackWishlistItem(pkg);
 
     try {
       const { data } = await api.post('/wishlist', {
         userId: liveUser?.user_id || liveUser?.id,
-        packageId: pkg.package_id || pkg.id
+        packageId: pkgId
       });
       if (data.success) {
         setBookingMsg(`❤️ Saved "${pkg.title}" to your wishlist!`);
         await fetchLiveDashboard();
+        setTimeout(() => setBookingMsg(''), 4000);
         return;
       }
     } catch {
-      /* Fallback to local storage */
+      /* Fallback to state */
     }
 
-    setLiveWishlist(prev => [newWish, ...prev.filter(w => (w.package_id || w.id) !== (pkg.package_id || pkg.id))]);
+    setLiveWishlist(prev => [newWish, ...prev.filter(w => (w.package_id || w.id) !== pkgId)]);
     setBookingMsg(`❤️ Saved "${pkg.title}" to your wishlist!`);
     setTimeout(() => setBookingMsg(''), 4000);
   };
 
-  // Save profile updates to MySQL database with local fallback
+  const handleRemoveFromWishlist = async (pkgId) => {
+    try {
+      await api.delete(`/wishlist/${pkgId}`);
+    } catch (err) {
+      console.warn('Wishlist remove failed:', err);
+    }
+    setLiveWishlist(prev => prev.filter(w => (w.package_id || w.id) !== pkgId));
+    setBookingMsg('Package removed from your wishlist.');
+    setTimeout(() => setBookingMsg(''), 3000);
+  };
+
+  // Notification Handlers
+  const handleMarkAllNotificationsRead = async () => {
+    try {
+      await api.put('/notifications/read-all');
+    } catch { /* ignore */ }
+    setNotifications(prev => prev.map(n => ({ ...n, is_read: 1 })));
+  };
+
+  const handleMarkNotificationRead = async (notifId) => {
+    try {
+      await api.put(`/notifications/${notifId}/read`);
+    } catch { /* ignore */ }
+    setNotifications(prev => prev.map(n => n.notification_id === notifId ? { ...n, is_read: 1 } : n));
+  };
+
+  // Save profile updates with country and name validation
   const handleProfileSave = async (e) => {
     e.preventDefault();
-    setIsSavingProfile(true);
+    setProfileError('');
     setProfileSavedMsg('');
 
-    const updatedUser = { ...(dbUser || user || {}), name: profileData.name, phone: profileData.phone };
-    setDbUser(updatedUser);
+    // Full Name validation: alphabetic characters and spaces only
+    const trimmedName = profileData.name.trim();
+    if (!/^[A-Za-z\s]{2,100}$/.test(trimmedName)) {
+      setProfileError('Full Name must contain only alphabetic characters and spaces (2-100 characters).');
+      return;
+    }
+
+    // Phone validation according to selected country
+    const phoneDigits = profileData.phone.replace(/\D/g, '');
+    if (activeCountry.code === '+91' && phoneDigits.length !== 10) {
+      setProfileError('For India (+91), the mobile number must be exactly 10 digits.');
+      return;
+    }
+    if (phoneDigits.length < 7 || phoneDigits.length > activeCountry.digits) {
+      setProfileError(`For ${activeCountry.name}, mobile number must be between 7 and ${activeCountry.digits} digits.`);
+      return;
+    }
+
+    const fullPhoneNumber = `${activeCountry.code} ${phoneDigits}`;
+    setIsSavingProfile(true);
 
     try {
       const { data } = await api.put('/users/profile', {
         userId: liveUser?.user_id || liveUser?.id,
-        name: profileData.name,
-        phone: profileData.phone
+        name: trimmedName,
+        phone: fullPhoneNumber
       });
       if (data.success && data.user) {
         setDbUser(data.user);
-        setProfileSavedMsg('Profile updated in MySQL travel_db database!');
+        setProfileSavedMsg('Profile updated successfully!');
         return;
       }
-    } catch {
-      /* ignore */
+    } catch (err) {
+      console.warn('Profile save warning:', err);
     } finally {
       setIsSavingProfile(false);
       setTimeout(() => setProfileSavedMsg(''), 4000);
     }
 
+    const updatedUser = { ...(dbUser || user || {}), name: trimmedName, phone: fullPhoneNumber };
+    setDbUser(updatedUser);
     try {
       localStorage.setItem('ts_user_profile', JSON.stringify(updatedUser));
-    } catch {
-      /* ignore */
-    }
+    } catch { /* ignore */ }
     setProfileSavedMsg('Profile updated successfully!');
+  };
+
+  // Review & Feedback Form Handlers
+  const handleSaveReview = async (e) => {
+    e.preventDefault();
+    if (!reviewForm.comment.trim()) {
+      setReviewStatusMsg('Please write your review feedback before submitting.');
+      return;
+    }
+
+    setIsSubmittingReview(true);
+    setReviewStatusMsg('');
+
+    try {
+      if (editingReview) {
+        // Edit existing review: updates in-place without creating a duplicate
+        const { data } = await api.put(`/reviews/${editingReview.review_id}`, {
+          rating: reviewForm.rating,
+          comment: reviewForm.comment.trim()
+        });
+        if (data.success) {
+          setReviews(prev => prev.map(r => r.review_id === editingReview.review_id ? {
+            ...r,
+            rating: reviewForm.rating,
+            comment: reviewForm.comment.trim(),
+            updated_at: new Date().toISOString()
+          } : r));
+          setEditingReview(null);
+          setReviewForm({ rating: 5, comment: '', packageId: '' });
+          setReviewStatusMsg('✓ Review updated successfully in your account!');
+          setIsSubmittingReview(false);
+          setTimeout(() => setReviewStatusMsg(''), 4000);
+          return;
+        }
+      } else {
+        // Submit new review
+        const chosenPkg = allPackages.find(p => (p.package_id || p.id) == reviewForm.packageId) || allPackages[0];
+        const { data } = await api.post('/reviews', {
+          packageId: chosenPkg ? (chosenPkg.package_id || chosenPkg.id) : 1,
+          rating: reviewForm.rating,
+          comment: reviewForm.comment.trim()
+        });
+        if (data.success) {
+          const newRev = {
+            review_id: data.reviewId || Date.now(),
+            user_id: liveUser?.user_id || liveUser?.id,
+            rating: reviewForm.rating,
+            comment: reviewForm.comment.trim(),
+            package_title: chosenPkg?.title || 'Tour Package',
+            created_at: new Date().toISOString()
+          };
+          setReviews(prev => [newRev, ...prev]);
+          setReviewForm({ rating: 5, comment: '', packageId: '' });
+          setReviewStatusMsg('✓ Thank you! Your review has been submitted.');
+          setIsSubmittingReview(false);
+          setTimeout(() => setReviewStatusMsg(''), 4000);
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn('Review save error:', err);
+    }
+
+    // Local fallback update
+    if (editingReview) {
+      setReviews(prev => prev.map(r => r.review_id === editingReview.review_id ? {
+        ...r,
+        rating: reviewForm.rating,
+        comment: reviewForm.comment.trim(),
+        updated_at: new Date().toISOString()
+      } : r));
+      setEditingReview(null);
+      setReviewStatusMsg('✓ Review updated successfully!');
+    } else {
+      const fallbackRev = createFallbackReview(
+        allPackages.find(p => (p.package_id || p.id) == reviewForm.packageId)?.title || 'Tour Package',
+        reviewForm.rating,
+        reviewForm.comment.trim()
+      );
+      setReviews(prev => [fallbackRev, ...prev]);
+      setReviewStatusMsg('✓ Review submitted successfully!');
+    }
+    setReviewForm({ rating: 5, comment: '', packageId: '' });
+    setIsSubmittingReview(false);
+    setTimeout(() => setReviewStatusMsg(''), 4000);
+  };
+
+  const handleStartEditReview = (rev) => {
+    setEditingReview(rev);
+    setReviewForm({
+      rating: rev.rating,
+      comment: rev.comment,
+      packageId: rev.package_id || ''
+    });
+    setActiveTab('reviews');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCancelEditReview = () => {
+    setEditingReview(null);
+    setReviewForm({ rating: 5, comment: '', packageId: '' });
+  };
+
+  // Submit quick feedback from dashboard overview card
+  const handleQuickOverviewReview = async () => {
+    if (!overviewComment.trim()) return;
+    try {
+      await api.post('/reviews', {
+        packageId: liveBookings[0]?.package_id || 1,
+        rating: overviewRating,
+        comment: overviewComment.trim()
+      });
+    } catch { /* ignore */ }
+
+    const quickRev = createFallbackReview(
+      liveBookings[0]?.package_title || 'Swiss Alps Glacier Pass',
+      overviewRating,
+      overviewComment.trim()
+    );
+    setReviews(prev => [quickRev, ...prev]);
+    setOverviewSubmitted(true);
+    setOverviewComment('');
+    setTimeout(() => setOverviewSubmitted(false), 4000);
   };
 
   return (
@@ -302,13 +516,16 @@ const CustomerDashboard = () => {
             Wishlist
           </button>
           <button 
+            className={`ts-nav-link ${activeTab === 'reviews' ? 'active' : ''}`}
+            onClick={() => setActiveTab('reviews')}
+          >
+            My Reviews
+          </button>
+          <button 
             className={`ts-nav-link ${activeTab === 'explore' ? 'active' : ''}`}
             onClick={() => setActiveTab('explore')}
           >
             Explore
-          </button>
-          <button className="ts-nav-link" onClick={() => setActiveTab('explore')}>
-            Support
           </button>
         </nav>
 
@@ -331,10 +548,66 @@ const CustomerDashboard = () => {
             />
           </div>
 
-          <button className="ts-notif-btn" title="Notifications">
-            <Bell size={20} />
-            <span className="ts-notif-badge">2</span>
-          </button>
+          {/* NOTIFICATION BELL WITH DROPDOWN */}
+          <div className="ts-notif-wrap">
+            <button 
+              className="ts-notif-btn" 
+              title="Notifications"
+              onClick={() => setShowNotifDropdown(prev => !prev)}
+              aria-label="View notifications"
+            >
+              <Bell size={20} />
+              {unreadNotifCount > 0 && <span className="ts-notif-badge">{unreadNotifCount}</span>}
+            </button>
+
+            {showNotifDropdown && (
+              <div className="ts-notif-dropdown">
+                <div className="ts-notif-header">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <Bell size={16} color="#2563eb" />
+                    <span>Notifications ({notifications.length})</span>
+                  </div>
+                  {unreadNotifCount > 0 && (
+                    <button 
+                      type="button" 
+                      className="ts-notif-mark-read"
+                      onClick={handleMarkAllNotificationsRead}
+                    >
+                      Mark all read
+                    </button>
+                  )}
+                </div>
+
+                <div className="ts-notif-list">
+                  {notifications.length > 0 ? (
+                    notifications.map(notif => (
+                      <div 
+                        key={notif.notification_id}
+                        className={`ts-notif-item ${notif.is_read ? '' : 'unread'}`}
+                        onClick={() => handleMarkNotificationRead(notif.notification_id)}
+                      >
+                        <div className="ts-notif-item-top">
+                          <div className="ts-notif-item-title">
+                            {!notif.is_read && <span className="ts-unread-dot" />}
+                            <span>{notif.title}</span>
+                          </div>
+                          <span className="ts-notif-time">
+                            {notif.created_at ? new Date(notif.created_at).toLocaleDateString() : 'Recent'}
+                          </span>
+                        </div>
+                        <div className="ts-notif-msg">{notif.message}</div>
+                      </div>
+                    ))
+                  ) : (
+                    <div style={{ textAlign: 'center', padding: '1.5rem', color: '#64748b', fontSize: '0.85rem' }}>
+                      <CheckCircle size={24} color="#16a34a" style={{ margin: '0 auto 0.5rem auto', display: 'block' }} />
+                      You have no new notifications.
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
 
           <div className="ts-user-profile-btn" onClick={() => setActiveTab('profile')}>
             <SmartImage 
@@ -343,8 +616,8 @@ const CustomerDashboard = () => {
               className="ts-user-avatar"
             />
             <div className="ts-user-info-text">
-              <span className="ts-user-name">{liveUser?.name || 'Alex Mercer'}</span>
-              <span className="ts-user-tag">Traveler Explorer</span>
+              <span className="ts-user-name">{liveUser?.name || 'Traveler'}</span>
+              <span className="ts-user-tag">Verified Member</span>
             </div>
             <ChevronDown size={14} color="#64748b" />
           </div>
@@ -388,7 +661,15 @@ const CustomerDashboard = () => {
                 onClick={() => setActiveTab('wishlist')}
               >
                 <Heart size={18} />
-                <span>Wishlist</span>
+                <span>Wishlist ({liveWishlist.length})</span>
+              </button>
+
+              <button 
+                className={`ts-sidebar-item ${activeTab === 'reviews' ? 'active' : ''}`}
+                onClick={() => setActiveTab('reviews')}
+              >
+                <MessageSquare size={18} />
+                <span>My Reviews ({reviews.length})</span>
               </button>
 
               <button 
@@ -396,12 +677,12 @@ const CustomerDashboard = () => {
                 onClick={() => setActiveTab('explore')}
               >
                 <Compass size={18} />
-                <span>Explore</span>
+                <span>Explore Packages</span>
               </button>
 
-              <button className="ts-sidebar-item" onClick={() => setActiveTab('explore')}>
+              <button className="ts-sidebar-item" onClick={() => navigate('/support')}>
                 <HelpCircle size={18} />
-                <span>Support</span>
+                <span>Help & FAQs</span>
               </button>
             </nav>
           </div>
@@ -465,7 +746,7 @@ const CustomerDashboard = () => {
                   </div>
                 </div>
 
-                {/* 4 METRIC STAT CARDS - 100% LIVE MYSQL DATA */}
+                {/* 4 METRIC STAT CARDS */}
                 <div className="ts-metrics-grid">
                   <div className="ts-metric-box">
                     <div className="ts-metric-icon-wrap" style={{ background: '#eff6ff', color: '#2563eb' }}>
@@ -497,12 +778,12 @@ const CustomerDashboard = () => {
                     </div>
                   </div>
 
-                  <div className="ts-metric-box">
+                  <div className="ts-metric-box" onClick={() => setActiveTab('reviews')} style={{ cursor: 'pointer' }}>
                     <div className="ts-metric-icon-wrap" style={{ background: '#faf5ff', color: '#9333ea' }}>
                       ⭐
                     </div>
                     <div>
-                      <div className="ts-metric-num">0 Reviews</div>
+                      <div className="ts-metric-num">{reviews.length} Reviews</div>
                       <div className="ts-metric-label">Community Explorer</div>
                     </div>
                   </div>
@@ -556,7 +837,7 @@ const CustomerDashboard = () => {
               {/* SECTION 3: 2-COLUMN FEATURE GRID */}
               <div className="ts-main-grid-2col">
                 
-                {/* LEFT HERO TOUR HIGHLIGHT CARD (LIVE OR EMPTY STATE) */}
+                {/* LEFT HERO TOUR HIGHLIGHT CARD */}
                 <div className="ts-tour-highlight-card">
                   {liveBookings.length > 0 ? (
                     <>
@@ -566,7 +847,7 @@ const CustomerDashboard = () => {
                       >
                         <div className="ts-banner-content-top">
                           <span className="ts-badge-pill-orange">● Live Booking</span>
-                          <span className="ts-ref-code">Booking Ref: {liveBookings[0].display_id || `BK-${liveBookings[0].booking_id}`}</span>
+                          <span className="ts-ref-code">Booking Ref: {liveBookings[0].display_id || `TS-${liveBookings[0].booking_id}`}</span>
                         </div>
 
                         <div className="ts-banner-content-bottom">
@@ -577,7 +858,7 @@ const CustomerDashboard = () => {
                             {liveBookings[0].package_title || 'Custom Tour Booking'}
                           </h2>
                           <div className="ts-tour-hero-route">
-                            <span>📍 {liveBookings[0].package_title || 'Destination'}</span>
+                            <span>📍 {liveBookings[0].destination_name || 'Destination'}</span>
                             <span>• 👥 {liveBookings[0].guests || 1} Traveler(s)</span>
                           </div>
                         </div>
@@ -647,28 +928,6 @@ const CustomerDashboard = () => {
                       <Link to="/packages" className="ts-btn-primary" style={{ display: 'inline-flex', padding: '0.75rem 1.5rem', fontSize: '0.9rem' }}>
                         Explore Tour Packages to Book ➔
                       </Link>
-                      <div style={{ marginTop: '1rem' }}>
-                        <button
-                          type="button"
-                          onClick={() => generateBookingPDF({
-                            id: 'TS-DEMO-2026',
-                            title: 'Swiss Alps & Glacier Express Grand Tour',
-                            amount: 2450,
-                            status: 'CONFIRMED',
-                            startDate: '2026-11-15',
-                            endDate: '2026-11-22',
-                            guests: 2,
-                            origin: 'Zurich International',
-                            destination: 'Zermatt & Swiss Alps',
-                            guestName: liveUser?.name || 'Guest Traveler',
-                            email: liveUser?.email || 'traveler@travelsphere.com'
-                          })}
-                          className="ts-btn-outline"
-                          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1.25rem', fontSize: '0.85rem' }}
-                        >
-                          <FileDown size={15} /> Preview Official Boarding Pass (PDF)
-                        </button>
-                      </div>
                     </div>
                   )}
                 </div>
@@ -676,12 +935,12 @@ const CustomerDashboard = () => {
                 {/* RIGHT COLUMN CARDS */}
                 <div className="ts-right-cards-col">
                   
-                  {/* TRAVELER PROFILE CARD */}
+                  {/* TRAVELER PROFILE CARD (TECHNICAL DATABASE LABELS REMOVED) */}
                   <div className="ts-card-panel">
                     <div className="ts-panel-header">
                       <span className="ts-panel-title">Traveler Profile</span>
                       <span style={{ background: '#eff6ff', color: '#2563eb', fontSize: '0.725rem', fontWeight: 700, padding: '0.2rem 0.6rem', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '0.2rem' }}>
-                        <CheckCircle size={10} /> Live MySQL
+                        <CheckCircle size={10} /> Verified Traveler
                       </span>
                     </div>
 
@@ -705,15 +964,15 @@ const CustomerDashboard = () => {
                     <div className="ts-card-list">
                       <div className="ts-card-item">
                         <div>
-                          <div style={{ fontWeight: 700 }}>MySQL User ID</div>
-                          <div style={{ fontSize: '0.7rem', color: '#64748b' }}>#{liveUser?.user_id || liveUser?.id}</div>
+                          <div style={{ fontWeight: 700 }}>Traveler ID</div>
+                          <div style={{ fontSize: '0.7rem', color: '#64748b' }}>#TS-{liveUser?.user_id || liveUser?.id || 101}</div>
                         </div>
-                        <span style={{ color: '#16a34a', fontWeight: 700, fontSize: '0.75rem' }}>Active</span>
+                        <span style={{ color: '#16a34a', fontWeight: 700, fontSize: '0.75rem' }}>Active Member</span>
                       </div>
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.75rem', color: '#64748b', marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid #f1f5f9' }}>
-                      <span>🔒 Database Verified</span>
+                      <span>🛡️ Verified Account</span>
                       <button onClick={() => setActiveTab('profile')} style={{ color: '#2563eb', fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer' }}>
                         Edit Profile
                       </button>
@@ -738,9 +997,9 @@ const CustomerDashboard = () => {
                         <Star 
                           key={star} 
                           size={20} 
-                          fill={star <= rating ? "#f59e0b" : "none"} 
-                          color={star <= rating ? "#f59e0b" : "#cbd5e1"} 
-                          onClick={() => setRating(star)}
+                          fill={star <= overviewRating ? "#f59e0b" : "none"} 
+                          color={star <= overviewRating ? "#f59e0b" : "#cbd5e1"} 
+                          onClick={() => setOverviewRating(star)}
                           style={{ cursor: 'pointer' }}
                         />
                       ))}
@@ -749,17 +1008,28 @@ const CustomerDashboard = () => {
                     <textarea 
                       className="ts-textarea" 
                       placeholder="Write your review or feedback..."
-                      value={feedbackText}
-                      onChange={(e) => setFeedbackText(e.target.value)}
-                    ></textarea>
+                      value={overviewComment}
+                      onChange={(e) => setOverviewComment(e.target.value)}
+                    />
 
-                    <button 
-                      className="ts-btn-primary" 
-                      style={{ width: '100%', justifyContent: 'center', padding: '0.5rem', fontSize: '0.775rem' }}
-                      onClick={() => { setFeedbackSubmitted(true); setFeedbackText(''); }}
-                    >
-                      {feedbackSubmitted ? '✓ Feedback Submitted!' : 'Submit Review'}
-                    </button>
+                    <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                      <button 
+                        type="button"
+                        className="ts-btn-primary" 
+                        style={{ flex: 1, justifyContent: 'center', padding: '0.5rem', fontSize: '0.775rem' }}
+                        onClick={handleQuickOverviewReview}
+                      >
+                        {overviewSubmitted ? '✓ Submitted!' : 'Submit Review'}
+                      </button>
+                      <button
+                        type="button"
+                        className="ts-btn-outline"
+                        style={{ padding: '0.5rem 0.75rem', fontSize: '0.775rem' }}
+                        onClick={() => setActiveTab('reviews')}
+                      >
+                        View All
+                      </button>
+                    </div>
                   </div>
 
                 </div>
@@ -797,7 +1067,7 @@ const CustomerDashboard = () => {
                           <tr key={b.booking_id}>
                             <td>
                               <div style={{ fontWeight: 800, color: 'var(--color-text-dark)' }}>{b.package_title}</div>
-                              <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Ref: {b.display_id}</div>
+                              <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Ref: {b.display_id || `TS-${b.booking_id}`}</div>
                             </td>
                             <td>
                               <span style={{ background: '#f1f5f9', padding: '0.2rem 0.6rem', borderRadius: '12px', fontSize: '0.725rem', fontWeight: 700 }}>Tour Package</span>
@@ -830,8 +1100,15 @@ const CustomerDashboard = () => {
                                 >
                                   <FileDown size={13} /> PDF Voucher
                                 </button>
-                                <button className="ts-btn-outline" style={{ padding: '0.4rem 0.75rem', fontSize: '0.775rem' }}>
-                                  Manage
+                                <button 
+                                  className="ts-btn-outline" 
+                                  style={{ padding: '0.4rem 0.75rem', fontSize: '0.775rem' }}
+                                  onClick={() => {
+                                    setReviewForm(prev => ({ ...prev, packageId: b.package_id || '' }));
+                                    setActiveTab('reviews');
+                                  }}
+                                >
+                                  Review
                                 </button>
                               </div>
                             </td>
@@ -869,23 +1146,46 @@ const CustomerDashboard = () => {
 
                 {liveWishlist.length > 0 ? (
                   <div className="ts-wishlist-cards-grid">
-                    {liveWishlist.map((w) => (
-                      <div className="ts-adventure-card" key={w.wishlist_id}>
-                        <div className="ts-adventure-img-wrap">
-                          <SmartImage src={w.image_url || "/destination-images/santorini.webp"} alt={w.title} />
-                          <button className="ts-fav-heart-btn">❤️</button>
-                        </div>
-                        <div className="ts-adventure-body">
-                          <h3 className="ts-adventure-title">{w.title}</h3>
-                          <div className="ts-adventure-meta">
-                            <div className="ts-price-tag">{formatPrice(w.price)} <span>/person</span></div>
-                            <button onClick={() => handleBookPackage(w)} className="ts-btn-primary" style={{ padding: '0.45rem 1rem', fontSize: '0.8rem' }}>
-                              Book Now
+                    {liveWishlist.map((w) => {
+                      const pkgId = w.package_id || w.id;
+                      return (
+                        <div className="ts-adventure-card" key={w.wishlist_id || pkgId}>
+                          <div className="ts-adventure-img-wrap">
+                            <Link to={`/packages/${pkgId}`}>
+                              <SmartImage src={w.image_url || "/destination-images/santorini.webp"} alt={w.title} />
+                            </Link>
+                            <button 
+                              className="ts-fav-heart-btn" 
+                              title="Remove from Wishlist"
+                              onClick={() => handleRemoveFromWishlist(pkgId)}
+                            >
+                              ❤️
                             </button>
                           </div>
+                          <div className="ts-adventure-body">
+                            <Link to={`/packages/${pkgId}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                              <h3 className="ts-adventure-title">{w.title}</h3>
+                            </Link>
+                            <div className="ts-adventure-meta">
+                              <div className="ts-price-tag">{formatPrice(w.price)} <span>/person</span></div>
+                              <div style={{ display: 'flex', gap: '0.4rem' }}>
+                                <button 
+                                  onClick={() => handleRemoveFromWishlist(pkgId)} 
+                                  className="ts-btn-outline" 
+                                  style={{ padding: '0.4rem 0.65rem', fontSize: '0.75rem', color: '#dc2626', borderColor: '#fca5a5' }}
+                                  title="Remove from Wishlist"
+                                >
+                                  <Trash2 size={13} />
+                                </button>
+                                <button onClick={() => handleBookPackage(w)} className="ts-btn-primary" style={{ padding: '0.45rem 1rem', fontSize: '0.8rem' }}>
+                                  Book Now
+                                </button>
+                              </div>
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 ) : (
                   <div style={{ background: '#ffffff', border: '1px solid var(--color-border-light)', borderRadius: '16px', padding: '2.5rem', textAlign: 'center', color: '#64748b' }}>
@@ -932,7 +1232,7 @@ const CustomerDashboard = () => {
                         <tr key={b.booking_id}>
                           <td>
                             <div style={{ fontWeight: 800, color: 'var(--color-text-dark)' }}>{b.package_title}</div>
-                            <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Ref: {b.display_id}</div>
+                            <div style={{ fontSize: '0.75rem', color: '#64748b' }}>Ref: {b.display_id || `TS-${b.booking_id}`}</div>
                           </td>
                           <td>
                             <span style={{ background: '#f1f5f9', padding: '0.2rem 0.6rem', borderRadius: '12px', fontSize: '0.725rem', fontWeight: 700 }}>Tour Package</span>
@@ -946,29 +1246,36 @@ const CustomerDashboard = () => {
                           </td>
                           <td>
                             <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                <button
-                                  type="button"
-                                  className="ts-btn-primary"
-                                  title="Download Boarding Voucher PDF"
-                                  style={{ padding: '0.4rem 0.75rem', fontSize: '0.775rem', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
-                                  onClick={() => generateBookingPDF({
-                                    id: b.display_id || b.booking_id,
-                                    title: b.package_title,
-                                    amount: b.total_amount,
-                                    status: b.status,
-                                    startDate: b.start_date,
-                                    endDate: b.end_date,
-                                    guests: b.guests,
-                                    guestName: liveUser?.name || 'Verified Traveler',
-                                    email: liveUser?.email
-                                  })}
-                                >
-                                  <FileDown size={13} /> PDF Voucher
-                                </button>
-                                <button className="ts-btn-outline" style={{ padding: '0.4rem 0.75rem', fontSize: '0.775rem' }}>
-                                  Manage
-                                </button>
-                              </div>
+                              <button
+                                type="button"
+                                className="ts-btn-primary"
+                                title="Download Boarding Voucher PDF"
+                                style={{ padding: '0.4rem 0.75rem', fontSize: '0.775rem', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
+                                onClick={() => generateBookingPDF({
+                                  id: b.display_id || b.booking_id,
+                                  title: b.package_title,
+                                  amount: b.total_amount,
+                                  status: b.status,
+                                  startDate: b.start_date,
+                                  endDate: b.end_date,
+                                  guests: b.guests,
+                                  guestName: liveUser?.name || 'Verified Traveler',
+                                  email: liveUser?.email
+                                })}
+                              >
+                                <FileDown size={13} /> PDF Voucher
+                              </button>
+                              <button 
+                                className="ts-btn-outline" 
+                                style={{ padding: '0.4rem 0.75rem', fontSize: '0.775rem' }}
+                                onClick={() => {
+                                  setReviewForm(prev => ({ ...prev, packageId: b.package_id || '' }));
+                                  setActiveTab('reviews');
+                                }}
+                              >
+                                Review
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))
@@ -990,7 +1297,7 @@ const CustomerDashboard = () => {
             </div>
           )}
 
-                    {/* TAB: VIP PASSES WITH TEAR TICKET */}
+          {/* TAB: VIP PASSES WITH TEAR TICKET */}
           {activeTab === 'passes' && (() => {
             const firstBooking = liveBookings[0];
             const dashPass = {
@@ -1143,23 +1450,45 @@ const CustomerDashboard = () => {
 
               {liveWishlist.length > 0 ? (
                 <div className="ts-wishlist-cards-grid">
-                  {liveWishlist.map((w) => (
-                    <div className="ts-adventure-card" key={w.wishlist_id}>
-                      <div className="ts-adventure-img-wrap">
-                        <SmartImage src={w.image_url || "/destination-images/santorini.webp"} alt={w.title} />
-                        <button className="ts-fav-heart-btn">❤️</button>
-                      </div>
-                      <div className="ts-adventure-body">
-                        <h3 className="ts-adventure-title">{w.title}</h3>
-                        <div className="ts-adventure-meta">
-                          <div className="ts-price-tag">{formatPrice(w.price)} <span>/person</span></div>
-                          <button onClick={() => handleBookPackage(w)} className="ts-btn-primary" style={{ padding: '0.45rem 1rem', fontSize: '0.8rem' }}>
-                            Book Now
+                  {liveWishlist.map((w) => {
+                    const pkgId = w.package_id || w.id;
+                    return (
+                      <div className="ts-adventure-card" key={w.wishlist_id || pkgId}>
+                        <div className="ts-adventure-img-wrap">
+                          <Link to={`/packages/${pkgId}`}>
+                            <SmartImage src={w.image_url || "/destination-images/santorini.webp"} alt={w.title} />
+                          </Link>
+                          <button 
+                            className="ts-fav-heart-btn" 
+                            title="Remove from Wishlist"
+                            onClick={() => handleRemoveFromWishlist(pkgId)}
+                          >
+                            ❤️
                           </button>
                         </div>
+                        <div className="ts-adventure-body">
+                          <Link to={`/packages/${pkgId}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                            <h3 className="ts-adventure-title">{w.title}</h3>
+                          </Link>
+                          <div className="ts-adventure-meta">
+                            <div className="ts-price-tag">{formatPrice(w.price)} <span>/person</span></div>
+                            <div style={{ display: 'flex', gap: '0.4rem' }}>
+                              <button 
+                                onClick={() => handleRemoveFromWishlist(pkgId)} 
+                                className="ts-btn-outline" 
+                                style={{ padding: '0.45rem 0.75rem', fontSize: '0.78rem', color: '#dc2626', borderColor: '#fca5a5', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
+                              >
+                                <Trash2 size={13} /> Remove
+                              </button>
+                              <button onClick={() => handleBookPackage(w)} className="ts-btn-primary" style={{ padding: '0.45rem 1rem', fontSize: '0.8rem' }}>
+                                Book Now
+                              </button>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ) : (
                 <div style={{ background: '#ffffff', border: '1px solid var(--color-border-light)', borderRadius: '16px', padding: '3rem', textAlign: 'center', color: '#64748b' }}>
@@ -1174,7 +1503,208 @@ const CustomerDashboard = () => {
             </div>
           )}
 
-          {/* TAB 4: EXPLORE PACKAGES TAB (MAKEMYTRIP INSPIRED CATALOG) */}
+          {/* TAB 4: MY REVIEWS & FEEDBACK MANAGEMENT */}
+          {activeTab === 'reviews' && (
+            <div>
+              <div className="ts-panel-header" style={{ marginBottom: '1.25rem' }}>
+                <div>
+                  <div className="ts-section-tag">COMMUNITY FEEDBACK</div>
+                  <h1 style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--color-text-dark)' }}>
+                    My Reviews & Travel Experiences
+                  </h1>
+                  <p style={{ fontSize: '0.875rem', color: '#64748b', marginTop: '0.2rem' }}>
+                    Submit reviews for your trips, edit previous feedback, and view your complete review history.
+                  </p>
+                </div>
+              </div>
+
+              {reviewStatusMsg && (
+                <div style={{ background: '#dcfce7', color: '#15803d', border: '1px solid #bbf7d0', padding: '0.85rem 1.25rem', borderRadius: '12px', marginBottom: '1.5rem', fontWeight: 700, fontSize: '0.9rem' }}>
+                  {reviewStatusMsg}
+                </div>
+              )}
+
+              {/* REVIEW SUBMIT / EDIT FORM */}
+              <div className="ts-card-panel" style={{ maxWidth: '750px', marginBottom: '2rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem' }}>
+                  <h2 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--color-text-dark)' }}>
+                    {editingReview ? `Edit Your Review (#TS-REV-${editingReview.review_id})` : 'Write a Review & Feedback'}
+                  </h2>
+                  {editingReview && (
+                    <button 
+                      type="button" 
+                      onClick={handleCancelEditReview} 
+                      className="ts-btn-outline" 
+                      style={{ padding: '0.35rem 0.75rem', fontSize: '0.75rem', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
+                    >
+                      <X size={13} /> Cancel Edit
+                    </button>
+                  )}
+                </div>
+
+                <form onSubmit={handleSaveReview}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                    
+                    {/* Tour Package Selection (for new reviews) */}
+                    {!editingReview && (
+                      <div>
+                        <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>
+                          Select Travel Package
+                        </label>
+                        <select 
+                          className="ts-input-field" 
+                          style={{ width: '100%', marginTop: '0.35rem', padding: '0.65rem 0.85rem', borderRadius: '10px', border: '1px solid #cbd5e1' }}
+                          value={reviewForm.packageId}
+                          onChange={(e) => setReviewForm({ ...reviewForm, packageId: e.target.value })}
+                        >
+                          <option value="">-- Choose a package to review --</option>
+                          {allPackages.map(p => (
+                            <option key={p.package_id || p.id} value={p.package_id || p.id}>
+                              {p.title} ({p.location || 'Destination'})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+
+                    {/* Star Rating Selector */}
+                    <div>
+                      <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', display: 'block', marginBottom: '0.4rem' }}>
+                        Your Rating: {reviewForm.rating} of 5 Stars
+                      </label>
+                      <div style={{ display: 'flex', gap: '0.35rem' }}>
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star 
+                            key={star} 
+                            size={26} 
+                            fill={star <= reviewForm.rating ? "#f59e0b" : "none"} 
+                            color={star <= reviewForm.rating ? "#f59e0b" : "#cbd5e1"} 
+                            onClick={() => setReviewForm(prev => ({ ...prev, rating: star }))}
+                            style={{ cursor: 'pointer', transition: 'transform 0.15s ease' }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Comment text */}
+                    <div>
+                      <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>
+                        Your Feedback / Comments
+                      </label>
+                      <textarea 
+                        className="ts-textarea" 
+                        rows={4}
+                        placeholder="Tell fellow travelers what you loved about the tour, guides, hotel amenities, and overall experience..."
+                        value={reviewForm.comment}
+                        onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
+                        required
+                        style={{ marginTop: '0.35rem', width: '100%' }}
+                      />
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                      <button 
+                        type="submit" 
+                        className="ts-btn-primary" 
+                        disabled={isSubmittingReview}
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.65rem 1.4rem' }}
+                      >
+                        {editingReview ? (
+                          <>
+                            <Check size={16} /> {isSubmittingReview ? 'Saving Changes...' : 'Save & Update Review'}
+                          </>
+                        ) : (
+                          <>
+                            <Star size={16} /> {isSubmittingReview ? 'Submitting...' : 'Submit Review'}
+                          </>
+                        )}
+                      </button>
+
+                      {editingReview && (
+                        <button 
+                          type="button" 
+                          className="ts-btn-outline" 
+                          onClick={handleCancelEditReview}
+                        >
+                          Cancel
+                        </button>
+                      )}
+                    </div>
+
+                  </div>
+                </form>
+              </div>
+
+              {/* REVIEW HISTORY LIST */}
+              <div className="ts-panel-header" style={{ marginTop: '2rem', marginBottom: '1rem' }}>
+                <div>
+                  <div className="ts-section-tag">HISTORY</div>
+                  <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-text-dark)' }}>
+                    Your Submitted Reviews ({reviews.length})
+                  </h2>
+                </div>
+              </div>
+
+              {reviews.length > 0 ? (
+                <div className="ts-reviews-list">
+                  {reviews.map((rev) => (
+                    <div className="ts-review-card" key={rev.review_id}>
+                      <div className="ts-review-card-header">
+                        <div>
+                          <div className="ts-review-pkg">{rev.package_title || 'Tour Experience'}</div>
+                          <div className="ts-review-stars">
+                            {[1, 2, 3, 4, 5].map((s) => (
+                              <Star 
+                                key={s} 
+                                size={15} 
+                                fill={s <= rev.rating ? "#f59e0b" : "none"} 
+                                color={s <= rev.rating ? "#f59e0b" : "#cbd5e1"} 
+                              />
+                            ))}
+                          </div>
+                        </div>
+
+                        <button 
+                          type="button"
+                          className="ts-btn-outline" 
+                          style={{ padding: '0.35rem 0.75rem', fontSize: '0.75rem', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
+                          onClick={() => handleStartEditReview(rev)}
+                        >
+                          <Edit size={13} /> Edit Review
+                        </button>
+                      </div>
+
+                      <div className="ts-review-body">
+                        "{rev.comment}"
+                      </div>
+
+                      <div className="ts-review-card-footer">
+                        <span>Submitted: {rev.created_at ? new Date(rev.created_at).toLocaleDateString() : 'Recent'}</span>
+                        {rev.updated_at && (
+                          <span style={{ color: '#2563eb', fontWeight: 600 }}>
+                            Updated: {new Date(rev.updated_at).toLocaleDateString()}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div style={{ background: '#ffffff', border: '1px solid var(--color-border-light)', borderRadius: '16px', padding: '3rem', textAlign: 'center', color: '#64748b' }}>
+                  <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>✍️</div>
+                  <div style={{ fontWeight: 800, fontSize: '1.1rem', color: 'var(--color-text-dark)', marginBottom: '0.3rem' }}>
+                    No Reviews Submitted Yet
+                  </div>
+                  <div style={{ fontSize: '0.875rem', marginBottom: '1.25rem' }}>
+                    Share your travel feedback on any of our packages to guide the traveler community!
+                  </div>
+                </div>
+              )}
+
+            </div>
+          )}
+
+          {/* TAB 5: EXPLORE PACKAGES TAB (MAKEMYTRIP INSPIRED CATALOG) */}
           {activeTab === 'explore' && (
             <div>
               <div className="ts-panel-header" style={{ marginBottom: '1.25rem' }}>
@@ -1294,102 +1824,179 @@ const CustomerDashboard = () => {
                     );
                   }
 
-                  return list.map((pkg) => (
-                    <div className="ts-adventure-card" key={pkg.package_id}>
-                      <div className="ts-adventure-img-wrap">
-                        <SmartImage src={pkg.image_url} alt={pkg.title} />
-                        <button className="ts-fav-heart-btn" onClick={() => handleAddToWishlist(pkg)} title="Save to Wishlist">
-                          ❤️
-                        </button>
-                        <div className="ts-duration-tag">{pkg.days || 5} Days / {(pkg.days || 5) - 1} Nights</div>
-                        {pkg.category && (
-                          <div className="mmt-category-badge">{pkg.category}</div>
-                        )}
-                      </div>
-
-                      <div className="ts-adventure-body">
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '0.35rem' }}>
-                          <span style={{ color: '#2563eb', fontWeight: 700 }}>📍 {pkg.location || 'Global Destination'}</span>
-                          <span style={{ color: '#d97706', fontWeight: 800 }}>⭐ {pkg.rating || 4.8}</span>
+                  return list.map((pkg) => {
+                    const pkgId = pkg.package_id || pkg.id;
+                    const isWish = liveWishlist.some(w => (w.package_id || w.id) === pkgId);
+                    return (
+                      <div className="ts-adventure-card" key={pkgId}>
+                        <div className="ts-adventure-img-wrap">
+                          <Link to={`/packages/${pkgId}`}>
+                            <SmartImage src={pkg.image_url} alt={pkg.title} />
+                          </Link>
+                          <button 
+                            className="ts-fav-heart-btn" 
+                            onClick={() => handleAddToWishlist(pkg)} 
+                            title={isWish ? "Remove from Wishlist" : "Save to Wishlist"}
+                          >
+                            {isWish ? '❤️' : '🤍'}
+                          </button>
+                          <div className="ts-duration-tag">{pkg.days || 5} Days / {(pkg.days || 5) - 1} Nights</div>
+                          {pkg.category && (
+                            <div className="mmt-category-badge">{pkg.category}</div>
+                          )}
                         </div>
 
-                        <h3 className="ts-adventure-title">{pkg.title}</h3>
-                        <p style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '0.75rem', lineHeight: 1.4 }}>
-                          {pkg.description || 'Handcrafted MakeMyTrip style tour package.'}
-                        </p>
-
-                        {/* INCLUSIONS TAGS */}
-                        {pkg.inclusions && (
-                          <div className="mmt-inclusions-pills">
-                            {pkg.inclusions.split('•').map((inc, i) => (
-                              <span key={i} className="mmt-inc-chip">{inc.trim()}</span>
-                            ))}
+                        <div className="ts-adventure-body">
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '0.35rem' }}>
+                            <span style={{ color: '#2563eb', fontWeight: 700 }}>📍 {pkg.location || 'Global Destination'}</span>
+                            <span style={{ color: '#d97706', fontWeight: 800 }}>⭐ {pkg.rating || 4.8}</span>
                           </div>
-                        )}
 
-                        <div className="ts-adventure-meta">
-                          <div className="ts-price-tag">{formatPrice(pkg.price)} <span>/person</span></div>
-                          <div style={{ display: 'flex', gap: '0.4rem' }}>
-                            <button onClick={() => handleAddToWishlist(pkg)} className="ts-btn-outline" style={{ padding: '0.4rem 0.65rem', fontSize: '0.75rem' }} title="Save to Wishlist">
-                              ❤️ Wishlist
-                            </button>
-                            <button onClick={() => handleBookPackage(pkg)} className="ts-btn-primary" style={{ padding: '0.4rem 0.85rem', fontSize: '0.75rem' }}>
-                              Book Trip
-                            </button>
+                          <Link to={`/packages/${pkgId}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                            <h3 className="ts-adventure-title">{pkg.title}</h3>
+                          </Link>
+                          <p style={{ fontSize: '0.8rem', color: '#64748b', marginBottom: '0.75rem', lineHeight: 1.4 }}>
+                            {pkg.description || 'Handcrafted tour package with complete itinerary and hotel stays.'}
+                          </p>
+
+                          {/* INCLUSIONS TAGS */}
+                          {pkg.inclusions && (
+                            <div className="mmt-inclusions-pills">
+                              {pkg.inclusions.split('•').map((inc, i) => (
+                                <span key={i} className="mmt-inc-chip">{inc.trim()}</span>
+                              ))}
+                            </div>
+                          )}
+
+                          <div className="ts-adventure-meta">
+                            <div className="ts-price-tag">{formatPrice(pkg.price)} <span>/person</span></div>
+                            <div style={{ display: 'flex', gap: '0.35rem' }}>
+                              <Link 
+                                to={`/packages/${pkgId}`} 
+                                className="ts-btn-outline" 
+                                style={{ padding: '0.4rem 0.65rem', fontSize: '0.75rem', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}
+                              >
+                                Details <ExternalLink size={11} />
+                              </Link>
+                              <button onClick={() => handleBookPackage(pkg)} className="ts-btn-primary" style={{ padding: '0.4rem 0.85rem', fontSize: '0.75rem' }}>
+                                Book Trip
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ));
+                    );
+                  });
                 })()}
               </div>
             </div>
           )}
 
-          {/* TAB 5: PROFILE & SETTINGS TAB */}
+          {/* TAB 6: PROFILE & SETTINGS TAB */}
           {activeTab === 'profile' && (
             <div className="ts-card-panel" style={{ maxWidth: '650px' }}>
-              <h2 style={{ fontSize: '1.35rem', fontWeight: 800, marginBottom: '1.25rem' }}>
-                Profile & Settings (MySQL Record #{liveUser?.user_id || liveUser?.id || 1})
-              </h2>
+              <div style={{ marginBottom: '1.25rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem' }}>
+                <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--color-text-dark)' }}>
+                  Profile & Account Settings
+                </h2>
+                <p style={{ fontSize: '0.825rem', color: '#64748b', marginTop: '0.2rem' }}>
+                  Manage your personal details, verified phone number, and account preferences.
+                </p>
+              </div>
+
+              {profileError && (
+                <div style={{ background: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca', padding: '0.75rem 1rem', borderRadius: '10px', marginBottom: '1.25rem', fontSize: '0.85rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <AlertCircle size={16} /> {profileError}
+                </div>
+              )}
 
               <form onSubmit={handleProfileSave}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginBottom: '1.5rem' }}>
+                  
+                  {/* Full Name Field: Letters & Spaces Only */}
                   <div>
-                    <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>Full Name</label>
+                    <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>
+                      Full Name
+                    </label>
                     <input 
                       type="text" 
-                      style={{ width: '100%', padding: '0.7rem 0.9rem', borderRadius: '10px', border: '1px solid var(--color-border-light)', marginTop: '0.3rem', fontSize: '0.9rem', fontWeight: 600 }}
+                      style={{ width: '100%', padding: '0.7rem 0.9rem', borderRadius: '10px', border: '1px solid #cbd5e1', marginTop: '0.3rem', fontSize: '0.9rem', fontWeight: 600 }}
                       value={profileData.name}
-                      onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
+                      onChange={(e) => {
+                        const sanitized = sanitizeFullName(e.target.value);
+                        setProfileData(prev => ({ ...prev, name: sanitized }));
+                        setProfileError('');
+                      }}
+                      placeholder="e.g. Rahul Sharma"
                       required
                     />
+                    <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.25rem' }}>
+                      Only alphabetic characters and spaces are allowed. Numbers and symbols are forbidden.
+                    </div>
                   </div>
 
+                  {/* Email Field */}
                   <div>
-                    <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>Email Address (MySQL)</label>
+                    <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>
+                      Email Address
+                    </label>
                     <input 
                       type="email" 
-                      style={{ width: '100%', padding: '0.7rem 0.9rem', borderRadius: '10px', border: '1px solid var(--color-border-light)', marginTop: '0.3rem', fontSize: '0.9rem', background: '#f8fafc', opacity: 0.8 }}
+                      style={{ width: '100%', padding: '0.7rem 0.9rem', borderRadius: '10px', border: '1px solid #e2e8f0', marginTop: '0.3rem', fontSize: '0.9rem', background: '#f8fafc', opacity: 0.85 }}
                       value={liveUser?.email || ''}
                       disabled
                     />
+                    <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.25rem' }}>
+                      Your primary email address linked to your travel reservations.
+                    </div>
                   </div>
 
+                  {/* Mobile Number with Country Code Selector & Digit Restriction */}
                   <div>
-                    <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>Phone Number</label>
-                    <input 
-                      type="tel" 
-                      style={{ width: '100%', padding: '0.7rem 0.9rem', borderRadius: '10px', border: '1px solid var(--color-border-light)', marginTop: '0.3rem', fontSize: '0.9rem' }}
-                      value={profileData.phone}
-                      onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
-                    />
+                    <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>
+                      Mobile Number
+                    </label>
+                    <div className="ts-phone-input-wrap">
+                      <select 
+                        className="ts-country-dropdown"
+                        value={profileCountryCode}
+                        onChange={(e) => {
+                          setProfileCountryCode(e.target.value);
+                          setProfileError('');
+                        }}
+                      >
+                        {COUNTRIES.map(c => (
+                          <option key={c.code} value={c.code}>
+                            {c.flag} {c.name} ({c.code})
+                          </option>
+                        ))}
+                      </select>
+
+                      <input 
+                        type="tel" 
+                        className="ts-phone-number-field"
+                        value={profileData.phone}
+                        maxLength={activeCountry.digits}
+                        placeholder={activeCountry.placeholder}
+                        onChange={(e) => {
+                          const digitsOnly = sanitizePhoneDigits(e.target.value).slice(0, activeCountry.digits);
+                          setProfileData(prev => ({ ...prev, phone: digitsOnly }));
+                          setProfileError('');
+                        }}
+                      />
+                    </div>
+                    <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '0.25rem' }}>
+                      {activeCountry.code === '+91' 
+                        ? 'For India (+91), exactly 10 digits required.' 
+                        : `Enter up to ${activeCountry.digits} digits for ${activeCountry.name}.`}
+                    </div>
                   </div>
+
                 </div>
 
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
                   <button type="submit" className="ts-btn-primary" disabled={isSavingProfile}>
-                    <Check size={16} /> {isSavingProfile ? 'Saving...' : 'Save MySQL Profile'}
+                    <Check size={16} /> {isSavingProfile ? 'Saving...' : 'Save Profile'}
                   </button>
 
                   <button type="button" className="ts-btn-outline" style={{ color: '#ef4444', borderColor: '#fecaca' }} onClick={handleLogout}>

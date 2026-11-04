@@ -8,6 +8,7 @@ import Home from '../pages/customer/Home';
 const Destinations = lazy(() => import('../pages/customer/Destinations'));
 const DestinationDetail = lazy(() => import('../pages/customer/DestinationDetail'));
 const TourPackages = lazy(() => import('../pages/customer/TourPackages'));
+const PackageDetail = lazy(() => import('../pages/customer/PackageDetail'));
 const Hotels = lazy(() => import('../pages/customer/Hotels'));
 const Vehicles = lazy(() => import('../pages/customer/Vehicles'));
 const About = lazy(() => import('../pages/customer/About'));
@@ -195,6 +196,7 @@ export default function AppRoutes() {
               <Route path="destinations" element={<Destinations />} />
               <Route path="destinations/:id" element={<DestinationDetail />} />
               <Route path="packages" element={<TourPackages />} />
+              <Route path="packages/:id" element={<PackageDetail />} />
               <Route path="itinerary-planner" element={<ItineraryPlanner />} />
               <Route path="trip-planner" element={<ItineraryPlanner />} />
               <Route path="ticket" element={<TicketShowcase />} />

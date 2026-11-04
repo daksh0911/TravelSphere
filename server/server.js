@@ -10,11 +10,15 @@ import {
   updateUserProfile, 
   createBooking, 
   addToWishlist, 
+  removeFromWishlist,
+  getWishlistByUser,
   getAllPackages, 
+  getPackageById,
   createSupportTicket, 
   listSupportTickets, 
   updateSupportTicketStatus,
   createReview,
+  updateReview,
   getReviewsByUser,
   getAllReviews,
   createContactMessage,
@@ -23,7 +27,8 @@ import {
   validateCoupon,
   createNotification,
   getNotificationsByUser,
-  markNotificationRead
+  markNotificationRead,
+  markAllNotificationsRead
 } from './db.js';
 
 const app = express();
@@ -107,16 +112,49 @@ app.get('/api/packages', async (req, res) => {
   catch (error) { console.error('Package query failed:', error.message); return safeError(res, 500, 'Failed to fetch packages.'); }
 });
 
+app.get('/api/packages/:id', async (req, res) => {
+  try {
+    const pkg = await getPackageById(req.params.id);
+    if (!pkg) return safeError(res, 404, 'Travel package not found.');
+    return res.json({ success: true, package: pkg });
+  } catch (error) {
+    console.error('Package detail query failed:', error.message);
+    return safeError(res, 500, 'Failed to fetch package details.');
+  }
+});
+
 app.post('/api/auth/register', rateLimit(15 * 60_000, 8, 'register'), async (req, res) => {
   try {
     const fullName = cleanText(req.body?.fullName, 100);
     const email = cleanText(req.body?.email, 254).toLowerCase();
     const phone = cleanText(req.body?.phone, 40);
     const country = cleanText(req.body?.country, 80);
+    const countryCode = cleanText(req.body?.countryCode, 10) || '+91';
     const password = typeof req.body?.password === 'string' ? req.body.password : '';
-    if (fullName.length < 2 || !validEmail(email) || password.length < 10 || password.length > 128) return safeError(res, 400, 'Use a valid name, email, and password of 10–128 characters.');
+
+    // Requirement 1: Full Name must accept only alphabetic characters and spaces
+    if (!/^[A-Za-z\s]{2,100}$/.test(fullName)) {
+      return safeError(res, 400, 'Full Name must accept only alphabetic characters and spaces (no numbers or special characters).');
+    }
+
+    if (!validEmail(email) || password.length < 8 || password.length > 128) {
+      return safeError(res, 400, 'Please provide a valid email and a strong password.');
+    }
+
+    // Requirement 1: Country-wise phone number validation
+    if (phone) {
+      const digitsOnly = phone.replace(/\D/g, '');
+      if (countryCode === '+91' && digitsOnly.length !== 10) {
+        return safeError(res, 400, 'Mobile Number for India (+91) must be exactly 10 digits.');
+      }
+      if (digitsOnly.length < 7 || digitsOnly.length > 15) {
+        return safeError(res, 400, 'Please enter a valid mobile number length for the selected country.');
+      }
+    }
+
     if (await findUserByEmail(email)) return safeError(res, 409, 'An account with this email address already exists.');
-    const newUser = await createUser({ name: fullName, email, password, phone, country });
+    const fullPhone = phone ? `${countryCode} ${phone.replace(/\D/g, '')}` : '';
+    const newUser = await createUser({ name: fullName, email, password, phone: fullPhone, country });
     return res.status(201).json({ success: true, message: 'Account created successfully! You can now log in.', user: newUser });
   } catch (error) { console.error('Registration failed:', error.message); return safeError(res, 400, 'Registration failed. Please check your details and try again.'); }
 });
@@ -154,6 +192,14 @@ app.post('/api/bookings', requireAuth, async (req, res) => {
     if (!validId(userId) || !validId(packageId) || !Number.isInteger(Number(guests)) || Number(guests) < 1 || Number(guests) > 30 || !Number.isFinite(Number(totalAmount)) || Number(totalAmount) < 0) return safeError(res, 400, 'Booking details are invalid.');
     if (!isSelf(req, userId)) return safeError(res, 403, 'You can only book for your own account.');
     const bookingId = await createBooking({ userId: Number(userId), packageId: Number(packageId), startDate: cleanText(startDate, 10), endDate: cleanText(endDate, 10), guests: Number(guests), totalAmount: Number(totalAmount) });
+    
+    // Automatically dispatch confirmation notification (Requirement 2)
+    await createNotification({
+      userId: Number(userId),
+      title: 'Booking Confirmed 🎉',
+      message: `Your booking #${bookingId} has been confirmed! Your travel voucher and itinerary are ready in your account.`
+    }).catch(err => console.warn('Booking notification warn:', err.message));
+
     return res.json({ success: true, message: 'Trip booked successfully!', bookingId });
   } catch (error) { console.error('Booking creation failed:', error.message); return safeError(res, 500, 'Failed to create booking.'); }
 });
@@ -163,8 +209,41 @@ app.post('/api/wishlist', requireAuth, async (req, res) => {
     const { userId, packageId } = req.body || {};
     if (!validId(userId) || !validId(packageId)) return safeError(res, 400, 'userId and packageId are required.');
     if (!isSelf(req, userId)) return safeError(res, 403, 'You can only edit your own wishlist.');
-    return res.json({ success: true, message: 'Saved to wishlist!', wishlistId: await addToWishlist({ userId: Number(userId), packageId: Number(packageId) }) });
+    const wishlistId = await addToWishlist({ userId: Number(userId), packageId: Number(packageId) });
+    
+    // Create wishlist notification
+    await createNotification({
+      userId: Number(userId),
+      title: 'Saved to Wishlist ❤️',
+      message: 'Travel package has been added to your saved wishlist.'
+    }).catch(err => console.warn('Wishlist notification warn:', err.message));
+
+    return res.json({ success: true, message: 'Saved to wishlist!', wishlistId });
   } catch (error) { console.error('Wishlist failed:', error.message); return safeError(res, 500, 'Failed to add to wishlist.'); }
+});
+
+app.delete('/api/wishlist/:packageId', requireAuth, async (req, res) => {
+  try {
+    const userId = Number(req.auth.sub);
+    const packageId = Number(req.params.packageId);
+    if (!validId(packageId)) return safeError(res, 400, 'Valid package ID is required.');
+    await removeFromWishlist({ userId, packageId });
+    return res.json({ success: true, message: 'Removed from wishlist successfully!' });
+  } catch (error) {
+    console.error('Wishlist deletion failed:', error.message);
+    return safeError(res, 500, 'Failed to remove from wishlist.');
+  }
+});
+
+app.get('/api/wishlist', requireAuth, async (req, res) => {
+  try {
+    const userId = Number(req.auth.sub);
+    const wishlist = await getWishlistByUser(userId);
+    return res.json({ success: true, wishlist });
+  } catch (error) {
+    console.error('Fetch wishlist failed:', error.message);
+    return safeError(res, 500, 'Failed to fetch wishlist.');
+  }
 });
 
 app.get('/api/user-dashboard-data', requireAuth, async (req, res) => {
@@ -192,10 +271,28 @@ app.get('/api/users/profile', requireAuth, async (req, res) => {
 
 app.put('/api/users/profile', requireAuth, async (req, res) => {
   try {
-    const { userId, name, phone } = req.body || {};
-    if (!validId(userId) || cleanText(name, 100).length < 2) return safeError(res, 400, 'A valid user ID and name are required.');
+    const { userId, name, phone, countryCode = '+91' } = req.body || {};
+    if (!validId(userId)) return safeError(res, 400, 'A valid user ID is required.');
     if (!isSelf(req, userId)) return safeError(res, 403, 'You can only edit your own profile.');
-    return res.json({ success: true, message: 'Profile updated successfully!', user: await updateUserProfile(Number(userId), { name: cleanText(name, 100), phone: cleanText(phone, 40) }) });
+    
+    const cleanName = cleanText(name, 100);
+    // Requirement 1: Full Name must accept only alphabetic characters and spaces
+    if (!/^[A-Za-z\s]{2,100}$/.test(cleanName)) {
+      return safeError(res, 400, 'Full Name must accept only alphabetic characters and spaces (no numbers or special characters).');
+    }
+
+    if (phone) {
+      const digitsOnly = String(phone).replace(/\D/g, '');
+      if (countryCode === '+91' && digitsOnly.length !== 10) {
+        return safeError(res, 400, 'Mobile Number for India (+91) must be exactly 10 digits.');
+      }
+      if (digitsOnly.length < 7 || digitsOnly.length > 15) {
+        return safeError(res, 400, 'Please enter a valid phone number length for your country.');
+      }
+    }
+
+    const updatedUser = await updateUserProfile(Number(userId), { name: cleanName, phone: cleanText(phone, 40) });
+    return res.json({ success: true, message: 'Profile updated successfully!', user: updatedUser });
   } catch (error) { console.error('Profile update failed:', error.message); return safeError(res, 500, 'Failed to update profile.'); }
 });
 
@@ -248,10 +345,52 @@ app.post('/api/reviews', requireAuth, rateLimit(15 * 60_000, 15, 'review'), asyn
       rating: parsedRating,
       comment: cleanComment
     });
+    
+    // Notification for review creation (Requirement 2 & 7)
+    await createNotification({
+      userId: Number(userId),
+      title: 'Review Published ⭐',
+      message: 'Thank you for your feedback! Your review has been saved.'
+    }).catch(err => console.warn('Review notification warn:', err.message));
+
     return res.status(201).json({ success: true, message: 'Review submitted successfully!', reviewId });
   } catch (error) {
     console.error('Review submission failed:', error.message);
     return safeError(res, 500, 'Review could not be saved right now.');
+  }
+});
+
+// Update review without duplicates (Requirement 7)
+app.put('/api/reviews/:id', requireAuth, rateLimit(15 * 60_000, 25, 'review-edit'), async (req, res) => {
+  try {
+    const reviewId = Number(req.params.id);
+    const { userId, rating, comment } = req.body || {};
+    const parsedRating = Number(rating);
+    if (!validId(reviewId) || !validId(userId) || !Number.isInteger(parsedRating) || parsedRating < 1 || parsedRating > 5) {
+      return safeError(res, 400, 'Choose a rating from 1 to 5.');
+    }
+    if (!isSelf(req, userId)) {
+      return safeError(res, 403, 'You can only edit your own reviews.');
+    }
+    const cleanComment = cleanText(comment, 2000);
+    if (!cleanComment) {
+      return safeError(res, 400, 'Please write your review feedback.');
+    }
+    const success = await updateReview({ reviewId, userId: Number(userId), rating: parsedRating, comment: cleanComment });
+    if (!success) {
+      return safeError(res, 404, 'Review not found or permission denied.');
+    }
+
+    await createNotification({
+      userId: Number(userId),
+      title: 'Review Updated ✍️',
+      message: 'Your review has been successfully updated.'
+    }).catch(err => console.warn('Review update notification warn:', err.message));
+
+    return res.json({ success: true, message: 'Review updated successfully!' });
+  } catch (error) {
+    console.error('Review update failed:', error.message);
+    return safeError(res, 500, 'Could not update review right now.');
   }
 });
 
@@ -360,6 +499,17 @@ app.put('/api/notifications/:id/read', requireAuth, async (req, res) => {
   } catch (error) {
     console.error('Notification update failed:', error.message);
     return safeError(res, 500, 'Failed to update notification.');
+  }
+});
+
+app.put('/api/notifications/read-all', requireAuth, async (req, res) => {
+  try {
+    const userId = Number(req.auth.sub);
+    await markAllNotificationsRead(userId);
+    return res.json({ success: true, message: 'All notifications marked as read.' });
+  } catch (error) {
+    console.error('Mark all read failed:', error.message);
+    return safeError(res, 500, 'Failed to update notifications.');
   }
 });
 

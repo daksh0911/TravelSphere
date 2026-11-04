@@ -1,7 +1,8 @@
 import { lazy, Suspense, useMemo, useState } from 'react';
 import { ArrowRight, Check, ChevronDown, Clock3, FileDown, Globe, Heart, LayoutGrid, MapPin, Search, ShieldCheck, Star, Users, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
+import api from '../../../services/api';
 import './TourPackages.css';
 import '../../../styles/showcase-skin.css';
 import './Compare.css';
@@ -94,10 +95,21 @@ export default function TourPackagesPage() {
     return [...filtered].sort((a, b) => sort === 'price' ? a.price - b.price : sort === 'rating' ? b.rating - a.rating : 0);
   }, [query, category, sort]);
 
-  const toggleWish = (id) => {
-    const next = wishlist.includes(id) ? wishlist.filter(item => item !== id) : [...wishlist, id];
+  const toggleWish = async (id) => {
+    const isSaved = wishlist.includes(id);
+    const next = isSaved ? wishlist.filter(item => item !== id) : [...wishlist, id];
     setWishlist(next);
     try { localStorage.setItem('ts_package_wishlist', JSON.stringify(next)); } catch { /* ignore */ }
+
+    try {
+      if (isSaved) {
+        await api.delete(`/wishlist/${id}`);
+      } else {
+        await api.post('/wishlist', { packageId: id });
+      }
+    } catch {
+      /* fallback to local storage */
+    }
   };
 
   const toggleCompare = (id) => {
@@ -269,7 +281,14 @@ export default function TourPackagesPage() {
               </ul>
               <div className="package-card-footer">
                 <div><small>Typical estimate</small><strong>{currency === "USD" ? pkg.priceLabel : `${formatPrice(pkg.price)}`}</strong><small>{currency} / person</small></div>
-                <button className="package-book" onClick={() => handleOpenBooking(pkg)}>View trip <ArrowRight size={16} /></button>
+                <div style={{ display: 'flex', gap: '0.4rem' }}>
+                  <Link to={`/packages/${pkg.id}`} className="package-book" style={{ textDecoration: 'none' }}>
+                    Details <ArrowRight size={14} />
+                  </Link>
+                  <button className="package-book" onClick={() => handleOpenBooking(pkg)} style={{ background: '#1e293b' }}>
+                    Book
+                  </button>
+                </div>
               </div>
               <label className="compare-check">
                 <input type="checkbox" checked={compare.includes(pkg.id)} onChange={() => toggleCompare(pkg.id)} /> Compare

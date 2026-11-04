@@ -100,11 +100,266 @@ export const ensurePackagesExist = async () => {
   }
 };
 
+// Complete Package Details Dictionary enriched with Hotel, Guide, Transport, Itinerary & Inclusions
+const PACKAGE_DETAILS_MAP = {
+  1: {
+    destination: 'Kyoto, Japan',
+    hotel: {
+      name: 'Aman Kyoto Luxury Pavilion',
+      details: 'Nestled in a secret garden of moss-covered boulders and towering cedar groves at the foot of Hidari Daimonji, offering hot spring onsens and traditional kaiseki banquets.',
+      address: '1 Okitayama Washimine-cho, Kita-ku, Kyoto 603-8458, Japan',
+      rating: 4.9,
+      amenities: ['Natural Mineral Onsen', 'Complimentary Traditional Kaiseki Breakfast', 'High-Speed Wi-Fi', 'Private Garden Terrace', '24/7 Concierge Service', 'Air Conditioning & Heated Floors'],
+      imageUrl: '/hotel-images/aman-kyoto.jpg'
+    },
+    guide: {
+      name: 'Kenji Takahashi',
+      bio: 'Government Certified Heritage Guide with over 14 years of cultural storytelling, tea ceremony curation, and temple preservation leadership in Kansai.',
+      languages: ['English', 'Japanese', 'French'],
+      rating: 4.95,
+      photoUrl: '/guide-images/arjun-sen.jpg'
+    },
+    transportation: {
+      type: 'Private Executive Luxury Van & Shinkansen',
+      model: 'Toyota Alphard Executive Lounge & Shinkansen Green Car',
+      capacity: 'Up to 5 passengers with premium luggage compartment',
+      details: 'All Kyoto transfers, private temple chauffeuring, luggage forwarding between stations, and reserved Green Car bullet train passes included.',
+      imageUrl: '/vehicle-images/mercedes-e-class.webp'
+    },
+    itinerary: [
+      { day: 1, title: 'Arrival & Gion Lantern Evening', desc: 'Private airport meet & greet, check-in at Aman Kyoto, followed by a quiet twilight lantern stroll through historic Gion with a welcome Kaiseki dinner.' },
+      { day: 2, title: 'Fushimi Inari Torii & Kiyomizu-dera', desc: 'Early morning private entry to Fushimi Inari shrine avoiding crowds, followed by a traditional matcha ceremony at a 300-year-old tea pavilion overlooking Kiyomizu-dera.' },
+      { day: 3, title: 'Arashiyama Bamboo Grove & Tenryu-ji', desc: 'Scenic rickshaw exploration along the Sagano bamboo paths, tranquil meditation walk in UNESCO Tenryu-ji Zen garden, and private boat cruise on the Hozu River.' },
+      { day: 4, title: 'Kinkaku-ji Golden Pavilion & Nishiki Market', desc: 'VIP access to Kinkaku-ji, followed by a culinary masterclass exploring historic Nishiki Market with local artisan tastings.' },
+      { day: 5, title: 'Nara Deer Sanctuary & Todai-ji Day Excursion', desc: 'Comfortable chauffeur transfer to Nara. Visit the Great Buddha at Todai-ji, interact with sacred deer, and experience ancient cedar trails.' },
+      { day: 6, title: 'Uji Green Tea Farm & Zen Workshop', desc: 'Hands-on tea harvest experience in historic Uji, private ceramics workshop, and relaxing evening in the natural hot spring onsen.' },
+      { day: 7, title: 'Farewell Tea & Chauffeur Departure', desc: 'Leisurely garden breakfast, personal souvenir wrapping service, and private transfer to Kansai International Airport.' }
+    ],
+    includedServices: [
+      '6 nights luxury accommodation at Aman Kyoto Luxury Pavilion',
+      'Daily gourmet artisan breakfast & 2 multi-course Kaiseki dinners',
+      'Private air-conditioned chauffeur vehicle and Shinkansen Green Car passes',
+      'Dedicated government-licensed English-speaking tour guide throughout',
+      'All temple entrance fees, private garden permits & tea ceremony tickets',
+      '24/7 TravelSphere concierge emergency and luggage dispatch assistance'
+    ],
+    excludedServices: [
+      'International round-trip flights',
+      'Personal travel insurance (available via add-on)',
+      'Passport and visa procurement fees',
+      'Discretionary tips and gratuities for chauffeur/guide',
+      'Personal boutique shopping and extra alcoholic beverages'
+    ],
+    facilities: ['Wi-Fi Included', 'Spa / Hot Spring Access', 'Chauffeur Driven', 'English Speaking Lead', 'Vegetarian / Halal Meals Available', 'Baggage Dispatch Service'],
+    images: [
+      '/package-images/5-kyoto.webp',
+      '/destination-images/kyoto.webp',
+      '/hotel-images/aman-kyoto.jpg'
+    ]
+  },
+  2: {
+    destination: 'Santorini, Greece',
+    hotel: {
+      name: 'Grace Hotel Santorini, Auberge Resorts',
+      details: 'Iconic cliff-top clifftop retreat carved into the caldera basin with infinity pool vistas of the Aegean Sea, minimalist Aegean architecture, and champagne sunsets.',
+      address: 'Imerovigli, Santorini 84700, Greece',
+      rating: 4.85,
+      amenities: ['Cliffside Infinity Heated Pool', 'Private Plunge Pools', 'Santorini Sunset Champagne Bar', 'Complimentary Daily Yoga & Pilates', 'Free High-Speed Wi-Fi', '24-hour Luxury In-Villa Dining'],
+      imageUrl: '/hotel-images/grace-santorini.jpg'
+    },
+    guide: {
+      name: 'Nikos Petrakis',
+      bio: 'Santorini native and certified Aegean historian specializing in ancient Akrotiri Minoan ruins, caldera geology, and volcanic viticulture.',
+      languages: ['English', 'Greek', 'Italian'],
+      rating: 4.9,
+      photoUrl: '/guide-images/nikos-petrakis.jpg'
+    },
+    transportation: {
+      type: 'Private Luxury Catamaran & Mercedes V-Class',
+      model: 'Lagoon 520 Yacht & Mercedes-Benz V-Class Chauffeur Van',
+      capacity: 'Up to 6 guests with dedicated yacht skipper and crew',
+      details: 'All island airport/port transfers, private vineyard transfers, and full-day private catamaran sailing through the volcanic caldera included.',
+      imageUrl: '/vehicle-images/range-rover-velar.webp'
+    },
+    itinerary: [
+      { day: 1, title: 'Arrival & Caldera Sunset Welcome', desc: 'VIP greeting at Thira Airport, private transfer to Imerovigli, check-in to your cliffside suite with complimentary chilled Assyrtiko wine, followed by a panoramic sunset dinner.' },
+      { day: 2, title: 'Private Catamaran Aegean Cruise', desc: 'Board your private luxury catamaran for a sail to the Red Beach, White Beach, and Nea Kameni volcanic hot springs, complete with barbecue on board.' },
+      { day: 3, title: 'Ancient Akrotiri Ruins & Red Beach', desc: 'Guided exploration through the remarkably preserved prehistoric city of Akrotiri, followed by swimming in volcanic bay waters and seaside taverna lunch.' },
+      { day: 4, title: 'Volcanic Wineries & Oia Village Stroll', desc: 'Private sommelier-led tasting at Santo Winery and Venetsanos, followed by an evening walk along the marble alleys of Oia as the sunset illuminates the white chapels.' },
+      { day: 5, title: 'Pyrgos Medieval Village & Mesa Vouno', desc: 'Discover quiet stone alleys, panoramic views from the highest point of the island, and a farewell seafood dinner at Ammoudi Bay.' },
+      { day: 6, title: 'Sunlit Breakfast & Port / Airport Transfer', desc: 'Champagne breakfast on your private terrace, leisurely packing, and private executive transfer to Santorini airport or ferry port.' }
+    ],
+    includedServices: [
+      '5 nights cliffside suite stay at Grace Hotel Santorini',
+      'Daily champagne breakfast overlooking the caldera',
+      'Full-day private catamaran yacht charter with chef-prepared lunch',
+      'Private air-conditioned Mercedes V-Class ground transfers throughout',
+      'Guided Akrotiri archaeological tour & private sommelier wine tastings',
+      '24/7 dedicated local island host and round-the-clock support'
+    ],
+    excludedServices: [
+      'International flights to/from Athens or Santorini',
+      'Personal travel insurance',
+      'Visa fees (if applicable)',
+      'Personal gratuities for boat crew and drivers',
+      'Extra motorized watersports'
+    ],
+    facilities: ['Sea View Suite', 'Private Heated Pool', 'Yacht Cruise Included', 'Sommelier Wine Tasting', 'High-Speed Wi-Fi', '24/7 Guest Care'],
+    images: [
+      '/package-images/2-santorini.webp',
+      '/destination-images/santorini.webp',
+      '/hotel-images/grace-santorini.jpg'
+    ]
+  },
+  3: {
+    destination: 'Bali, Indonesia',
+    hotel: {
+      name: 'Mandapa, a Ritz-Carlton Reserve, Ubud',
+      details: 'Secluded luxury sanctuary along the sacred Ayung River in Ubud, featuring private pool villas, holistic wellness healing, and verdant rice terrace views.',
+      address: 'Jl. Raya Kedewatan, Banjar Kedewatan, Ubud, Bali 80571, Indonesia',
+      rating: 4.8,
+      amenities: ['Private Riverside Pool Villa', 'Holistic Ayurvedic Spa & Yoga Pavilion', 'Fine Dining Kubu Bamboo Pods', 'Complimentary Wi-Fi', 'Padi Butler Service', 'Fitness Center & Herb Garden'],
+      imageUrl: '/hotel-images/mandapa-ubud.jpg'
+    },
+    guide: {
+      name: 'Wayan Sudiarta',
+      bio: 'Deeply knowledgeable Balinese cultural elder and accredited eco-guide, sharing sacred temple rituals, rice farming heritage, and holistic wellness philosophy.',
+      languages: ['English', 'Indonesian', 'Balinese'],
+      rating: 4.92,
+      photoUrl: '/guide-images/wayan-sudiarta.jpg'
+    },
+    transportation: {
+      type: 'Private Air-Conditioned SUV & Traditional Boat',
+      model: 'Toyota Fortuner 4x4 / Luxury MPV',
+      capacity: 'Up to 4 travelers with ample luggage space',
+      details: 'Private air-conditioned vehicle with dedicated driver for all day excursions, temple visits, and scenic highland transfers.',
+      imageUrl: '/vehicle-images/mercedes-e-class.webp'
+    },
+    itinerary: [
+      { day: 1, title: 'Arrival in Denpasar & Ubud Rainforest Transfer', desc: 'Warm Balinese garland welcome at DPS Airport, private scenic transfer through artist villages to Mandapa Ubud, and evening herbal wellness dinner.' },
+      { day: 2, title: 'Tirta Empul Water Purification & Rice Terraces', desc: 'Participate in a traditional Melukat water blessing ceremony at Tirta Empul, followed by walking through the emerald Tegalalang rice terraces with local farmers.' },
+      { day: 3, title: 'Mount Batur Sunrise & Hot Springs', desc: 'Early 4WD or gentle scenic viewpoint trek for sunrise over Mount Batur volcano, followed by soaking in natural lakeside thermal hot springs.' },
+      { day: 4, title: 'Sacred Monkey Forest & Artisan Silver Workshop', desc: 'Morning visit to the Sacred Monkey Forest Sanctuary, private silver jewelry-making masterclass in Celuk, and sunset riverside dining in a private bamboo cocoon.' },
+      { day: 5, title: 'Holistic Spa Ritual & Departure Transfer', desc: 'Two-hour Balinese massage and herbal bath ritual, tropical fruit tasting, and comfortable private chauffeur transfer back to the airport.' }
+    ],
+    includedServices: [
+      '4 nights private pool villa at Mandapa, a Ritz-Carlton Reserve',
+      'Daily organic farm-to-table breakfast and 2 wellness lunches',
+      'Private 4x4 vehicle with dedicated English-speaking chauffeur',
+      'Personal Balinese spiritual guide and all temple entrance donations',
+      'Traditional Melukat holy water blessing ceremony materials',
+      'Complimentary 120-minute couple spa and herbal healing session'
+    ],
+    excludedServices: [
+      'International flights to Bali (DPS)',
+      'Entry visa on arrival fee (if applicable)',
+      'Travel and cancellation insurance',
+      'Discretionary tips for villa butler and driver'
+    ],
+    facilities: ['Private Pool', 'Holistic Spa', 'Temple Blessing Included', 'Private 4x4 Chauffeur', 'High-Speed Wi-Fi', '24/7 Padi Butler'],
+    images: [
+      '/package-images/3-bali.webp',
+      '/destination-images/bali.webp',
+      '/hotel-images/mandapa-ubud.jpg'
+    ]
+  },
+  4: {
+    destination: 'Interlaken & Zermatt, Switzerland',
+    hotel: {
+      name: 'Victoria-Jungfrau Grand Hotel & Spa',
+      details: 'Historic 5-star Swiss palace hotel at the foot of the snow-capped Jungfrau massif, featuring a 5,500 sq m Nescens Spa, grand Belle Époque ballrooms, and alpine terraces.',
+      address: 'Höheweg 41, 3800 Interlaken, Switzerland',
+      rating: 4.95,
+      amenities: ['5,500 sq m Thermal Spa & Indoor Roman Pool', 'First-Class Glacier Railway Passes', 'Panoramic Alpine View Rooms', 'Michelin-Starred Dining', 'Complimentary High-Speed Wi-Fi', 'Ski & Mountain Bike Storage'],
+      imageUrl: '/hotel-images/victoria-jungfrau.jpg'
+    },
+    guide: {
+      name: 'Marco Zbinden',
+      bio: 'Swiss Alpine Club certified mountain guide and glacier naturalist with 18 years experience guiding expeditions across Jungfraujoch, the Eiger trail, and Zermatt.',
+      languages: ['English', 'German', 'French', 'Italian'],
+      rating: 5.0,
+      photoUrl: '/guide-images/arjun-sen.jpg'
+    },
+    transportation: {
+      type: 'Swiss First Class Panoramic Train & Private Electric Shuttle',
+      model: 'Glacier Express Excellence Class & Swiss Travel First Pass',
+      capacity: 'First-Class rail with private seating and panoramic dome windows',
+      details: 'All Swiss panoramic trains, cogwheel mountain railways, cable cars, and airport transfers fully covered on first-class passes.',
+      imageUrl: '/vehicle-images/mercedes-e-class.webp'
+    },
+    itinerary: [
+      { day: 1, title: 'Zurich Arrival & Scenic Rail to Interlaken', desc: 'Chauffeur greeting at Zurich Airport, scenic first-class train ride along Lake Thun to Interlaken, check-in at the Victoria-Jungfrau with Swiss chocolate welcome.' },
+      { day: 2, title: 'Jungfraujoch – Top of Europe Glacier Tour', desc: 'Ascend via the Eiger Express tricable gondola to Jungfraujoch at 3,454m. Explore the Ice Palace, Sphinx Observatory, and snow plateau.' },
+      { day: 3, title: 'Lauterbrunnen Valley of 72 Waterfalls & Mürren', desc: 'Scenic train into Lauterbrunnen, walk behind Staubbach Falls, cogwheel railway up to car-free alpine village Mürren, and Swiss cheese fondue tasting.' },
+      { day: 4, title: 'Glacier Express Scenic Train to Zermatt', desc: 'Board the world-famous Glacier Express with panoramic dome windows traversing dramatic viaducts and mountain passes into Zermatt beneath the Matterhorn.' },
+      { day: 5, title: 'Gornergrat Railway & Matterhorn Reflection', desc: 'Historic open-air cogwheel train ride to Gornergrat at 3,089m with 360-degree views of 29 four-thousand-meter peaks and the iconic Matterhorn reflection in Riffelsee.' },
+      { day: 6, title: 'Lake Brienz Steamer & Harder Kulm Panorama', desc: 'Historic paddle-steamer cruise across turquoise Lake Brienz, funicular ascent to Harder Kulm for evening sunset over the two lakes.' },
+      { day: 7, title: 'Alpine Wellness & Chocolate Masterclass', desc: 'Relaxing morning at the 5,500m² Nescens Spa, followed by a private Swiss chocolate-making workshop with master chocolatiers.' },
+      { day: 8, title: 'First-Class Return & Departure', desc: 'Breakfast on the terrace, panoramic scenic train transfer to Zurich or Geneva Airport for homeward flight.' }
+    ],
+    includedServices: [
+      '7 nights luxury accommodation at 5-star Victoria-Jungfrau & Zermatt partner resort',
+      'Daily Swiss gourmet buffet breakfast & 3 traditional alpine dinners',
+      '8-Day Swiss Travel Pass in First Class with unlimited train, boat, and bus travel',
+      'All mountain excursions including Jungfraujoch and Gornergrat tickets',
+      'Certified Swiss mountain guide for alpine day hikes',
+      'Full access to luxury thermal spa, Roman indoor baths, and saunas'
+    ],
+    excludedServices: [
+      'Transatlantic / international airfare',
+      'Personal ski equipment rental (can be arranged on request)',
+      'Travel medical insurance',
+      'Personal incidentals and alcoholic drinks outside included tastings'
+    ],
+    facilities: ['Glacier Express 1st Class', '5,500m² Luxury Spa', 'Matterhorn Excursion', 'Swiss Chocolate Workshop', 'High-Speed Wi-Fi', 'Certified Alpine Lead'],
+    images: [
+      '/package-images/4-swiss-alps.webp',
+      '/destination-images/swiss-alps.webp',
+      '/hotel-images/victoria-jungfrau.jpg'
+    ]
+  }
+};
+
 // Fetch all available packages from MySQL
 export const getAllPackages = async () => {
   await ensurePackagesExist();
   const [rows] = await pool.execute(`SELECT * FROM packages WHERE is_active = 1 ORDER BY package_id ASC`);
   return rows;
+};
+
+// Fetch single package by ID with full hotel, guide, transport & itinerary details
+export const getPackageById = async (packageId) => {
+  await ensurePackagesExist();
+  const [rows] = await pool.execute(`SELECT * FROM packages WHERE package_id = ?`, [packageId]);
+  
+  // Default base data if found in MySQL
+  const base = rows[0] || null;
+  const numId = Number(packageId);
+  const enriched = PACKAGE_DETAILS_MAP[numId] || PACKAGE_DETAILS_MAP[1];
+
+  if (!base && !enriched) return null;
+
+  return {
+    id: base?.package_id || numId,
+    package_id: base?.package_id || numId,
+    title: base?.title || enriched.title || 'Curated Tour Package',
+    description: base?.description || 'Thoughtfully crafted travel journey featuring verified stays, licensed guides, and seamless transport.',
+    days: base?.days || 5,
+    nights: base?.nights || 4,
+    price: base?.price || 1200,
+    rating: base?.rating || 4.9,
+    imageUrl: base?.image_url || enriched.images[0] || '/destination-images/kyoto.webp',
+    image: base?.image_url || enriched.images[0] || '/destination-images/kyoto.webp',
+    destination: enriched.destination,
+    hotel: enriched.hotel,
+    guide: enriched.guide,
+    transportation: enriched.transportation,
+    itinerary: enriched.itinerary,
+    includedServices: enriched.includedServices,
+    excludedServices: enriched.excludedServices,
+    facilities: enriched.facilities,
+    images: enriched.images
+  };
 };
 
 // Fetch complete live dashboard data for a user from MySQL
@@ -173,6 +428,19 @@ export const getUserDashboardData = async (email) => {
     console.warn('Reviews fetch warning:', err.message);
   }
 
+  // Fetch live notifications for user
+  let notifications = [];
+  try {
+    await ensureNotificationsTable();
+    const [notifRows] = await pool.execute(
+      `SELECT notification_id, user_id, title, message, is_read, created_at FROM notifications WHERE user_id = ? ORDER BY notification_id DESC`,
+      [user.user_id]
+    );
+    notifications = notifRows;
+  } catch (err) {
+    console.warn('Notifications fetch warning:', err.message);
+  }
+
   const { password: _password, ...userProfile } = user;
 
   return {
@@ -180,12 +448,14 @@ export const getUserDashboardData = async (email) => {
     bookings,
     wishlist,
     reviews,
+    notifications,
     allPackages: packagesList,
     stats: {
       totalBookings: bookings.length,
       activeBookings: bookings.filter(b => b.status === 'confirmed').length,
       wishlistCount: wishlist.length,
-      reviewsCount: reviews.length
+      reviewsCount: reviews.length,
+      unreadNotificationsCount: notifications.filter(n => !n.is_read).length
     }
   };
 };
@@ -213,6 +483,41 @@ export const addToWishlist = async ({ userId, packageId }) => {
     [userId, packageId]
   );
   return result.insertId;
+};
+
+// Remove item from wishlist in MySQL wishlist table
+export const removeFromWishlist = async ({ userId, packageId }) => {
+  const [result] = await pool.execute(
+    `DELETE FROM wishlist WHERE user_id = ? AND target_id = ? AND target_type = 'package'`,
+    [userId, packageId]
+  );
+  return result.affectedRows > 0;
+};
+
+// Get all wishlist items for a user
+export const getWishlistByUser = async (userId) => {
+  await ensurePackagesExist();
+  const [rows] = await pool.execute(
+    `SELECT 
+        w.wishlist_id,
+        w.added_at,
+        p.package_id,
+        p.package_id AS id,
+        p.title,
+        p.description,
+        p.price,
+        p.rating,
+        p.image_url,
+        p.image_url AS image,
+        p.days,
+        p.nights
+     FROM wishlist w
+     JOIN packages p ON w.target_id = p.package_id AND w.target_type = 'package'
+     WHERE w.user_id = ?
+     ORDER BY w.wishlist_id DESC`,
+    [userId]
+  );
+  return rows;
 };
 
 // Update user profile in MySQL
@@ -274,6 +579,7 @@ const ensureReviewsTable = () => (reviewsReady ??= pool.execute(
      booking_id INT NULL,
      rating TINYINT NOT NULL,
      comment TEXT NULL,
+     updated_at TIMESTAMP NULL DEFAULT NULL,
      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
    )`
 ).catch(err => { reviewsReady = undefined; throw err; }));
@@ -281,16 +587,34 @@ const ensureReviewsTable = () => (reviewsReady ??= pool.execute(
 export const createReview = async ({ userId, bookingId, rating, comment }) => {
   await ensureReviewsTable();
   const [result] = await pool.execute(
-    `INSERT INTO reviews (user_id, booking_id, rating, comment) VALUES (?, ?, ?, ?)`,
+    `INSERT INTO reviews (user_id, booking_id, rating, comment, created_at) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)`,
     [userId, bookingId || null, rating, comment || null]
   );
   return result.insertId;
 };
 
+export const updateReview = async ({ reviewId, userId, rating, comment }) => {
+  await ensureReviewsTable();
+  try {
+    const [result] = await pool.execute(
+      `UPDATE reviews SET rating = ?, comment = ?, updated_at = CURRENT_TIMESTAMP WHERE review_id = ? AND user_id = ?`,
+      [rating, comment || null, reviewId, userId]
+    );
+    return result.affectedRows > 0;
+  } catch {
+    // If updated_at column doesn't exist in older table, fallback to rating and comment update
+    const [result] = await pool.execute(
+      `UPDATE reviews SET rating = ?, comment = ? WHERE review_id = ? AND user_id = ?`,
+      [rating, comment || null, reviewId, userId]
+    );
+    return result.affectedRows > 0;
+  }
+};
+
 export const getReviewsByUser = async (userId) => {
   await ensureReviewsTable();
   const [rows] = await pool.execute(
-    `SELECT review_id, user_id, booking_id, rating, comment, created_at FROM reviews WHERE user_id = ? ORDER BY review_id DESC`,
+    `SELECT review_id, user_id, booking_id, rating, comment, updated_at, created_at FROM reviews WHERE user_id = ? ORDER BY review_id DESC`,
     [userId]
   );
   return rows;
@@ -299,7 +623,7 @@ export const getReviewsByUser = async (userId) => {
 export const getAllReviews = async () => {
   await ensureReviewsTable();
   const [rows] = await pool.execute(
-    `SELECT r.review_id, r.user_id, r.booking_id, r.rating, r.comment, r.created_at, u.name AS user_name, u.email AS user_email
+    `SELECT r.review_id, r.user_id, r.booking_id, r.rating, r.comment, r.updated_at, r.created_at, u.name AS user_name, u.email AS user_email
      FROM reviews r
      LEFT JOIN users u ON r.user_id = u.user_id
      ORDER BY r.review_id DESC`
@@ -451,6 +775,12 @@ export const getNotificationsByUser = async (userId) => {
 export const markNotificationRead = async (notificationId) => {
   await ensureNotificationsTable();
   await pool.execute(`UPDATE notifications SET is_read = 1 WHERE notification_id = ?`, [notificationId]);
+  return true;
+};
+
+export const markAllNotificationsRead = async (userId) => {
+  await ensureNotificationsTable();
+  await pool.execute(`UPDATE notifications SET is_read = 1 WHERE user_id = ?`, [userId]);
   return true;
 };
 

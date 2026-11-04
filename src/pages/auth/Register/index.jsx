@@ -3,6 +3,7 @@ import { AlertCircle, ArrowRight, CheckCircle2, Eye, EyeOff, MapPin, ShieldCheck
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/useAuth';
 import { motion, AnimatePresence } from 'framer-motion';
+import { COUNTRIES, getCountryByCode, sanitizeFullName, sanitizePhoneDigits } from '../../../utils/countryPhoneConfig';
 import './Register.css';
 
 import usePageTitle from '../../../hooks/usePageTitle';
@@ -12,15 +13,46 @@ export default function RegisterPage() {
   const { register } = useAuth();
   
   const [formData, setFormData] = useState({
-    fullName: '', email: '', country: '', phone: '', password: '', confirmPassword: '', agreeTerms: false
+    fullName: '', email: '', country: 'IN', countryCode: '+91', phone: '', password: '', confirmPassword: '', agreeTerms: false
   });
   
+  const activeCountry = getCountryByCode(formData.country || formData.countryCode);
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [errors, setErrors] = useState({});
+
+  // Requirement 1: Full name accepts only alphabetic characters and spaces
+  const handleFullNameChange = (e) => {
+    const sanitized = sanitizeFullName(e.target.value);
+    setFormData(prev => ({ ...prev, fullName: sanitized }));
+    if (errors.fullName) {
+      setErrors(prev => ({ ...prev, fullName: '' }));
+    }
+  };
+
+  // Requirement 1: Country-wise phone number restriction
+  const handleCountryChange = (e) => {
+    const selectedCode = e.target.value;
+    const countryCfg = getCountryByCode(selectedCode);
+    setFormData(prev => ({
+      ...prev,
+      country: countryCfg.code,
+      countryCode: countryCfg.dialCode,
+      phone: sanitizePhoneDigits(prev.phone, countryCfg.digits)
+    }));
+  };
+
+  const handlePhoneChange = (e) => {
+    const sanitizedDigits = sanitizePhoneDigits(e.target.value, activeCountry.digits);
+    setFormData(prev => ({ ...prev, phone: sanitizedDigits }));
+    if (errors.phone) {
+      setErrors(prev => ({ ...prev, phone: '' }));
+    }
+  };
 
   const change = e => {
     const { name, value } = e.target;
@@ -42,7 +74,25 @@ export default function RegisterPage() {
     setSuccessMessage('');
     
     const newErrors = {};
+
+    // Requirement 1: Full Name validation (alphabetic and spaces only, min 2 chars)
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = 'Full Name is required.';
+    } else if (!/^[A-Za-z\s]{2,100}$/.test(formData.fullName.trim())) {
+      newErrors.fullName = 'Full Name must contain only letters and spaces (no numbers or special characters).';
+    }
+
     if (!validateEmail(formData.email)) newErrors.email = 'Please enter a valid email address.';
+    
+    // Requirement 1: Phone validation according to selected country
+    if (formData.phone) {
+      if (activeCountry.code === 'IN' && formData.phone.length !== 10) {
+        newErrors.phone = 'Mobile number for India (+91) must be exactly 10 digits.';
+      } else if (formData.phone.length !== activeCountry.digits) {
+        newErrors.phone = `Mobile number for ${activeCountry.name} must be exactly ${activeCountry.digits} digits.`;
+      }
+    }
+
     if (!validatePassword(formData.password)) newErrors.password = 'Password must be at least 8 characters, with 1 uppercase and 1 number.';
     if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Passwords do not match.';
     
@@ -61,10 +111,11 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       const result = await register({
-        fullName: formData.fullName,
+        fullName: formData.fullName.trim(),
         email: formData.email,
-        country: formData.country,
-        phone: formData.phone,
+        country: activeCountry.name,
+        countryCode: activeCountry.dialCode,
+        phone: formData.phone ? `${activeCountry.dialCode} ${formData.phone}` : '',
         password: formData.password
       });
       
@@ -139,9 +190,31 @@ export default function RegisterPage() {
               </div>
             </div>
             
-            <label className="register-field">
-              <span>Full name</span>
-              <input type="text" name="fullName" placeholder="What should we call you?" value={formData.fullName} onChange={change} required />
+            <label className={`register-field ${errors.fullName ? 'error-field' : ''}`}>
+              <span>Full name <small style={{ color: '#64748b' }}>(Letters & spaces only)</small></span>
+              <input 
+                type="text" 
+                name="fullName" 
+                placeholder="e.g. Rahul Sharma" 
+                value={formData.fullName} 
+                onChange={handleFullNameChange} 
+                autoComplete="name"
+                required 
+              />
+              <AnimatePresence>
+                {errors.fullName && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: -5, height: 0 }} 
+                    animate={{ opacity: 1, y: 0, height: 'auto' }} 
+                    exit={{ opacity: 0, y: -5, height: 0 }} 
+                    transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                    className="form-validation-error"
+                    style={{ color: '#e74c3c', fontSize: '13px', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}
+                  >
+                    <AlertCircle size={14} /> <span>{errors.fullName}</span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </label>
             
             <label className={`register-field ${errors.email ? 'error-field' : ''}`}>
@@ -163,25 +236,48 @@ export default function RegisterPage() {
               </AnimatePresence>
             </label>
             
-            <div className="register-field-row">
+            <div className="register-field-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1.25fr', gap: '12px' }}>
               <label className="register-field">
                 <span>Country</span>
-                <select name="country" value={formData.country} onChange={change} required>
-                  <option value="">Choose</option>
-                  <option value="US">United States</option>
-                  <option value="IN">India</option>
-                  <option value="UK">United Kingdom</option>
-                  <option value="CA">Canada</option>
-                  <option value="AU">Australia</option>
-                  <option value="DE">Germany</option>
-                  <option value="FR">France</option>
-                  <option value="AE">UAE</option>
+                <select name="country" value={formData.country} onChange={handleCountryChange} required>
+                  {COUNTRIES.map(c => (
+                    <option key={c.code} value={c.code}>
+                      {c.flag} {c.name} ({c.dialCode})
+                    </option>
+                  ))}
                 </select>
               </label>
               
-              <label className="register-field">
-                <span>Phone <small>optional</small></span>
-                <input type="tel" name="phone" placeholder="+1 555 000" value={formData.phone} onChange={change} />
+              <label className={`register-field ${errors.phone ? 'error-field' : ''}`}>
+                <span>Mobile Number <small style={{ color: '#64748b' }}>({activeCountry.digits} digits for {activeCountry.code})</small></span>
+                <div style={{ display: 'flex', alignItems: 'center', background: '#f8fafc', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '10px', overflow: 'hidden' }}>
+                  <span style={{ padding: '0 10px', fontSize: '13px', fontWeight: 700, color: '#475569', background: '#e2e8f0', height: '100%', display: 'flex', alignItems: 'center' }}>
+                    {activeCountry.dialCode}
+                  </span>
+                  <input 
+                    type="tel" 
+                    name="phone" 
+                    placeholder={`${activeCountry.digits} digits`} 
+                    value={formData.phone} 
+                    onChange={handlePhoneChange}
+                    maxLength={activeCountry.digits}
+                    style={{ border: 'none', background: 'transparent', flex: 1, padding: '12px 14px' }}
+                  />
+                </div>
+                <AnimatePresence>
+                  {errors.phone && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: -5, height: 0 }} 
+                      animate={{ opacity: 1, y: 0, height: 'auto' }} 
+                      exit={{ opacity: 0, y: -5, height: 0 }} 
+                      transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                      className="form-validation-error"
+                      style={{ color: '#e74c3c', fontSize: '12px', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}
+                    >
+                      <AlertCircle size={13} /> <span>{errors.phone}</span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </label>
             </div>
             

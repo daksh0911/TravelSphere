@@ -1537,3 +1537,192 @@
   }
 }
 
+
+
+/* --- Notification Dropdown --- */
+.ts-notif-wrap {
+  position: relative;
+}
+
+.ts-notif-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 360px;
+  max-width: 90vw;
+  background: #ffffff;
+  border: 1px solid var(--border-light, #e2e8f0);
+  border-radius: 16px;
+  box-shadow: 0 20px 45px -15px rgba(0, 0, 0, 0.15), 0 0 1px rgba(0, 0, 0, 0.1);
+  z-index: 200;
+  padding: 1rem;
+}
+
+.ts-notif-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-dark, #1e293b);
+}
+
+.ts-notif-mark-read {
+  background: none;
+  border: none;
+  color: #2563eb;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+}
+
+.ts-notif-mark-read:hover {
+  background: #eff6ff;
+}
+
+.ts-notif-list {
+  max-height: 320px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.ts-notif-item {
+  padding: 0.75rem;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  transition: all 0.2s ease;
+  position: relative;
+  cursor: pointer;
+}
+
+.ts-notif-item.unread {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.ts-notif-item-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.ts-notif-item-title {
+  font-size: 0.825rem;
+  font-weight: 700;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.ts-unread-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #2563eb;
+  flex-shrink: 0;
+}
+
+.ts-notif-time {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+.ts-notif-msg {
+  font-size: 0.775rem;
+  color: #64748b;
+  line-height: 1.4;
+}
+
+/* --- Country Selector & Phone Input --- */
+.ts-phone-input-wrap {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.3rem;
+}
+
+.ts-country-dropdown {
+  flex-shrink: 0;
+  width: 140px;
+  padding: 0.7rem 0.6rem;
+  border-radius: 10px;
+  border: 1px solid var(--border-light, #cbd5e1);
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: #ffffff;
+  color: #1e293b;
+  cursor: pointer;
+}
+
+.ts-phone-number-field {
+  flex: 1;
+  padding: 0.7rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid var(--border-light, #cbd5e1);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* --- Review Management Cards --- */
+.ts-reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.ts-review-card {
+  background: #ffffff;
+  border: 1px solid var(--border-light, #e2e8f0);
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 4px 15px -4px rgba(0, 0, 0, 0.05);
+}
+
+.ts-review-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.ts-review-stars {
+  display: flex;
+  gap: 0.2rem;
+  color: #f59e0b;
+}
+
+.ts-review-pkg {
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #1e293b;
+}
+
+.ts-review-body {
+  font-size: 0.875rem;
+  color: #475569;
+  line-height: 1.5;
+  margin-bottom: 0.75rem;
+}
+
+.ts-review-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  padding-top: 0.75rem;
+  border-top: 1px solid #f1f5f9;
+}
