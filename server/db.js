@@ -320,45 +320,59 @@ const PACKAGE_DETAILS_MAP = {
   }
 };
 
-// Fetch all available packages from MySQL
+// Fetch all available packages from MySQL (with offline fallback for reliability)
 export const getAllPackages = async () => {
-  await ensurePackagesExist();
-  const [rows] = await pool.execute(`SELECT * FROM packages WHERE is_active = 1 ORDER BY package_id ASC`);
-  return rows;
+  try {
+    await ensurePackagesExist();
+    const [rows] = await pool.execute(`SELECT * FROM packages WHERE is_active = 1 ORDER BY package_id ASC`);
+    return rows;
+  } catch (err) {
+    console.warn('MySQL packages query failed, using offline fallback:', err.message);
+    return [
+      { package_id: 1, title: 'Kyoto Cherry Blossom Tour', description: 'Explore historic temples and blooming sakura gardens in Kyoto.', days: 7, nights: 6, price: 1450.00, image_url: '/destination-images/kyoto.webp', rating: 4.9, is_active: 1 },
+      { package_id: 2, title: 'Santorini Sunset Cruise & Villa', description: 'Luxurious caldera views and Aegean sea cruises in Greece.', days: 6, nights: 5, price: 1780.00, image_url: '/destination-images/santorini.webp', rating: 4.8, is_active: 1 },
+      { package_id: 3, title: 'Bali Beach Villa & Temple Tour', description: 'Tropical beaches, rice terraces, and spiritual wellness in Bali.', days: 5, nights: 4, price: 1120.00, image_url: '/destination-images/bali.webp', rating: 4.7, is_active: 1 },
+      { package_id: 4, title: 'Swiss Alps Glacier & Scenic Express', description: 'Majestic glacier peaks and first class panoramic trains in Interlaken.', days: 8, nights: 7, price: 2100.00, image_url: '/destination-images/swiss-alps.webp', rating: 5.0, is_active: 1 }
+    ];
+  }
 };
 
-// Fetch single package by ID with full hotel, guide, transport & itinerary details
+// Fetch single package by ID with full hotel, guide, transport & itinerary details (with offline fallback)
 export const getPackageById = async (packageId) => {
-  await ensurePackagesExist();
-  const [rows] = await pool.execute(`SELECT * FROM packages WHERE package_id = ?`, [packageId]);
-  
-  // Default base data if found in MySQL
-  const base = rows[0] || null;
   const numId = Number(packageId);
   const enriched = PACKAGE_DETAILS_MAP[numId] || PACKAGE_DETAILS_MAP[1];
+  let base = null;
+
+  try {
+    await ensurePackagesExist();
+    const [rows] = await pool.execute(`SELECT * FROM packages WHERE package_id = ?`, [packageId]);
+    base = rows[0] || null;
+  } catch (err) {
+    console.warn('MySQL query for package detail failed, using enriched catalog data:', err.message);
+  }
 
   if (!base && !enriched) return null;
 
   return {
     id: base?.package_id || numId,
     package_id: base?.package_id || numId,
-    title: base?.title || enriched.title || 'Curated Tour Package',
+    title: base?.title || enriched?.title || 'Curated Tour Package',
     description: base?.description || 'Thoughtfully crafted travel journey featuring verified stays, licensed guides, and seamless transport.',
     days: base?.days || 5,
     nights: base?.nights || 4,
     price: base?.price || 1200,
     rating: base?.rating || 4.9,
-    imageUrl: base?.image_url || enriched.images[0] || '/destination-images/kyoto.webp',
-    image: base?.image_url || enriched.images[0] || '/destination-images/kyoto.webp',
-    destination: enriched.destination,
-    hotel: enriched.hotel,
-    guide: enriched.guide,
-    transportation: enriched.transportation,
-    itinerary: enriched.itinerary,
-    includedServices: enriched.includedServices,
-    excludedServices: enriched.excludedServices,
-    facilities: enriched.facilities,
-    images: enriched.images
+    imageUrl: base?.image_url || enriched?.images?.[0] || '/destination-images/kyoto.webp',
+    image: base?.image_url || enriched?.images?.[0] || '/destination-images/kyoto.webp',
+    destination: enriched?.destination,
+    hotel: enriched?.hotel,
+    guide: enriched?.guide,
+    transportation: enriched?.transportation,
+    itinerary: enriched?.itinerary,
+    includedServices: enriched?.includedServices,
+    excludedServices: enriched?.excludedServices,
+    facilities: enriched?.facilities,
+    images: enriched?.images
   };
 };
 

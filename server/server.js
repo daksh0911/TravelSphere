@@ -142,14 +142,15 @@ app.post('/api/auth/register', rateLimit(15 * 60_000, 8, 'register'), async (req
     }
 
     // Requirement 1: Country-wise phone number validation
-    if (phone) {
-      const digitsOnly = phone.replace(/\D/g, '');
-      if (countryCode === '+91' && digitsOnly.length !== 10) {
-        return safeError(res, 400, 'Mobile Number for India (+91) must be exactly 10 digits.');
-      }
-      if (digitsOnly.length < 7 || digitsOnly.length > 15) {
-        return safeError(res, 400, 'Please enter a valid mobile number length for the selected country.');
-      }
+    if (!phone) {
+      return safeError(res, 400, 'Mobile Number is required.');
+    }
+    const digitsOnly = phone.replace(/\D/g, '');
+    if (countryCode === '+91' && digitsOnly.length !== 10) {
+      return safeError(res, 400, 'Mobile Number for India (+91) must be exactly 10 digits.');
+    }
+    if (digitsOnly.length < 7 || digitsOnly.length > 15) {
+      return safeError(res, 400, 'Please enter a valid mobile number length for the selected country.');
     }
 
     if (await findUserByEmail(email)) return safeError(res, 409, 'An account with this email address already exists.');

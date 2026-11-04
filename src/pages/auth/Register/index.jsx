@@ -85,12 +85,12 @@ export default function RegisterPage() {
     if (!validateEmail(formData.email)) newErrors.email = 'Please enter a valid email address.';
     
     // Requirement 1: Phone validation according to selected country
-    if (formData.phone) {
-      if (activeCountry.code === 'IN' && formData.phone.length !== 10) {
-        newErrors.phone = 'Mobile number for India (+91) must be exactly 10 digits.';
-      } else if (formData.phone.length !== activeCountry.digits) {
-        newErrors.phone = `Mobile number for ${activeCountry.name} must be exactly ${activeCountry.digits} digits.`;
-      }
+    if (!formData.phone.trim()) {
+      newErrors.phone = 'Mobile Number is required.';
+    } else if (activeCountry.code === 'IN' && formData.phone.length !== 10) {
+      newErrors.phone = 'Mobile number for India (+91) must be exactly 10 digits.';
+    } else if (formData.phone.length !== activeCountry.digits) {
+      newErrors.phone = `Mobile number for ${activeCountry.name} must be exactly ${activeCountry.digits} digits.`;
     }
 
     if (!validatePassword(formData.password)) newErrors.password = 'Password must be at least 8 characters, with 1 uppercase and 1 number.';
@@ -261,6 +261,7 @@ export default function RegisterPage() {
                     value={formData.phone} 
                     onChange={handlePhoneChange}
                     maxLength={activeCountry.digits}
+                    required
                     style={{ border: 'none', background: 'transparent', flex: 1, padding: '12px 14px' }}
                   />
                 </div>

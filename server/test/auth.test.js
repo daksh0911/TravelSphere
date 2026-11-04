@@ -68,3 +68,40 @@ test('ticket admin routes are protected and validated', async () => {
   assert.equal((await call('/api/support/tickets/abc', { method: 'PUT', token: admin, body: JSON.stringify({ status: 'resolved' }) })).status, 400);
   assert.equal((await call('/api/support/tickets/3', { method: 'PUT', token: admin, body: JSON.stringify({ status: 'bogus' }) })).status, 400);
 });
+
+test('registration validates full name letters only and country phone digits', async () => {
+  const badName = await call('/api/auth/register', {
+    method: 'POST',
+    body: JSON.stringify({ fullName: 'John123', email: 'valid@example.com', password: 'Password123!' })
+  });
+  assert.equal(badName.status, 400);
+
+  const badPhoneIndia = await call('/api/auth/register', {
+    method: 'POST',
+    body: JSON.stringify({
+      fullName: 'John Doe',
+      email: 'valid2@example.com',
+      password: 'Password123!',
+      countryCode: '+91',
+      phone: '98765'
+    })
+  });
+  assert.equal(badPhoneIndia.status, 400);
+});
+
+test('packages endpoint returns complete package details with itinerary and hotel', async () => {
+  const res = await call('/api/packages/1');
+  assert.equal(res.status, 200);
+  const data = await res.json();
+  assert.equal(data.success, true);
+  assert.ok(data.package);
+  assert.ok(data.package.hotel);
+  assert.ok(data.package.itinerary);
+  assert.ok(Array.isArray(data.package.itinerary));
+});
+
+test('notification and review endpoints are protected with authentication', async () => {
+  assert.equal((await call('/api/notifications')).status, 401);
+  assert.equal((await call('/api/notifications/read-all', { method: 'PUT' })).status, 401);
+  assert.equal((await call('/api/reviews/1', { method: 'PUT', body: JSON.stringify({ rating: 5 }) })).status, 401);
+});
