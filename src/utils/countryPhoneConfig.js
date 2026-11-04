@@ -27,3 +27,4 @@ export const sanitizePhoneDigits = (val, maxDigits = 10) => {
   // Allow only digits up to maxDigits
   return val.replace(/\D/g, '').slice(0, maxDigits);
 };
+

@@ -72,21 +72,51 @@ test('ticket admin routes are protected and validated', async () => {
 test('registration validates full name letters only and country phone digits', async () => {
   const badName = await call('/api/auth/register', {
     method: 'POST',
-    body: JSON.stringify({ fullName: 'John123', email: 'valid@example.com', password: 'Password123!' })
+    body: JSON.stringify({ fullName: 'John123', email: 'valid@example.com', password: 'Password123!', phone: '9876543210' })
   });
   assert.equal(badName.status, 400);
 
-  const badPhoneIndia = await call('/api/auth/register', {
+  const badSpecialName = await call('/api/auth/register', {
+    method: 'POST',
+    body: JSON.stringify({ fullName: 'Rahul@Sharma', email: 'valid@example.com', password: 'Password123!', phone: '9876543210' })
+  });
+  assert.equal(badSpecialName.status, 400);
+
+  const badPhoneIndiaShort = await call('/api/auth/register', {
     method: 'POST',
     body: JSON.stringify({
       fullName: 'John Doe',
       email: 'valid2@example.com',
       password: 'Password123!',
       countryCode: '+91',
-      phone: '98765'
+      phone: '987654321' // 9 digits
     })
   });
-  assert.equal(badPhoneIndia.status, 400);
+  assert.equal(badPhoneIndiaShort.status, 400);
+
+  const badPhoneIndiaLong = await call('/api/auth/register', {
+    method: 'POST',
+    body: JSON.stringify({
+      fullName: 'John Doe',
+      email: 'valid2@example.com',
+      password: 'Password123!',
+      countryCode: '+91',
+      phone: '98765432100' // 11 digits
+    })
+  });
+  assert.equal(badPhoneIndiaLong.status, 400);
+
+  const missingPhone = await call('/api/auth/register', {
+    method: 'POST',
+    body: JSON.stringify({
+      fullName: 'John Doe',
+      email: 'valid2@example.com',
+      password: 'Password123!',
+      countryCode: '+91',
+      phone: ''
+    })
+  });
+  assert.equal(missingPhone.status, 400);
 });
 
 test('packages endpoint returns complete package details with itinerary and hotel', async () => {

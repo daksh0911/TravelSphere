@@ -43,6 +43,19 @@ const attempts = new Map();
 const cleanText = (value, max = 160) => typeof value === 'string' ? value.trim().slice(0, max) : '';
 const validEmail = value => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 const validId = value => Number.isInteger(Number(value)) && Number(value) > 0;
+const extractLocalPhoneDigits = (phone, countryCode = '+91') => {
+  const raw = String(phone || '').trim();
+  const codeDigits = String(countryCode || '').replace(/\D/g, '');
+  if (raw.startsWith('+') || (countryCode && raw.startsWith(countryCode))) {
+    const afterCode = raw.replace(/^\+/, '').replace(new RegExp('^' + codeDigits), '');
+    return afterCode.replace(/\D/g, '');
+  }
+  const allDigits = raw.replace(/\D/g, '');
+  if (codeDigits && allDigits.startsWith(codeDigits) && allDigits.length > 10) {
+    return allDigits.slice(codeDigits.length);
+  }
+  return allDigits;
+};
 const safeError = (res, status, message) => res.status(status).json({ success: false, message });
 const signedToken = payload => {
   const body = Buffer.from(JSON.stringify({ ...payload, exp: Date.now() + 8 * 60 * 60 * 1000 })).toString('base64url');
@@ -145,16 +158,16 @@ app.post('/api/auth/register', rateLimit(15 * 60_000, 8, 'register'), async (req
     if (!phone) {
       return safeError(res, 400, 'Mobile Number is required.');
     }
-    const digitsOnly = phone.replace(/\D/g, '');
-    if (countryCode === '+91' && digitsOnly.length !== 10) {
+    const localDigits = extractLocalPhoneDigits(phone, countryCode);
+    if (countryCode === '+91' && localDigits.length !== 10) {
       return safeError(res, 400, 'Mobile Number for India (+91) must be exactly 10 digits.');
     }
-    if (digitsOnly.length < 7 || digitsOnly.length > 15) {
+    if (localDigits.length < 7 || localDigits.length > 15) {
       return safeError(res, 400, 'Please enter a valid mobile number length for the selected country.');
     }
 
     if (await findUserByEmail(email)) return safeError(res, 409, 'An account with this email address already exists.');
-    const fullPhone = phone ? `${countryCode} ${phone.replace(/\D/g, '')}` : '';
+    const fullPhone = `${countryCode} ${localDigits}`;
     const newUser = await createUser({ name: fullName, email, password, phone: fullPhone, country });
     return res.status(201).json({ success: true, message: 'Account created successfully! You can now log in.', user: newUser });
   } catch (error) { console.error('Registration failed:', error.message); return safeError(res, 400, 'Registration failed. Please check your details and try again.'); }
@@ -282,17 +295,19 @@ app.put('/api/users/profile', requireAuth, async (req, res) => {
       return safeError(res, 400, 'Full Name must accept only alphabetic characters and spaces (no numbers or special characters).');
     }
 
+    let fullCleanPhone = cleanText(phone, 40);
     if (phone) {
-      const digitsOnly = String(phone).replace(/\D/g, '');
-      if (countryCode === '+91' && digitsOnly.length !== 10) {
+      const localDigits = extractLocalPhoneDigits(phone, countryCode);
+      if (countryCode === '+91' && localDigits.length !== 10) {
         return safeError(res, 400, 'Mobile Number for India (+91) must be exactly 10 digits.');
       }
-      if (digitsOnly.length < 7 || digitsOnly.length > 15) {
+      if (localDigits.length < 7 || localDigits.length > 15) {
         return safeError(res, 400, 'Please enter a valid phone number length for your country.');
       }
+      fullCleanPhone = `${countryCode} ${localDigits}`;
     }
 
-    const updatedUser = await updateUserProfile(Number(userId), { name: cleanName, phone: cleanText(phone, 40) });
+    const updatedUser = await updateUserProfile(Number(userId), { name: cleanName, phone: fullCleanPhone });
     return res.json({ success: true, message: 'Profile updated successfully!', user: updatedUser });
   } catch (error) { console.error('Profile update failed:', error.message); return safeError(res, 500, 'Failed to update profile.'); }
 });
