@@ -71,6 +71,23 @@ const createFallbackReview = (pkgTitle, rating, comment) => ({
   created_at: new Date().toISOString()
 });
 
+const DEFAULT_CHECKLIST = [
+  { id: 'passport', text: 'Valid Passport / Government Photo ID Verified' },
+  { id: 'voucher', text: 'Download Offline PDF Boarding Voucher' },
+  { id: 'adapter', text: 'Universal Power Adapter & Device Chargers' },
+  { id: 'apparel', text: 'Destination Climate Outfits & Footwear Packed' },
+  { id: 'forex', text: 'Forex Travel Card & Emergency Cash' }
+];
+
+const getDaysUntilTrip = (dateStr) => {
+  if (!dateStr) return 14;
+  const target = new Date(dateStr).getTime();
+  if (isNaN(target)) return 14;
+  const now = new Date('2026-11-04').getTime();
+  const diff = Math.ceil((target - now) / (1000 * 60 * 60 * 24));
+  return diff > 0 ? diff : 1;
+};
+
 const CustomerDashboard = () => {
   usePageTitle('My Dashboard');
   const { user, logout } = useAuth();
@@ -119,6 +136,29 @@ const CustomerDashboard = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [pkgSearch, setPkgSearch] = useState('');
   const [sortBy, setSortBy] = useState('recommended');
+
+  // Pre-Trip Checklist state
+  const [checklist, setChecklist] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('ts_travel_checklist') || '{"passport":true,"voucher":true}');
+    } catch {
+      return { passport: true, voucher: true };
+    }
+  });
+
+  const toggleChecklistItem = (id) => {
+    setChecklist(prev => {
+      const next = { ...prev, [id]: !prev[id] };
+      try { localStorage.setItem('ts_travel_checklist', JSON.stringify(next)); } catch { /* ignore */ }
+      const allChecked = DEFAULT_CHECKLIST.every(item => next[item.id]);
+      if (allChecked && !prev[id]) {
+        confetti({ particleCount: 65, spread: 55, origin: { y: 0.6 } });
+      }
+      return next;
+    });
+  };
+
+  const checklistCount = DEFAULT_CHECKLIST.filter(item => checklist[item.id]).length;
 
   const activeCountry = COUNTRIES.find(c => c.code === profileCountryCode) || COUNTRIES[0];
 
@@ -832,6 +872,31 @@ const CustomerDashboard = () => {
                     <Search size={20} />
                   </Link>
                 </div>
+
+                {/* TRENDING POPULAR DESTINATIONS CHIPS */}
+                <div className="ts-trending-chips-row">
+                  <span style={{ fontSize: '0.72rem', fontWeight: 800, color: '#94a3b8', letterSpacing: '0.05em' }}>POPULAR:</span>
+                  {[
+                    { name: 'Swiss Alps', icon: '🏔️' },
+                    { name: 'Maldives', icon: '🏖️' },
+                    { name: 'Kyoto', icon: '🌸' },
+                    { name: 'Bali', icon: '🌴' },
+                    { name: 'Paris', icon: '🗼' }
+                  ].map(item => (
+                    <button
+                      key={item.name}
+                      type="button"
+                      className="ts-trending-chip"
+                      onClick={() => {
+                        setSearchQuery(item.name);
+                        setPkgSearch(item.name);
+                        setActiveTab('explore');
+                      }}
+                    >
+                      <span>{item.icon}</span> <span>{item.name}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* SECTION 3: 2-COLUMN FEATURE GRID */}
@@ -847,6 +912,9 @@ const CustomerDashboard = () => {
                       >
                         <div className="ts-banner-content-top">
                           <span className="ts-badge-pill-orange">● Live Booking</span>
+                          <span className="ts-badge-pill-orange" style={{ background: 'rgba(15, 23, 42, 0.75)', color: '#38bdf8', backdropFilter: 'blur(6px)' }}>
+                            ⏳ {getDaysUntilTrip(liveBookings[0].start_date)} Days to Departure
+                          </span>
                           <span className="ts-ref-code">Booking Ref: {liveBookings[0].display_id || `TS-${liveBookings[0].booking_id}`}</span>
                         </div>
 
@@ -894,6 +962,36 @@ const CustomerDashboard = () => {
                             <div className="ts-detail-val">{formatPrice(liveBookings[0].total_amount)}</div>
                           </div>
                         </div>
+
+                        {/* INTERACTIVE PRE-TRIP CHECKLIST */}
+                        <div className="ts-pre-trip-box">
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.45rem', flexWrap: 'wrap', gap: '0.4rem' }}>
+                            <span style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--color-text-dark)', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                              <CheckCircle size={14} color="#16a34a" /> Pre-Trip Preparation Checklist
+                            </span>
+                            <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#16a34a' }}>
+                              {checklistCount} of {DEFAULT_CHECKLIST.length} Ready ({Math.round((checklistCount / DEFAULT_CHECKLIST.length) * 100)}%)
+                            </span>
+                          </div>
+
+                          <div style={{ width: '100%', height: '6px', background: '#e2e8f0', borderRadius: '999px', overflow: 'hidden', marginBottom: '0.65rem' }}>
+                            <div style={{ width: `${(checklistCount / DEFAULT_CHECKLIST.length) * 100}%`, height: '100%', background: '#16a34a', transition: 'width 0.3s ease' }} />
+                          </div>
+
+                          <div className="ts-checklist-grid">
+                            {DEFAULT_CHECKLIST.map((item) => (
+                              <label key={item.id} className="ts-checklist-item" style={{ color: checklist[item.id] ? '#16a34a' : '#475569' }}>
+                                <input 
+                                  type="checkbox" 
+                                  checked={Boolean(checklist[item.id])} 
+                                  onChange={() => toggleChecklistItem(item.id)}
+                                />
+                                <span style={{ textDecoration: checklist[item.id] ? 'line-through' : 'none' }}>{item.text}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+
                         <div style={{ marginTop: '1.25rem', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
                           <button
                             type="button"
@@ -913,6 +1011,17 @@ const CustomerDashboard = () => {
                           >
                             <FileDown size={15} /> Download Official Voucher & Boarding Pass (PDF)
                           </button>
+
+                          <a
+                            href={`https://wa.me/?text=${encodeURIComponent(`✈️ Great news! Our trip to "${liveBookings[0].package_title}" is confirmed! Booking Ref: ${liveBookings[0].display_id || liveBookings[0].booking_id}. Destination: ${liveBookings[0].destination_name || 'Global Destination'}. Travel Date: ${liveBookings[0].start_date || 'Nov 18, 2026'}. View details on TravelSphere!`)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="ts-btn-outline"
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', padding: '0.65rem 1rem', fontSize: '0.82rem', textDecoration: 'none', color: '#15803d', borderColor: '#bbf7d0', background: '#f0fdf4' }}
+                            title="Share booking with family on WhatsApp"
+                          >
+                            <span>💬 WhatsApp Family</span>
+                          </a>
                         </div>
                       </div>
                     </>

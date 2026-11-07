@@ -1726,3 +1726,75 @@
   padding-top: 0.75rem;
   border-top: 1px solid #f1f5f9;
 }
+
+/* Pre-Trip Preparation Checklist */
+.ts-pre-trip-box {
+  background: #f8fafc;
+  border: 1px solid var(--border-light, #e2e8f0);
+  border-radius: 14px;
+  padding: 1rem 1.15rem;
+  margin-top: 1.25rem;
+}
+
+.ts-checklist-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.45rem;
+}
+
+.ts-checklist-item {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.15s ease;
+}
+
+.ts-checklist-item input[type="checkbox"] {
+  accent-color: #16a34a;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+/* Trending Chips Row */
+.ts-trending-chips-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 2px;
+}
+
+.ts-trending-chips-row::-webkit-scrollbar {
+  display: none;
+}
+
+.ts-trending-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  border: 1px solid var(--border-light, #e2e8f0);
+  background: #ffffff;
+  color: #475569;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.ts-trending-chip:hover {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #2563eb;
+  transform: translateY(-1px);
+}

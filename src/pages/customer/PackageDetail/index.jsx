@@ -13,7 +13,9 @@ import {
   Car, 
   ShieldCheck, 
   Sparkles, 
-  FileDown
+  FileDown,
+  Share2,
+  Sun
 } from 'lucide-react';
 import SmartImage from '../../../components/common/SmartImage';
 import { useCurrency } from '../../../context/useCurrency';
@@ -24,6 +26,24 @@ import { generateBookingPDF } from '../../../utils/pdfVoucher';
 import './PackageDetail.css';
 
 const generateReservationId = () => `#TS-BK-${Math.floor(100000 + Math.random() * 900000)}`;
+
+const CLIMATE_MAP = {
+  1: { temp: '28°C - 31°C', condition: 'Tropical Sunshine & Gentle Breeze', bestMonths: 'Nov to Apr (Dry & Sunny)', gear: 'Light cottons, swimwear, reef-safe sunscreen, sunglasses' },
+  2: { temp: '22°C - 28°C', condition: 'Mediterranean Azure Skies & Sunset Breeze', bestMonths: 'May to Oct (Ideal Weather)', gear: 'Walking shoes for cobbled paths, evening cardigan, camera' },
+  3: { temp: '26°C - 30°C', condition: 'Tropical Warmth & Lush Greenery', bestMonths: 'Apr to Oct (Dry Season)', gear: 'Breathable attire, temple sarong, comfortable trainers' },
+  4: { temp: '8°C - 18°C (Alpine)', condition: 'Crisp Mountain Air & Snow Glaciers', bestMonths: 'Jun - Sep (Hiking) or Dec - Mar (Snow)', gear: 'Thermal layers, waterproof alpine windbreaker, sunglasses' },
+  5: { temp: '14°C - 22°C', condition: 'Mild Sakura Spring / Autumn Foliage', bestMonths: 'Mar to May & Sep to Nov', gear: 'Easy slip-off shoes for temples, light layers, daypack' },
+  6: { temp: '24°C - 32°C', condition: 'Warm Desert Sunshine', bestMonths: 'Oct to Apr (Pleasant Winters)', gear: 'Sun protection, evening desert wrap, smart resort wear' },
+  7: { temp: '15°C - 23°C', condition: 'Charming European Temperate', bestMonths: 'Apr to Oct (Pleasant & Lively)', gear: 'Chic walking footwear, compact umbrella, daypack' },
+  8: { temp: '18°C - 28°C', condition: 'Sunny Royal Winter Skies', bestMonths: 'Oct to Mar (Royal Season)', gear: 'Breathable linens, wide-brim hat, camera for forts' }
+};
+
+const getClimateForPackage = (id) => CLIMATE_MAP[Number(id)] || {
+  temp: '20°C - 26°C',
+  condition: 'Pleasant & Travel-Friendly',
+  bestMonths: 'Year-Round Curated Departures',
+  gear: 'Comfortable daywear, travel adapters, valid passport'
+};
 
 export default function PackageDetailPage() {
   const { id } = useParams();
@@ -53,6 +73,20 @@ export default function PackageDetailPage() {
     }
   });
   const [wishlistLoading, setWishlistLoading] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
+  const climate = getClimateForPackage(id);
+
+  const handleCopyShareLink = async () => {
+    try {
+      if (typeof navigator !== 'undefined' && navigator.clipboard) {
+        await navigator.clipboard.writeText(window.location.href);
+        setCopiedLink(true);
+        setTimeout(() => setCopiedLink(false), 2500);
+      }
+    } catch {
+      /* ignore */
+    }
+  };
 
   usePageTitle(pkg ? `${pkg.title} · Travel Package` : 'Package Details');
 
@@ -397,6 +431,45 @@ export default function PackageDetailPage() {
             )}
           </div>
 
+          {/* BEST TIME TO VISIT & CLIMATE INSIGHT */}
+          <div className="pkg-card-box">
+            <h3 className="pkg-section-title">
+              <Sun size={20} color="#f59e0b" /> Best Time to Visit & Climate Insight
+            </h3>
+            <div className="pkg-climate-grid">
+              <div className="pkg-climate-item">
+                <span className="pkg-climate-icon">🌤️</span>
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: '0.88rem', color: '#1e293b' }}>Typical Climate</div>
+                  <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.2rem', lineHeight: 1.4 }}>
+                    <strong style={{ color: '#a3704c' }}>{climate.temp}</strong><br />
+                    {climate.condition}
+                  </div>
+                </div>
+              </div>
+
+              <div className="pkg-climate-item">
+                <span className="pkg-climate-icon">📅</span>
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: '0.88rem', color: '#1e293b' }}>Peak Travel Season</div>
+                  <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.2rem', lineHeight: 1.4 }}>
+                    {climate.bestMonths}
+                  </div>
+                </div>
+              </div>
+
+              <div className="pkg-climate-item">
+                <span className="pkg-climate-icon">🎒</span>
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: '0.88rem', color: '#1e293b' }}>Recommended Packing</div>
+                  <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.2rem', lineHeight: 1.4 }}>
+                    {climate.gear}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* INCLUSIONS & EXCLUSIONS */}
           <div className="pkg-card-box">
             <h3 className="pkg-section-title">
@@ -538,6 +611,29 @@ export default function PackageDetailPage() {
                   <Heart size={16} fill={isWishlisted ? 'currentColor' : 'none'} />
                   {isWishlisted ? 'Saved in Wishlist' : 'Add to Wishlist'}
                 </button>
+
+                {/* Social & Buddy Share Buttons */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.45rem', marginTop: '0.4rem' }}>
+                  <button
+                    type="button"
+                    className="btn-share-pkg"
+                    onClick={handleCopyShareLink}
+                    title="Copy direct trip link"
+                  >
+                    {copiedLink ? <Check size={14} color="#16a34a" /> : <Share2 size={14} />}
+                    <span>{copiedLink ? 'Link Copied!' : 'Copy Link'}</span>
+                  </button>
+
+                  <a
+                    href={`https://wa.me/?text=${encodeURIComponent(`Check out this vacation package on TravelSphere: "${pkg?.title}" in ${pkg?.destination}! View details: ${typeof window !== 'undefined' ? window.location.href : ''}`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-whatsapp-pkg"
+                    title="Share with travel companions on WhatsApp"
+                  >
+                    <span>💬 WhatsApp</span>
+                  </a>
+                </div>
               </div>
 
               <div style={{ fontSize: '0.72rem', color: '#94a3b8', textAlign: 'center', marginTop: '0.85rem' }}>

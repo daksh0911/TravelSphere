@@ -411,3 +411,75 @@
   background: #f8fafc;
 }
 
+/* Climate & Season Insight */
+.pkg-climate-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .pkg-climate-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}
+
+.pkg-climate-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  background: #f8fafc;
+  padding: 1rem;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+}
+
+.pkg-climate-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+/* Social Share Buttons */
+.btn-share-pkg {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  background: #ffffff;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 0.65rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-share-pkg:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+.btn-whatsapp-pkg {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 0.65rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.btn-whatsapp-pkg:hover {
+  background: #dcfce7;
+  color: #166534;
+}
+
