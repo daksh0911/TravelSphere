@@ -1132,7 +1132,7 @@ const CustomerDashboard = () => {
                 {/* RIGHT COLUMN CARDS */}
                 <div className="ts-right-cards-col">
                   
-                  {/* TRAVELER PROFILE CARD (TECHNICAL DATABASE LABELS REMOVED) */}
+                  {/* TRAVELER PROFILE CARD */}
                   <div className="ts-card-panel">
                     <div className="ts-panel-header">
                       <span className="ts-panel-title">Traveler Profile</span>
