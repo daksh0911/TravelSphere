@@ -202,7 +202,8 @@ app.post('/api/auth/social-login', rateLimit(15 * 60_000, 8, 'social-login'), (r
 
 app.post('/api/bookings', requireAuth, async (req, res) => {
   try {
-    const { userId, packageId, startDate, endDate, guests, totalAmount } = req.body || {};
+    const userId = req.body?.userId ? Number(req.body.userId) : Number(req.auth?.sub);
+    const { packageId, startDate, endDate, guests, totalAmount } = req.body || {};
     if (!validId(userId) || !validId(packageId) || !Number.isInteger(Number(guests)) || Number(guests) < 1 || Number(guests) > 30 || !Number.isFinite(Number(totalAmount)) || Number(totalAmount) < 0) return safeError(res, 400, 'Booking details are invalid.');
     if (!isSelf(req, userId)) return safeError(res, 403, 'You can only book for your own account.');
     const bookingId = await createBooking({ userId: Number(userId), packageId: Number(packageId), startDate: cleanText(startDate, 10), endDate: cleanText(endDate, 10), guests: Number(guests), totalAmount: Number(totalAmount) });
@@ -220,7 +221,8 @@ app.post('/api/bookings', requireAuth, async (req, res) => {
 
 app.post('/api/wishlist', requireAuth, async (req, res) => {
   try {
-    const { userId, packageId } = req.body || {};
+    const userId = req.body?.userId ? Number(req.body.userId) : Number(req.auth?.sub);
+    const packageId = Number(req.body?.packageId);
     if (!validId(userId) || !validId(packageId)) return safeError(res, 400, 'userId and packageId are required.');
     if (!isSelf(req, userId)) return safeError(res, 403, 'You can only edit your own wishlist.');
     const wishlistId = await addToWishlist({ userId: Number(userId), packageId: Number(packageId) });
@@ -285,7 +287,8 @@ app.get('/api/users/profile', requireAuth, async (req, res) => {
 
 app.put('/api/users/profile', requireAuth, async (req, res) => {
   try {
-    const { userId, name, phone, countryCode = '+91' } = req.body || {};
+    const userId = req.body?.userId ? Number(req.body.userId) : Number(req.auth?.sub);
+    const { name, phone, countryCode = '+91' } = req.body || {};
     if (!validId(userId)) return safeError(res, 400, 'A valid user ID is required.');
     if (!isSelf(req, userId)) return safeError(res, 403, 'You can only edit your own profile.');
     
@@ -343,7 +346,8 @@ app.put('/api/support/tickets/:id', adminOnly, async (req, res) => {
 // Reviews endpoint (PDF Table 22 / Table 19)
 app.post('/api/reviews', requireAuth, rateLimit(15 * 60_000, 15, 'review'), async (req, res) => {
   try {
-    const { userId, bookingId, rating, comment } = req.body || {};
+    const userId = req.body?.userId ? Number(req.body.userId) : Number(req.auth?.sub);
+    const { bookingId, rating, comment } = req.body || {};
     const parsedRating = Number(rating);
     if (!validId(userId) || !Number.isInteger(parsedRating) || parsedRating < 1 || parsedRating > 5) {
       return safeError(res, 400, 'Choose a rating from 1 to 5.');
@@ -380,7 +384,8 @@ app.post('/api/reviews', requireAuth, rateLimit(15 * 60_000, 15, 'review'), asyn
 app.put('/api/reviews/:id', requireAuth, rateLimit(15 * 60_000, 25, 'review-edit'), async (req, res) => {
   try {
     const reviewId = Number(req.params.id);
-    const { userId, rating, comment } = req.body || {};
+    const userId = req.body?.userId ? Number(req.body.userId) : Number(req.auth?.sub);
+    const { rating, comment } = req.body || {};
     const parsedRating = Number(rating);
     if (!validId(reviewId) || !validId(userId) || !Number.isInteger(parsedRating) || parsedRating < 1 || parsedRating > 5) {
       return safeError(res, 400, 'Choose a rating from 1 to 5.');
@@ -468,7 +473,8 @@ app.post('/api/coupons/validate', rateLimit(15 * 60_000, 30, 'coupon'), async (r
 // Payments recording endpoint (PDF Table 21 / Table 18)
 app.post('/api/payments', requireAuth, rateLimit(15 * 60_000, 20, 'payment'), async (req, res) => {
   try {
-    const { bookingId, userId, amount, method } = req.body || {};
+    const userId = req.body?.userId ? Number(req.body.userId) : Number(req.auth?.sub);
+    const { bookingId, amount, method } = req.body || {};
     if (!validId(userId) || !validId(bookingId) || !Number.isFinite(Number(amount)) || Number(amount) <= 0) {
       return safeError(res, 400, 'Payment details are invalid.');
     }

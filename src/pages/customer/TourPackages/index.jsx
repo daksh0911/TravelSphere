@@ -7,6 +7,7 @@ import './TourPackages.css';
 import '../../../styles/showcase-skin.css';
 import './Compare.css';
 import { useCurrency } from '../../../context/useCurrency';
+import { useAuth } from '../../../context/useAuth';
 import SmartImage from '../../../components/common/SmartImage';
 const InteractiveWorldMap = lazy(() => import('../../../components/common/InteractiveWorldMap'));
 import { generateBookingPDF } from '../../../utils/pdfVoucher';
@@ -47,6 +48,7 @@ const itemVariants = {
 export default function TourPackagesPage() {
   usePageTitle('Tour Packages');
   const { formatPrice, currency } = useCurrency();
+  const { user, isAuthenticated } = useAuth();
   const [searchParams] = useSearchParams();
   const destinationParam = searchParams.get('destination');
   const [query, setQuery] = useState(() => DESTINATIONS_BY_ID[destinationParam]?.name || localStorage.getItem('ts_destination_interest') || '');
@@ -105,7 +107,10 @@ export default function TourPackagesPage() {
       if (isSaved) {
         await api.delete(`/wishlist/${id}`);
       } else {
-        await api.post('/wishlist', { packageId: id });
+        await api.post('/wishlist', {
+          userId: user?.user_id || user?.id,
+          packageId: id
+        });
       }
     } catch {
       /* fallback to local storage */
@@ -119,6 +124,7 @@ export default function TourPackagesPage() {
   const submitBooking = (e) => {
     e.preventDefault();
     const guests = Number(travelersCount) || 2;
+    const totalAmount = booking.price * guests;
     const reservation = {
       id: `TS-BK-${Math.floor(1000 + Math.random() * 9000)}`,
       packageId: booking.id,
@@ -129,13 +135,24 @@ export default function TourPackagesPage() {
       days: booking.days,
       nights: booking.nights,
       guests,
-      amount: booking.price * guests,
+      amount: totalAmount,
       status: 'Confirmed'
     };
     try {
       const current = JSON.parse(localStorage.getItem('ts_trip_requests') || '[]');
       localStorage.setItem('ts_trip_requests', JSON.stringify([reservation, ...current]));
     } catch { /* ignore */ }
+
+    if (isAuthenticated) {
+      api.post('/bookings', {
+        userId: user?.user_id || user?.id,
+        packageId: booking.id,
+        startDate: checkInDate,
+        endDate: checkOutDate,
+        guests,
+        totalAmount
+      }).catch(() => {});
+    }
 
     setLastConfirmedBooking(reservation);
     setBooking(null);

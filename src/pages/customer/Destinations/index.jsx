@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { ArrowRight, CalendarDays, Globe, Heart, LayoutGrid, MapPin, Search, Sparkles, X } from 'lucide-react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import '../../../styles/showcase-skin.css';
 import './Destinations.css';
@@ -18,6 +18,7 @@ const REGIONS = ['All regions', ...new Set(DESTINATIONS.map((item) => item.regio
 
 export default function DestinationsPage() {
   usePageTitle('Destinations');
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const requestedRegion = searchParams.get('region');
   const initialRegion = REGIONS.includes(requestedRegion) ? requestedRegion : 'All regions';
@@ -197,7 +198,7 @@ export default function DestinationsPage() {
                 <ul>
                   {selected.highlights.map(highlight => <li key={highlight}><span>✓</span>{highlight}</li>)}
                 </ul>
-                <button className="primary-action full" onClick={() => { localStorage.setItem('ts_destination_interest', selected.name); window.location.href = '/packages'; }}>
+                <button className="primary-action full" onClick={() => { localStorage.setItem('ts_destination_interest', selected.name); navigate('/packages'); }}>
                   See trips to {selected.name} <ArrowRight size={17}/>
                 </button>
               </div>

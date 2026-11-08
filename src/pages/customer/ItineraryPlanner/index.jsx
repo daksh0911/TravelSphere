@@ -71,12 +71,12 @@ export default function ItineraryPlanner() {
 
   const handleGenerate = (e) => {
     e.preventDefault();
-    const dest = DESTINATIONS.find(d => d.id === selectedDestId) || { name: 'Kyoto, Japan' };
+    const dest = DESTINATIONS.find(d => d.id === selectedDestId) || { name: 'Kyoto', country: 'Japan' };
 
     startTransition(() => {
       const result = generateItinerary({
         destinationId: selectedDestId,
-        destinationName: dest.name + ', ' + dest.country,
+        destinationName: dest.country ? `${dest.name}, ${dest.country}` : dest.name,
         origin: originCity,
         durationDays: Number(durationDays),
         vibe,

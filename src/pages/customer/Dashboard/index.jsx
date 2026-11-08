@@ -83,7 +83,7 @@ const getDaysUntilTrip = (dateStr) => {
   if (!dateStr) return 14;
   const target = new Date(dateStr).getTime();
   if (isNaN(target)) return 14;
-  const now = new Date('2026-11-04').getTime();
+  const now = Date.now();
   const diff = Math.ceil((target - now) / (1000 * 60 * 60 * 24));
   return diff > 0 ? diff : 1;
 };
@@ -185,6 +185,19 @@ const CustomerDashboard = () => {
         setNotifications(data.notifications || []);
         setLiveStats(data.stats || { totalBookings: 0, activeBookings: 0, wishlistCount: 0 });
 
+        if (data.wishlist) {
+          try {
+            const wishIds = data.wishlist.map(w => w.package_id || w.id).filter(Boolean);
+            localStorage.setItem('ts_package_wishlist', JSON.stringify(wishIds));
+          } catch { /* ignore */ }
+        }
+        if (data.reviews) {
+          try { localStorage.setItem('ts_user_reviews', JSON.stringify(data.reviews)); } catch { /* ignore */ }
+        }
+        if (data.notifications) {
+          try { localStorage.setItem('ts_user_notifications', JSON.stringify(data.notifications)); } catch { /* ignore */ }
+        }
+
         // Parse country code and phone number
         const rawPhone = data.user.phone || user?.phone || '';
         const matchedCountry = COUNTRIES.find(c => rawPhone.startsWith(c.code)) || COUNTRIES[0];
@@ -228,6 +241,47 @@ const CustomerDashboard = () => {
           }
         ];
         setLiveBookings(fallbackBookings);
+
+        try {
+          const localWishIds = JSON.parse(localStorage.getItem('ts_package_wishlist') || '[]');
+          if (localWishIds.length > 0) {
+            const catalog = [
+              { id: 1, package_id: 1, title: 'Kyoto Cherry Blossom Tour', price: 1450, rating: 4.9, image_url: '/destination-images/kyoto.webp' },
+              { id: 2, package_id: 2, title: 'Santorini Sunset Cruise & Villa', price: 1780, rating: 4.8, image_url: '/destination-images/santorini.webp' },
+              { id: 3, package_id: 3, title: 'Bali Beach Villa & Temple Tour', price: 1120, rating: 4.7, image_url: '/destination-images/bali.webp' },
+              { id: 4, package_id: 4, title: 'Swiss Alps Glacier & Scenic Express', price: 2100, rating: 5.0, image_url: '/destination-images/swiss-alps.webp' }
+            ];
+            const fallbackWishlist = localWishIds.map(wId => {
+              const matched = catalog.find(p => (p.package_id || p.id) === Number(wId));
+              return matched ? {
+                wishlist_id: Date.now() + Number(wId),
+                package_id: matched.package_id || matched.id,
+                title: matched.title,
+                price: matched.price,
+                rating: matched.rating || 4.9,
+                image_url: matched.image_url || '/destination-images/kyoto.webp'
+              } : null;
+            }).filter(Boolean);
+            if (fallbackWishlist.length > 0) {
+              setLiveWishlist(fallbackWishlist);
+            }
+          }
+        } catch { /* ignore */ }
+
+        try {
+          const localReviews = JSON.parse(localStorage.getItem('ts_user_reviews') || '[]');
+          if (localReviews.length > 0) {
+            setReviews(localReviews);
+          }
+        } catch { /* ignore */ }
+
+        try {
+          const localNotifs = JSON.parse(localStorage.getItem('ts_user_notifications') || '[]');
+          if (localNotifs.length > 0) {
+            setNotifications(localNotifs);
+          }
+        } catch { /* ignore */ }
+
         setLiveStats({
           totalBookings: fallbackBookings.length,
           activeBookings: fallbackBookings.length,
@@ -304,6 +358,13 @@ const CustomerDashboard = () => {
 
     const newWish = createFallbackWishlistItem(pkg);
 
+    // Keep localStorage synchronized across packages and dashboard
+    try {
+      const local = JSON.parse(localStorage.getItem('ts_package_wishlist') || '[]');
+      if (!local.includes(pkgId)) local.push(pkgId);
+      localStorage.setItem('ts_package_wishlist', JSON.stringify(local));
+    } catch { /* ignore */ }
+
     try {
       const { data } = await api.post('/wishlist', {
         userId: liveUser?.user_id || liveUser?.id,
@@ -325,6 +386,12 @@ const CustomerDashboard = () => {
   };
 
   const handleRemoveFromWishlist = async (pkgId) => {
+    // Keep localStorage synchronized
+    try {
+      const local = JSON.parse(localStorage.getItem('ts_package_wishlist') || '[]').filter(x => x !== pkgId);
+      localStorage.setItem('ts_package_wishlist', JSON.stringify(local));
+    } catch { /* ignore */ }
+
     try {
       await api.delete(`/wishlist/${pkgId}`);
     } catch (err) {
@@ -340,14 +407,22 @@ const CustomerDashboard = () => {
     try {
       await api.put('/notifications/read-all');
     } catch { /* ignore */ }
-    setNotifications(prev => prev.map(n => ({ ...n, is_read: 1 })));
+    setNotifications(prev => {
+      const next = prev.map(n => ({ ...n, is_read: 1 }));
+      try { localStorage.setItem('ts_user_notifications', JSON.stringify(next)); } catch { /* ignore */ }
+      return next;
+    });
   };
 
   const handleMarkNotificationRead = async (notifId) => {
     try {
       await api.put(`/notifications/${notifId}/read`);
     } catch { /* ignore */ }
-    setNotifications(prev => prev.map(n => n.notification_id === notifId ? { ...n, is_read: 1 } : n));
+    setNotifications(prev => {
+      const next = prev.map(n => n.notification_id === notifId ? { ...n, is_read: 1 } : n);
+      try { localStorage.setItem('ts_user_notifications', JSON.stringify(next)); } catch { /* ignore */ }
+      return next;
+    });
   };
 
   // Save profile updates with country and name validation
@@ -418,16 +493,19 @@ const CustomerDashboard = () => {
       if (editingReview) {
         // Edit existing review: updates in-place without creating a duplicate
         const { data } = await api.put(`/reviews/${editingReview.review_id}`, {
+          userId: liveUser?.user_id || liveUser?.id,
           rating: reviewForm.rating,
           comment: reviewForm.comment.trim()
         });
         if (data.success) {
-          setReviews(prev => prev.map(r => r.review_id === editingReview.review_id ? {
+          const updated = reviews.map(r => r.review_id === editingReview.review_id ? {
             ...r,
             rating: reviewForm.rating,
             comment: reviewForm.comment.trim(),
             updated_at: new Date().toISOString()
-          } : r));
+          } : r);
+          setReviews(updated);
+          try { localStorage.setItem('ts_user_reviews', JSON.stringify(updated)); } catch { /* ignore */ }
           setEditingReview(null);
           setReviewForm({ rating: 5, comment: '', packageId: '' });
           setReviewStatusMsg('✓ Review updated successfully in your account!');
@@ -439,6 +517,7 @@ const CustomerDashboard = () => {
         // Submit new review
         const chosenPkg = allPackages.find(p => (p.package_id || p.id) == reviewForm.packageId) || allPackages[0];
         const { data } = await api.post('/reviews', {
+          userId: liveUser?.user_id || liveUser?.id,
           packageId: chosenPkg ? (chosenPkg.package_id || chosenPkg.id) : 1,
           rating: reviewForm.rating,
           comment: reviewForm.comment.trim()
@@ -452,7 +531,9 @@ const CustomerDashboard = () => {
             package_title: chosenPkg?.title || 'Tour Package',
             created_at: new Date().toISOString()
           };
-          setReviews(prev => [newRev, ...prev]);
+          const next = [newRev, ...reviews];
+          setReviews(next);
+          try { localStorage.setItem('ts_user_reviews', JSON.stringify(next)); } catch { /* ignore */ }
           setReviewForm({ rating: 5, comment: '', packageId: '' });
           setReviewStatusMsg('✓ Thank you! Your review has been submitted.');
           setIsSubmittingReview(false);
@@ -466,12 +547,14 @@ const CustomerDashboard = () => {
 
     // Local fallback update
     if (editingReview) {
-      setReviews(prev => prev.map(r => r.review_id === editingReview.review_id ? {
+      const updated = reviews.map(r => r.review_id === editingReview.review_id ? {
         ...r,
         rating: reviewForm.rating,
         comment: reviewForm.comment.trim(),
         updated_at: new Date().toISOString()
-      } : r));
+      } : r);
+      setReviews(updated);
+      try { localStorage.setItem('ts_user_reviews', JSON.stringify(updated)); } catch { /* ignore */ }
       setEditingReview(null);
       setReviewStatusMsg('✓ Review updated successfully!');
     } else {
@@ -480,7 +563,9 @@ const CustomerDashboard = () => {
         reviewForm.rating,
         reviewForm.comment.trim()
       );
-      setReviews(prev => [fallbackRev, ...prev]);
+      const next = [fallbackRev, ...reviews];
+      setReviews(next);
+      try { localStorage.setItem('ts_user_reviews', JSON.stringify(next)); } catch { /* ignore */ }
       setReviewStatusMsg('✓ Review submitted successfully!');
     }
     setReviewForm({ rating: 5, comment: '', packageId: '' });
@@ -509,6 +594,7 @@ const CustomerDashboard = () => {
     if (!overviewComment.trim()) return;
     try {
       await api.post('/reviews', {
+        userId: liveUser?.user_id || liveUser?.id,
         packageId: liveBookings[0]?.package_id || 1,
         rating: overviewRating,
         comment: overviewComment.trim()
@@ -520,7 +606,9 @@ const CustomerDashboard = () => {
       overviewRating,
       overviewComment.trim()
     );
-    setReviews(prev => [quickRev, ...prev]);
+    const next = [quickRev, ...reviews];
+    setReviews(next);
+    try { localStorage.setItem('ts_user_reviews', JSON.stringify(next)); } catch { /* ignore */ }
     setOverviewSubmitted(true);
     setOverviewComment('');
     setTimeout(() => setOverviewSubmitted(false), 4000);
