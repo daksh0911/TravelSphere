@@ -67,7 +67,7 @@ function getTravelMateReply(userText) {
 
   // 7. How to use wishlist
   if (t.includes('wishlist') || t.includes('save') || t.includes('heart') || t.includes('favorite')) {
-    return "How to use the Wishlist:\n1. Click the Heart (❤️) icon on any travel package card or package details page.\n2. The package will be instantly saved to your account database.\n3. To view all your saved trips, visit 'My Dashboard' and switch to the 'Dream Escapes (Wishlist)' tab.\n4. You can book directly or remove items anytime with one click!";
+    return "How to use the Wishlist:\n1. Click the Heart (❤️) icon on any travel package card or package details page.\n2. The package will be instantly saved to your saved trips.\n3. To view all your saved trips, visit 'My Dashboard' and switch to the 'Dream Escapes (Wishlist)' tab.\n4. You can book directly or remove items anytime with one click!";
   }
 
   // 8. How to contact customer support

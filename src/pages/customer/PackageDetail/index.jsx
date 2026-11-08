@@ -197,7 +197,7 @@ export default function PackageDetailPage() {
         <div style={{ textAlign: 'center', color: '#64748b' }}>
           <Sparkles size={32} color="#a3704c" className="animate-spin" />
           <h3 style={{ marginTop: '1rem', color: '#1e293b' }}>Loading Complete Package Details...</h3>
-          <p style={{ fontSize: '0.85rem' }}>Fetching itinerary, hotel amenities, and guide allocations from database.</p>
+          <p style={{ fontSize: '0.85rem' }}>Fetching itinerary, hotel amenities, and guide allocations.</p>
         </div>
       </div>
     );
@@ -637,7 +637,7 @@ export default function PackageDetailPage() {
               </div>
 
               <div style={{ fontSize: '0.72rem', color: '#94a3b8', textAlign: 'center', marginTop: '0.85rem' }}>
-                🛡️ 100% Secure Checkout · Instant Database Sync
+                🛡️ 100% Secure Checkout · Instant Confirmation
               </div>
             </form>
           )}
