@@ -241,7 +241,6 @@ export default function RegisterPage() {
               <input 
                 type="text" 
                 name="fullName" 
-                placeholder="e.g. Rahul Sharma" 
                 value={formData.fullName} 
                 onChange={handleFullNameChange} 
                 autoComplete="name"
@@ -265,7 +264,7 @@ export default function RegisterPage() {
             
             <label className={`register-field ${errors.email ? 'error-field' : ''}`}>
               <span>Email address</span>
-              <input type="email" name="email" placeholder="you@example.com" value={formData.email} onChange={change} required />
+              <input type="email" name="email" value={formData.email} onChange={change} required />
               <AnimatePresence>
                 {errors.email && (
                   <motion.div 
@@ -303,7 +302,6 @@ export default function RegisterPage() {
                   <input 
                     type="tel" 
                     name="phone" 
-                    placeholder={`${activeCountry.digits} digits`} 
                     value={formData.phone} 
                     onChange={handlePhoneChange}
                     maxLength={activeCountry.digits}
@@ -335,7 +333,6 @@ export default function RegisterPage() {
                   <input
                     type={showPassword ? 'text' : 'password'}
                     name="password"
-                    placeholder="8+ characters"
                     value={formData.password}
                     onChange={change}
                     required
@@ -371,7 +368,6 @@ export default function RegisterPage() {
                   <input
                     type={showConfirmPassword ? 'text' : 'password'}
                     name="confirmPassword"
-                    placeholder="Repeat password"
                     value={formData.confirmPassword}
                     onChange={change}
                     required

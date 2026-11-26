@@ -589,11 +589,17 @@ const CustomerDashboard = () => {
       const isCancelled = statusInfo.label === 'Cancelled';
       if (!seen.has(title) && !isCancelled) {
         seen.add(title);
+        const rawType = getBookingType(b);
+        const tLower = title.toLowerCase();
+        const type = (tLower.includes('hotel') || tLower.includes('resort') || tLower.includes('villa') || tLower.includes('stay'))
+          ? 'hotel'
+          : rawType;
         list.push({
           id,
           package_id: id,
           title,
-          location: b.destination_name || b.destination || b.departure_city || 'Booked Trip',
+          type,
+          location: b.destination_name || b.destination || b.departure_city || 'Booked Service',
           booking_id: b.booking_id,
           status: statusInfo.label,
           isFinished,
@@ -1310,7 +1316,7 @@ const CustomerDashboard = () => {
   const handleSaveReview = async (e) => {
     e.preventDefault();
     if (!editingReview && !reviewForm.packageId) {
-      setReviewStatusMsg('Please select a travel package to review.');
+      setReviewStatusMsg('Please select a completed booking or service to review.');
       return;
     }
     const chosenBooked = bookedPackages.find(p => String(p.package_id) === String(reviewForm.packageId));
@@ -3072,11 +3078,11 @@ const CustomerDashboard = () => {
                 <form onSubmit={handleSaveReview}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                     
-                    {/* Tour Package Selection (for new reviews) */}
+                    {/* Booking / Service Selection (for new reviews) */}
                     {!editingReview && (
                       <div>
                         <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>
-                          Select Travel Package
+                          Select Completed Booking / Service
                         </label>
                         <select 
                           className="ts-input-field" 
@@ -3094,23 +3100,26 @@ const CustomerDashboard = () => {
                           }}
                           required
                         >
-                          <option value="">-- Choose a package to review --</option>
+                          <option value="">-- Choose a completed trip, hotel, bus, train or rental to review --</option>
                           {bookedPackages.length > 0 ? (
-                            bookedPackages.map(p => (
-                              <option 
-                                key={p.package_id} 
-                                value={p.package_id}
-                                disabled={!p.isFinished}
-                              >
-                                {p.title} {p.isFinished ? `(✓ Completed - ${p.location})` : `(Upcoming - Available after ${p.date || 'trip date'})`}
-                              </option>
-                            ))
+                            bookedPackages.map(p => {
+                              const badge = p.type === 'flight' ? '✈ Flight' : p.type === 'train' ? '🚆 Train' : p.type === 'bus' ? '🚌 Bus' : p.type === 'car' ? '🚗 Rental' : p.type === 'hotel' ? '🏨 Hotel' : '🎫 Tour';
+                              return (
+                                <option 
+                                  key={p.package_id} 
+                                  value={p.package_id}
+                                  disabled={!p.isFinished}
+                                >
+                                  [{badge}] {p.title} {p.isFinished ? `(✓ Completed - ${p.location})` : `(Upcoming - Available after ${p.date || 'travel date'})`}
+                                </option>
+                              );
+                            })
                           ) : (
-                            <option value="" disabled>No booked packages found. Book a trip to submit a review.</option>
+                            <option value="" disabled>No bookings found. Complete a trip, stay or ride to submit a review.</option>
                           )}
                         </select>
                         <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.35rem' }}>
-                          ℹ️ Only booked packages that have completed their travel dates are eligible for review.
+                          ℹ️ Only completed bookings (tours, hotels, buses, trains & rentals) that have finished their travel dates are eligible for review.
                         </div>
                       </div>
                     )}
