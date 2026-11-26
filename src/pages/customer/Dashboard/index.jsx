@@ -564,6 +564,8 @@ const CustomerDashboard = () => {
   })();
 
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [liveBookings, setLiveBookings] = useState(() => {
     try {
@@ -572,6 +574,35 @@ const CustomerDashboard = () => {
     } catch { /* ignore */ }
     return DEFAULT_CUSTOMER_BOOKINGS;
   });
+
+  // Packages and trips booked by the user (only booked packages shown in reviews)
+  const bookedPackages = useMemo(() => {
+    if (!liveBookings || liveBookings.length === 0) return [];
+    const list = [];
+    const seen = new Set();
+    liveBookings.forEach((b) => {
+      const title = b.package_title || b.title;
+      if (!title) return;
+      const id = String(b.package_id || b.booking_id || b.id || title);
+      const statusInfo = getBookingStatusDisplay(b);
+      const isFinished = statusInfo.label === 'Finished';
+      const isCancelled = statusInfo.label === 'Cancelled';
+      if (!seen.has(title) && !isCancelled) {
+        seen.add(title);
+        list.push({
+          id,
+          package_id: id,
+          title,
+          location: b.destination_name || b.destination || b.departure_city || 'Booked Trip',
+          booking_id: b.booking_id,
+          status: statusInfo.label,
+          isFinished,
+          date: b.end_date || b.travel_date || b.start_date
+        });
+      }
+    });
+    return list;
+  }, [liveBookings]);
   const [liveWishlist, setLiveWishlist] = useState(() => {
     const fromStorage = resolveWishlistFromStorage();
     if (fromStorage.length > 0) return fromStorage;
@@ -1282,6 +1313,11 @@ const CustomerDashboard = () => {
       setReviewStatusMsg('Please select a travel package to review.');
       return;
     }
+    const chosenBooked = bookedPackages.find(p => String(p.package_id) === String(reviewForm.packageId));
+    if (chosenBooked && !chosenBooked.isFinished) {
+      setReviewStatusMsg(`Reviews can only be submitted after your booking dates have finished (${chosenBooked.date || 'past trip date'}).`);
+      return;
+    }
     if (!reviewForm.comment.trim()) {
       setReviewStatusMsg('Please write your review feedback before submitting.');
       return;
@@ -1316,7 +1352,9 @@ const CustomerDashboard = () => {
         }
       } else {
         // Submit new review
-        const chosenPkg = allPackages.find(p => (p.package_id || p.id) == reviewForm.packageId) || allPackages[0];
+        const chosenPkg = chosenBooked 
+          || allPackages.find(p => String(p.package_id || p.id) === String(reviewForm.packageId)) 
+          || { title: 'Tour Package' };
         const { data } = await api.post('/reviews', {
           userId: liveUser?.user_id || liveUser?.id,
           packageId: chosenPkg ? (chosenPkg.package_id || chosenPkg.id) : 1,
@@ -1359,8 +1397,11 @@ const CustomerDashboard = () => {
       setEditingReview(null);
       setReviewStatusMsg('✓ Review updated successfully!');
     } else {
+      const chosenPkg = chosenBooked 
+        || allPackages.find(p => String(p.package_id || p.id) === String(reviewForm.packageId)) 
+        || { title: 'Tour Package' };
       const fallbackRev = createFallbackReview(
-        allPackages.find(p => (p.package_id || p.id) == reviewForm.packageId)?.title || 'Tour Package',
+        chosenPkg?.title || 'Tour Package',
         reviewForm.rating,
         reviewForm.comment.trim()
       );
@@ -2369,16 +2410,22 @@ const CustomerDashboard = () => {
                                 ) : (
                                   <span style={{ fontSize: '0.725rem', color: '#94a3b8', fontStyle: 'italic', alignSelf: 'center' }}>Cancelled</span>
                                 )}
-                                <button 
-                                  className="ts-btn-outline" 
-                                  style={{ padding: '0.4rem 0.65rem', fontSize: '0.75rem' }}
-                                  onClick={() => {
-                                    setReviewForm(prev => ({ ...prev, packageId: b.package_id || '' }));
-                                    setActiveTab('reviews');
-                                  }}
-                                >
-                                  Review
-                                </button>
+                                {getBookingStatusDisplay(b).label === 'Finished' && (
+                                  <button 
+                                    type="button"
+                                    className="ts-btn-outline" 
+                                    style={{ padding: '0.4rem 0.65rem', fontSize: '0.75rem', borderColor: '#f59e0b', color: '#b45309', background: '#fffbeb', fontWeight: 700 }}
+                                    onClick={() => {
+                                      const pkgId = String(b.package_id || b.booking_id || b.id || b.package_title);
+                                      setReviewForm(prev => ({ ...prev, packageId: pkgId }));
+                                      setActiveTab('reviews');
+                                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                                    }}
+                                    title="Submit review for completed trip"
+                                  >
+                                    ⭐ Review Trip
+                                  </button>
+                                )}
                               </div>
                             </td>
                           </tr>
@@ -2463,16 +2510,22 @@ const CustomerDashboard = () => {
                           ) : (
                             <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontStyle: 'italic', alignSelf: 'center', padding: '0 0.5rem' }}>Cancelled</span>
                           )}
-                          <button 
-                            type="button"
-                            className="ts-btn-outline" 
-                            onClick={() => {
-                              setReviewForm(prev => ({ ...prev, packageId: b.package_id || '' }));
-                              setActiveTab('reviews');
-                            }}
-                          >
-                            Review
-                          </button>
+                          {getBookingStatusDisplay(b).label === 'Finished' && (
+                            <button 
+                              type="button"
+                              className="ts-btn-outline" 
+                              style={{ borderColor: '#f59e0b', color: '#b45309', background: '#fffbeb', fontWeight: 700 }}
+                              onClick={() => {
+                                const pkgId = String(b.package_id || b.booking_id || b.id || b.package_title);
+                                setReviewForm(prev => ({ ...prev, packageId: pkgId }));
+                                setActiveTab('reviews');
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                              }}
+                              title="Submit review for completed trip"
+                            >
+                              ⭐ Review Trip
+                            </button>
+                          )}
                         </div>
                       </div>
                     ))
@@ -2713,16 +2766,22 @@ const CustomerDashboard = () => {
                               ) : (
                                 <span style={{ fontSize: '0.725rem', color: '#94a3b8', fontStyle: 'italic', alignSelf: 'center' }}>Cancelled</span>
                               )}
-                              <button 
-                                className="ts-btn-outline" 
-                                style={{ padding: '0.4rem 0.65rem', fontSize: '0.75rem' }}
-                                onClick={() => {
-                                  setReviewForm(prev => ({ ...prev, packageId: b.package_id || '' }));
-                                  setActiveTab('reviews');
-                                }}
-                              >
-                                Review
-                              </button>
+                              {getBookingStatusDisplay(b).label === 'Finished' && (
+                                <button 
+                                  type="button"
+                                  className="ts-btn-outline" 
+                                  style={{ padding: '0.4rem 0.65rem', fontSize: '0.75rem', borderColor: '#f59e0b', color: '#b45309', background: '#fffbeb', fontWeight: 700 }}
+                                  onClick={() => {
+                                    const pkgId = String(b.package_id || b.booking_id || b.id || b.package_title);
+                                    setReviewForm(prev => ({ ...prev, packageId: pkgId }));
+                                    setActiveTab('reviews');
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                  }}
+                                  title="Submit review for completed trip"
+                                >
+                                  ⭐ Review Trip
+                                </button>
+                              )}
                             </div>
                           </td>
                         </tr>
@@ -2847,16 +2906,22 @@ const CustomerDashboard = () => {
                         ) : (
                           <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontStyle: 'italic', alignSelf: 'center', padding: '0 0.5rem' }}>Cancelled</span>
                         )}
-                        <button 
-                          type="button"
-                          className="ts-btn-outline" 
-                          onClick={() => {
-                            setReviewForm(prev => ({ ...prev, packageId: b.package_id || '' }));
-                            setActiveTab('reviews');
-                          }}
-                        >
-                          Review
-                        </button>
+                        {getBookingStatusDisplay(b).label === 'Finished' && (
+                          <button 
+                            type="button"
+                            className="ts-btn-outline" 
+                            style={{ borderColor: '#f59e0b', color: '#b45309', background: '#fffbeb', fontWeight: 700 }}
+                            onClick={() => {
+                              const pkgId = String(b.package_id || b.booking_id || b.id || b.package_title);
+                              setReviewForm(prev => ({ ...prev, packageId: pkgId }));
+                              setActiveTab('reviews');
+                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }}
+                            title="Submit review for completed trip"
+                          >
+                            ⭐ Review Trip
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))
@@ -3017,16 +3082,36 @@ const CustomerDashboard = () => {
                           className="ts-input-field" 
                           style={{ width: '100%', marginTop: '0.35rem', padding: '0.65rem 0.85rem', borderRadius: '10px', border: '1px solid #cbd5e1' }}
                           value={reviewForm.packageId}
-                          onChange={(e) => setReviewForm({ ...reviewForm, packageId: e.target.value })}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            const found = bookedPackages.find(p => String(p.package_id) === String(val));
+                            if (found && !found.isFinished) {
+                              setReviewStatusMsg(`ℹ️ Reviews can only be submitted after your booking dates have finished (${found.date || 'past trip date'}).`);
+                            } else {
+                              setReviewStatusMsg('');
+                            }
+                            setReviewForm({ ...reviewForm, packageId: val });
+                          }}
                           required
                         >
                           <option value="">-- Choose a package to review --</option>
-                          {allPackages.map(p => (
-                            <option key={p.package_id || p.id} value={p.package_id || p.id}>
-                              {p.title} ({p.location || 'Destination'})
-                            </option>
-                          ))}
+                          {bookedPackages.length > 0 ? (
+                            bookedPackages.map(p => (
+                              <option 
+                                key={p.package_id} 
+                                value={p.package_id}
+                                disabled={!p.isFinished}
+                              >
+                                {p.title} {p.isFinished ? `(✓ Completed - ${p.location})` : `(Upcoming - Available after ${p.date || 'trip date'})`}
+                              </option>
+                            ))
+                          ) : (
+                            <option value="" disabled>No booked packages found. Book a trip to submit a review.</option>
+                          )}
                         </select>
+                        <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.35rem' }}>
+                          ℹ️ Only booked packages that have completed their travel dates are eligible for review.
+                        </div>
                       </div>
                     )}
 
