@@ -748,7 +748,7 @@
 .vehicle-showcase-head h2 { margin: 12px 0 0; font-family:var(--font-family-heading); font-size:clamp(2.4rem,4vw,4.2rem); line-height:.95; letter-spacing:-.07em; }
 .vehicle-showcase-head h2 em { color:#d5a477; font-style:italic; font-weight:400; }
 .vehicle-showcase-head p { max-width:430px; color:rgba(255,255,255,.65); font-size:12px; line-height:1.5; margin:14px 0 0; }
-.vehicle-showcase-legend { display:flex; gap:18px; flex-wrap:wrap; color:rgba(255,255,255,.55); font-size:10px; text-transform:uppercase; letter-spacing:.12em; }
+.vehicle-showcase-legend { display:flex; gap:18px; flex-wrap:nowrap; justify-content:center; color:rgba(255,255,255,.55); font-size:10px; text-transform:uppercase; letter-spacing:.12em; }
 .vehicle-showcase-legend span { display:flex; flex-direction:column; gap:5px; }
 .vehicle-showcase-legend b { color:#fff; font-size:18px; letter-spacing:0; }
 .vehicle-showcase-stage { width:min(1180px,100%); height:310px; margin:8px auto 0; border-top:1px solid rgba(255,255,255,.14); border-bottom:1px solid rgba(255,255,255,.14); }
@@ -757,7 +757,7 @@
 .vehicle-image > .smart-image { padding: 0; }
 .vehicle-body { padding:22px; }
 .vehicle-group { margin-top:46px; }
-@media (max-width:620px){ .vehicle-showcase{padding:30px 18px 34px}.vehicle-showcase-head{display:block}.vehicle-showcase-legend{margin-top:20px}.vehicle-showcase-stage{height:225px} }
+@media (max-width:620px){ .vehicle-showcase{padding:30px 18px 34px}.vehicle-showcase-head{display:block}.vehicle-showcase-legend{margin-top:20px; flex-wrap:nowrap; justify-content:space-evenly; gap:12px}.vehicle-showcase-legend span{align-items:center; text-align:center}.vehicle-showcase-stage{height:225px} }
 
 /* Fleet cards: make the vehicle itself the hero, with quick-scan specifications below. */
 .vehicle-grid { align-items: stretch; }
