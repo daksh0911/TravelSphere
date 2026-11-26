@@ -82,11 +82,13 @@ export const getBookingType = (b) => {
   if (b.booking_type) {
     const rawType = b.booking_type.toLowerCase();
     if (['vehicle', 'bike', 'motorcycle', 'suv'].includes(rawType)) return 'car';
+    if (rawType.includes('guide')) return 'guide';
     return rawType;
   }
   const title = (b.package_title || b.packageTitle || '').toLowerCase();
   const carrier = (b.carrier || '').toLowerCase();
   const notes = (b.notes || '').toLowerCase();
+  if (title.includes('guide') || notes.includes('guide') || b.guide_id || b.guide_name) return 'guide';
   if (carrier.includes('air') || title.includes('flight') || title.includes('jet') || title.includes('seaplane') || notes.includes('flight')) return 'flight';
   if (carrier.includes('rail') || title.includes('train') || title.includes('express') || title.includes('shinkansen') || notes.includes('rail') || notes.includes('train')) return 'train';
   if (carrier.includes('bus') || title.includes('bus') || title.includes('coach') || notes.includes('bus')) return 'bus';
@@ -99,6 +101,7 @@ const getBookingBadgeLabel = (b) => {
   if (bookingType === 'flight') return '✈ Flight';
   if (bookingType === 'train') return '🚆 Train';
   if (bookingType === 'bus') return '🚌 Bus';
+  if (bookingType === 'guide') return '🧭 Tour Guide';
   if (bookingType === 'car') {
     const text = `${b?.package_title || ''} ${b?.notes || ''}`.toLowerCase();
     return (text.includes('bike') || text.includes('motorcycle') || text.includes('touring') || text.includes('cruiser'))
@@ -774,6 +777,7 @@ const CustomerDashboard = () => {
   const busBookings = useMemo(() => liveBookings.filter(b => getBookingType(b) === 'bus'), [liveBookings]);
   const carBookings = useMemo(() => liveBookings.filter(b => getBookingType(b) === 'car'), [liveBookings]);
   const packageBookings = useMemo(() => liveBookings.filter(b => getBookingType(b) === 'package'), [liveBookings]);
+  const guideBookings = useMemo(() => liveBookings.filter(b => getBookingType(b) === 'guide'), [liveBookings]);
 
   const displayedBookings = useMemo(() => {
     if (bookingFilter === 'flight') return flightBookings;
@@ -781,8 +785,9 @@ const CustomerDashboard = () => {
     if (bookingFilter === 'bus') return busBookings;
     if (bookingFilter === 'car') return carBookings;
     if (bookingFilter === 'package') return packageBookings;
+    if (bookingFilter === 'guide') return guideBookings;
     return liveBookings;
-  }, [bookingFilter, liveBookings, flightBookings, trainBookings, busBookings, carBookings, packageBookings]);
+  }, [bookingFilter, liveBookings, flightBookings, trainBookings, busBookings, carBookings, packageBookings, guideBookings]);
 
   const handleCreateFastBooking = (bookingData) => {
     setShowFastBookingModal(null);
@@ -1176,8 +1181,14 @@ const CustomerDashboard = () => {
     setShowCheckoutModal(false);
     setLiveBookings(prev => [confirmedBooking, ...prev]);
     confetti({ particleCount: 80, spread: 65, origin: { y: 0.6 } });
-    setBookingMsg(`🎉 Booking confirmed for "${confirmedBooking.package_title}"! Download your official voucher.`);
-    setActiveTab('bookings');
+    const isGuide = getBookingType(confirmedBooking) === 'guide';
+    if (isGuide) {
+      setBookingMsg(`🎉 Tour guide booking confirmed for "${confirmedBooking.package_title}"! View your booked guide reservation in the section below.`);
+      setActiveTab('guides');
+    } else {
+      setBookingMsg(`🎉 Booking confirmed for "${confirmedBooking.package_title}"! Download your official voucher.`);
+      setActiveTab('bookings');
+    }
     setTimeout(() => setBookingMsg(''), 6000);
   };
 
@@ -1748,6 +1759,15 @@ const CustomerDashboard = () => {
               </button>
 
               <button 
+                className={`ts-drawer-link ${activeTab === 'bookings' && bookingFilter === 'guide' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('bookings'); setBookingFilter('guide'); setShowMobileDrawer(false); }}
+              >
+                <Award size={18} />
+                <span>Tour Guides</span>
+                {guideBookings.length > 0 && <span className="ts-drawer-badge">{guideBookings.length}</span>}
+              </button>
+
+              <button 
                 className={`ts-drawer-link ${activeTab === 'wishlist' ? 'active' : ''}`}
                 onClick={() => { setActiveTab('wishlist'); setShowMobileDrawer(false); }}
               >
@@ -1867,6 +1887,14 @@ const CustomerDashboard = () => {
               >
                 <Car size={18} />
                 <span>Cars ({carBookings.length})</span>
+              </button>
+
+              <button 
+                className={`ts-sidebar-item ${activeTab === 'bookings' && bookingFilter === 'guide' ? 'active' : ''}`}
+                onClick={() => { setActiveTab('bookings'); setBookingFilter('guide'); }}
+              >
+                <Award size={18} />
+                <span>Guides ({guideBookings.length})</span>
               </button>
 
               <button 
@@ -2687,6 +2715,13 @@ const CustomerDashboard = () => {
                 >
                   🎫 Packages ({packageBookings.length})
                 </button>
+                <button
+                  type="button"
+                  className={`ts-filter-pill ${bookingFilter === 'guide' ? 'active' : ''}`}
+                  onClick={() => setBookingFilter('guide')}
+                >
+                  🧭 Tour Guides ({guideBookings.length})
+                </button>
               </div>
 
               {/* Desktop Table View */}
@@ -2796,14 +2831,19 @@ const CustomerDashboard = () => {
                       <tr>
                         <td colSpan={8} style={{ textAlign: 'center', padding: '3rem', color: '#64748b' }}>
                           <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>
-                            {bookingFilter === 'flight' ? '✈️' : bookingFilter === 'train' ? '🚆' : bookingFilter === 'bus' ? '🚌' : bookingFilter === 'car' ? '🚗' : '📋'}
+                            {bookingFilter === 'flight' ? '✈️' : bookingFilter === 'train' ? '🚆' : bookingFilter === 'bus' ? '🚌' : bookingFilter === 'car' ? '🚗' : bookingFilter === 'guide' ? '🧭' : '📋'}
                           </div>
                           <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--color-text-dark)', marginBottom: '0.2rem' }}>
-                            No {bookingFilter === 'flight' ? 'Flight' : bookingFilter === 'train' ? 'Train' : bookingFilter === 'bus' ? 'Bus' : bookingFilter === 'car' ? 'Car Rental' : 'Travel'} Bookings Found
+                            No {bookingFilter === 'flight' ? 'Flight' : bookingFilter === 'train' ? 'Train' : bookingFilter === 'bus' ? 'Bus' : bookingFilter === 'car' ? 'Car Rental' : bookingFilter === 'guide' ? 'Tour Guide' : 'Travel'} Bookings Found
                           </div>
                           <div style={{ fontSize: '0.85rem', marginBottom: '1.25rem' }}>
-                            You have no {bookingFilter === 'all' ? 'active or completed' : bookingFilter} bookings yet. Click below to book instantly!
+                            You have no {bookingFilter === 'all' ? 'active or completed' : bookingFilter === 'guide' ? 'tour guide' : bookingFilter} bookings yet. Click below to book instantly!
                           </div>
+                          {bookingFilter === 'guide' && (
+                            <button onClick={() => setActiveTab('guides')} className="ts-btn-primary" style={{ display: 'inline-flex' }}>
+                              🧭 Hire Certified Tour Guide
+                            </button>
+                          )}
                           {bookingFilter === 'flight' && (
                             <button onClick={() => setShowFastBookingModal('flight')} className="ts-btn-primary" style={{ display: 'inline-flex' }}>
                               ✈ Book Flight Ticket
@@ -2934,14 +2974,19 @@ const CustomerDashboard = () => {
                 ) : (
                   <div style={{ textAlign: 'center', padding: '3rem 1rem', color: '#64748b', background: '#fff', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
                     <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>
-                      {bookingFilter === 'flight' ? '✈️' : bookingFilter === 'train' ? '🚆' : bookingFilter === 'bus' ? '🚌' : bookingFilter === 'car' ? '🚗' : '📋'}
+                      {bookingFilter === 'flight' ? '✈️' : bookingFilter === 'train' ? '🚆' : bookingFilter === 'bus' ? '🚌' : bookingFilter === 'car' ? '🚗' : bookingFilter === 'guide' ? '🧭' : '📋'}
                     </div>
                     <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--color-text-dark)', marginBottom: '0.2rem' }}>
-                      No {bookingFilter === 'flight' ? 'Flight' : bookingFilter === 'train' ? 'Train' : bookingFilter === 'bus' ? 'Bus' : bookingFilter === 'car' ? 'Car Rental' : 'Travel'} Bookings Found
+                      No {bookingFilter === 'flight' ? 'Flight' : bookingFilter === 'train' ? 'Train' : bookingFilter === 'bus' ? 'Bus' : bookingFilter === 'car' ? 'Car Rental' : bookingFilter === 'guide' ? 'Tour Guide' : 'Travel'} Bookings Found
                     </div>
                     <div style={{ fontSize: '0.85rem', marginBottom: '1.25rem' }}>
-                      You have no {bookingFilter === 'all' ? 'active or completed' : bookingFilter} bookings yet. Click below to book instantly!
+                      You have no {bookingFilter === 'all' ? 'active or completed' : bookingFilter === 'guide' ? 'tour guide' : bookingFilter} bookings yet. Click below to book instantly!
                     </div>
+                    {bookingFilter === 'guide' && (
+                      <button onClick={() => setActiveTab('guides')} className="ts-btn-primary" style={{ display: 'inline-flex' }}>
+                        🧭 Hire Certified Tour Guide
+                      </button>
+                    )}
                     {bookingFilter === 'flight' && (
                       <button onClick={() => setShowFastBookingModal('flight')} className="ts-btn-primary" style={{ display: 'inline-flex' }}>
                         ✈ Book Flight Ticket
@@ -3576,6 +3621,110 @@ const CustomerDashboard = () => {
                   </p>
                 </div>
               </div>
+
+              {/* DEDICATED SECTION: YOUR BOOKED TOUR GUIDES */}
+              {guideBookings.length > 0 && (
+                <div style={{ marginBottom: '2.5rem', background: '#ffffff', borderRadius: '20px', padding: '1.75rem', border: '1px solid #e2e8f0', boxShadow: '0 8px 30px rgba(0,0,0,0.04)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.85rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <span style={{ fontSize: '0.725rem', fontWeight: 800, color: '#b45309', background: '#fef3c7', padding: '0.2rem 0.65rem', borderRadius: '6px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                          RESERVATIONS SECTION
+                        </span>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#16a34a' }}>
+                          ● Active Hired Guides
+                        </span>
+                      </div>
+                      <h3 style={{ margin: '0.35rem 0 0', fontSize: '1.35rem', fontWeight: 800, color: '#0f172a' }}>
+                        Your Booked Tour Guides ({guideBookings.length})
+                      </h3>
+                      <p style={{ margin: '0.2rem 0 0', fontSize: '0.825rem', color: '#64748b' }}>
+                        All your private guide reservations, service dates, and travel vouchers are saved here.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.25rem' }}>
+                    {guideBookings.map((b) => (
+                      <div key={b.booking_id || b.display_id} style={{ background: '#f8fafc', borderRadius: '16px', border: '1px solid #cbd5e1', padding: '1.25rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                        <div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
+                            <div>
+                              <span className="ts-type-badge badge-guide" style={{ marginBottom: '0.35rem', display: 'inline-block' }}>
+                                🧭 Tour Guide Reservation
+                              </span>
+                              <h4 style={{ margin: '0.2rem 0', fontSize: '1.1rem', fontWeight: 800, color: '#0f172a' }}>
+                                {b.package_title}
+                              </h4>
+                              <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                                Booking Ref: {b.display_id || `TS-${b.booking_id}`}
+                              </div>
+                            </div>
+                            <span className={`ts-status-badge ${getBookingStatusDisplay(b).className}`}>
+                              ● {getBookingStatusDisplay(b).label}
+                            </span>
+                          </div>
+
+                          <div style={{ background: '#ffffff', padding: '0.85rem', borderRadius: '12px', border: '1px solid #e2e8f0', fontSize: '0.825rem', color: '#334155', marginBottom: '1rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                              <span style={{ color: '#64748b' }}>Destination / Area:</span>
+                              <strong>{b.destination_name || 'Designated Region'}</strong>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                              <span style={{ color: '#64748b' }}>Service Date:</span>
+                              <strong>{b.start_date ? new Date(b.start_date).toLocaleDateString() : (b.travel_date || 'Upcoming')}</strong>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                              <span style={{ color: '#64748b' }}>Travelers:</span>
+                              <strong>{b.guests || 2} Persons</strong>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px dashed #e2e8f0', paddingTop: '0.4rem', marginTop: '0.2rem' }}>
+                              <span style={{ color: '#64748b' }}>Paid Amount:</span>
+                              <strong style={{ color: '#a3704c', fontSize: '0.95rem' }}>{formatPrice(b.total_amount)}</strong>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                          <button
+                            type="button"
+                            className="ts-btn-primary"
+                            style={{ flex: 1, padding: '0.45rem 0.75rem', fontSize: '0.78rem', justifyContent: 'center', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
+                            onClick={() => generateBookingPDF({
+                              id: b.display_id || b.booking_id,
+                              title: b.package_title,
+                              amount: b.total_amount,
+                              status: getBookingStatusDisplay(b).label,
+                              startDate: b.start_date,
+                              endDate: b.end_date,
+                              guests: b.guests,
+                              guestName: liveUser?.name || 'Verified Traveler',
+                              email: liveUser?.email
+                            })}
+                          >
+                            <FileDown size={14} /> Download Guide Voucher PDF
+                          </button>
+                          {getBookingStatusDisplay(b).label === 'Finished' && (
+                            <button
+                              type="button"
+                              className="ts-btn-outline"
+                              style={{ padding: '0.45rem 0.75rem', fontSize: '0.78rem', borderColor: '#f59e0b', color: '#b45309', background: '#fffbeb', fontWeight: 700 }}
+                              onClick={() => {
+                                const pkgId = String(b.package_id || b.booking_id || b.id || b.package_title);
+                                setReviewForm(prev => ({ ...prev, packageId: pkgId }));
+                                setActiveTab('reviews');
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                              }}
+                            >
+                              ⭐ Review Guide
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="ts-guides-grid">
                 {CERTIFIED_GUIDES.map(guide => (

@@ -1094,6 +1094,10 @@
   background: #fae8ff;
   color: #86198f;
 }
+.ts-type-badge.badge-guide {
+  background: #fef08a;
+  color: #854d0e;
+}
 
 /* SECTION 5: WISHLIST CARDS GRID */
 .ts-wishlist-section {
