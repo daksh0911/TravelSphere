@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>TravelSphere — External Examiner Presentation & Viva Voce Guide</title>
+<style>
+  @page {
+    size: A4;
+    margin: 18mm 16mm 18mm 16mm;
+  }
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #1e293b;
+    background: #fff;
+    font-size: 10pt;
+    line-height: 1.5;
+  }
+  .header-box {
+    border-bottom: 3px solid #0284c7;
+    padding-bottom: 12px;
+    margin-bottom: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .title {
+    font-size: 20pt;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.5px;
+  }
+  .subtitle {
+    font-size: 11pt;
+    color: #0284c7;
+    font-weight: 600;
+    margin-top: 2px;
+  }
+  .badge-row {
+    font-size: 8pt;
+    color: #64748b;
+    text-align: right;
+  }
+  .badge {
+    background: #e0f2fe;
+    color: #0369a1;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    display: inline-block;
+    margin-bottom: 3px;
+  }
+  h2 {
+    font-size: 13pt;
+    color: #0f172a;
+    border-bottom: 1.5px solid #e2e8f0;
+    padding-bottom: 4px;
+    margin-top: 18px;
+    margin-bottom: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  h3 {
+    font-size: 11pt;
+    color: #1e293b;
+    margin-top: 10px;
+    margin-bottom: 4px;
+    font-weight: 700;
+  }
+  p {
+    margin-bottom: 6px;
+  }
+  .callout {
+    background: #f8fafc;
+    border-left: 4px solid #0284c7;
+    padding: 10px 14px;
+    margin: 8px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 9.5pt;
+  }
+  .callout-gold {
+    background: #fffbeb;
+    border-left: 4px solid #f59e0b;
+    padding: 10px 14px;
+    margin: 8px 0;
+    border-radius: 0 6px 6px 0;
+    font-size: 9.5pt;
+  }
+  .script-box {
+    background: #f1f5f9;
+    border: 1px dashed #cbd5e1;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-style: italic;
+    color: #0f172a;
+    margin: 8px 0;
+    font-size: 9.5pt;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0 14px 0;
+    font-size: 9pt;
+  }
+  th {
+    background: #f1f5f9;
+    color: #0f172a;
+    font-weight: 700;
+    text-align: left;
+    padding: 7px 10px;
+    border: 1px solid #cbd5e1;
+  }
+  td {
+    padding: 6px 10px;
+    border: 1px solid #e2e8f0;
+    vertical-align: top;
+  }
+  tr:nth-child(even) td {
+    background: #f8fafc;
+  }
+  pre, code {
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 8.5pt;
+  }
+  pre {
+    background: #0f172a;
+    color: #e2e8f0;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin: 6px 0;
+    overflow-x: auto;
+    line-height: 1.4;
+  }
+  .inline-code {
+    background: #e2e8f0;
+    color: #0f172a;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 8.5pt;
+  }
+  .qa-block {
+    margin-bottom: 10px;
+    page-break-inside: avoid;
+  }
+  .qa-q {
+    font-weight: 700;
+    color: #0284c7;
+    font-size: 10pt;
+    margin-bottom: 2px;
+  }
+  .qa-a {
+    color: #334155;
+    padding-left: 10px;
+    border-left: 2px solid #cbd5e1;
+    margin-bottom: 6px;
+    font-size: 9.5pt;
+  }
+  .page-break {
+    page-break-before: always;
+  }
+  .footer-note {
+    font-size: 8pt;
+    color: #94a3b8;
+    text-align: center;
+    margin-top: 14px;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 6px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header-box">
+  <div>
+    <div class="title">TravelSphere</div>
+    <div class="subtitle">External Examiner Presentation & Viva Voce Defense Guide</div>
+  </div>
+  <div class="badge-row">
+    <div class="badge">B.Tech / MCA Project Defense</div><br>
+    Academic Year 2026 · Confidential Cheat Sheet
+  </div>
+</div>
+
+<h2>🖥️ 1. Screen Setup & Short Commands (Before Examiner Sits Down)</h2>
+<p>Keep these 4 windows open on your desktop before calling the examiner. <strong>Note: Apache is NOT needed — only MySQL is required.</strong></p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="width: 25%;">Window</th>
+      <th style="width: 35%;">What It Is</th>
+      <th style="width: 40%;">Exact Action / Short Command</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>1. Web Browser</strong></td>
+      <td>Live Production Website</td>
+      <td>Open <span class="inline-code">https://travel--sphere.vercel.app</span> (or <span class="inline-code">http://localhost:5173</span>)</td>
+    </tr>
+    <tr>
+      <td><strong>2. Terminal 1</strong></td>
+      <td>MySQL CLI Instant Proof</td>
+      <td>Open Command Prompt / PowerShell:<br>
+      <span class="inline-code">mysql -u root -e "USE travel_db; SHOW TABLES;"</span></td>
+    </tr>
+    <tr>
+      <td><strong>3. VS Code</strong></td>
+      <td>Code Architecture & DDL Schema</td>
+      <td>Keep <span class="inline-code">database/schema.sql</span> visible in editor</td>
+    </tr>
+    <tr>
+      <td><strong>4. XAMPP Panel</strong></td>
+      <td>Database Engine Service</td>
+      <td><strong>MySQL</strong>: Started (Green, Port 3306) · <strong>Apache</strong>: Stopped</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout">
+  <strong>Top 3 Terminal Commands to Memorize for Database Defense:</strong>
+  <pre>mysql -u root -e "USE travel_db; SHOW TABLES;"
+mysql -u root -e "USE travel_db; SELECT user_id, name, email, role, password FROM users LIMIT 3;"
+mysql -u root -e "USE travel_db; SELECT contact_id, name, email, message, created_at FROM contact_messages ORDER BY contact_id DESC LIMIT 1;"</pre>
+</div>
+
+<h2>🎙️ 2. The 90-Second Opening Elevator Pitch</h2>
+<div class="script-box">
+  "Good morning / Good afternoon, Sir/Ma'am.<br><br>
+  My name is <strong>[Your Name]</strong>, and I am presenting <strong>TravelSphere</strong> — an enterprise-grade, full-stack travel and tourism management ecosystem.<br><br>
+  Traditional travel websites are either static informational brochures or isolated booking tools. TravelSphere solves this by implementing a <strong>Multi-Tenant Role-Based Access Control (RBAC) architecture</strong> that connects travelers and suppliers across <strong>6 distinct operational roles</strong>:<br>
+  1. The <strong>Customer (Traveler)</strong> who explores destinations, generates AI itineraries, and books trips;<br>
+  2. The <strong>Travel Agent</strong> who curates holiday packages and tracks booking commissions;<br>
+  3. The <strong>Hotel Manager</strong> who manages room occupancy and reservation check-ins;<br>
+  4. The <strong>Transport Provider</strong> managing vehicle fleets across flights, trains, buses, and cars;<br>
+  5. The <strong>Tour Guide</strong> coordinating scheduled traveler groups and activity rosters;<br>
+  6. And the <strong>Global Administrator</strong> governing platform analytics, user accounts, and security verifications.<br><br>
+  Let me walk you through our live platform, tech stack, and relational MySQL database."
+</div>
+
+<h2>⚙️ 3. Tech Stack & Architecture Overview</h2>
+<table>
+  <thead>
+    <tr>
+      <th style="width: 25%;">Layer</th>
+      <th style="width: 40%;">Technologies Used</th>
+      <th style="width: 35%;">Key Architectural Reason</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Frontend</strong></td>
+      <td>React 19, Vite 8, React Router v7, Framer Motion, Lenis, Leaflet GIS</td>
+      <td>Virtual DOM reactivity, sub-second HMR builds, 60fps smooth scrolling, and mobile-optimized routing.</td>
+    </tr>
+    <tr>
+      <td><strong>Backend APIs</strong></td>
+      <td>Node.js (Express 5) & Python (Flask 3)</td>
+      <td>High-throughput RESTful endpoints, connection pooling, and HMAC-SHA256 authenticated session guards.</td>
+    </tr>
+    <tr>
+      <td><strong>Database</strong></td>
+      <td>MySQL 8.0 (<span class="inline-code">travel_db</span> on Port 3306)</td>
+      <td>19 normalized tables in 3NF with foreign key constraints enforcing strict ACID transactional integrity.</td>
+    </tr>
+    <tr>
+      <td><strong>Security</strong></td>
+      <td>bcrypt (cost factor 10), CSP, Rate Limiting</td>
+      <td>Zero-knowledge password encryption (<span class="inline-code">$2b$10$...</span>), XSS protection, and SQL injection immunity.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="page-break"></div>
+
+<h2>🖱️ 4. Click-by-Click Live Demo Workflow (Examiner Script)</h2>
+
+<h3>Step 1: Homepage & Public Exploration</h3>
+<p>• Scroll gently through the landing page. Point out the Lenis smooth scroll and responsive design.<br>
+• <strong>Currency Switcher</strong>: Change currency from USD ($) to INR (₹) or EUR (€). Show how package prices immediately recalculate across the catalog.<br>
+• <strong>Interactive World Map</strong>: Scroll to the Leaflet map. Click on destination pins (e.g., <em>Kyoto, Japan</em> or <em>Swiss Alps</em>) to display geocoded coordinate cards.</p>
+
+<h3>Step 2: Customer / Traveler Experience</h3>
+<p>• Click <strong>Sign In</strong> and enter customer credentials: <strong>Email</strong>: <span class="inline-code">customer@travelsphere.org</span> | <strong>Password</strong>: <span class="inline-code">SphereCustomer@2026</span><br>
+• <strong>Customer Dashboard</strong>: Show the 4 booking category filters: <em>Flights, Trains, Buses, and Car Rentals</em> with real-time status badges (<em>Confirmed</em> vs <em>Finished</em>).<br>
+• <strong>AI Trip Studio / Itinerary Planner</strong>: Go to <em>Trip Planner</em>. Select <em>Kyoto, Japan</em>, adjust the budget slider, select <em>Slow Living</em>, and click <em>Generate Tailored Itinerary</em>. Show the generated day-by-day plan.<br>
+• <strong>Download PDF Voucher</strong>: Click <em>Download PDF Voucher</em>. Show the dynamically generated boarding voucher rendered via <span class="inline-code">jspdf</span>.<br>
+• <strong>AI TravelMate Chatbot</strong>: Open the chat widget in the bottom-right corner. Demonstrate the 4 window states (Floating, Standard, Fullscreen, Dock). Type: <em>"What flights and hotels are available for Kyoto?"</em> and show the intelligent structured response.</p>
+
+<h3>Step 3: Multi-Role Stakeholder Dashboards (Log out and switch)</h3>
+<p>Showcase the distinct operational dashboards for each role:</p>
+<table>
+  <thead>
+    <tr>
+      <th style="width: 25%;">Role</th>
+      <th style="width: 35%;">Login Credentials</th>
+      <th style="width: 40%;">Key Features to Highlight</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Travel Agent</strong></td>
+      <td><span class="inline-code">agent@travelsphere.org</span><br><span class="inline-code">SphereAgent@2026</span></td>
+      <td>12.5% agency commission tier tracking, active tour packages, and traveler inquiry pipeline.</td>
+    </tr>
+    <tr>
+      <td><strong>Hotel Manager</strong></td>
+      <td><span class="inline-code">hotel@travelsphere.org</span><br><span class="inline-code">SphereHotel@2026</span></td>
+      <td>Room occupancy rate (%), gross revenue chart, check-in/out rosters, and reservation status buttons.</td>
+    </tr>
+    <tr>
+      <td><strong>Transport Provider</strong></td>
+      <td><span class="inline-code">transport@travelsphere.org</span><br><span class="inline-code">SphereTransport@2026</span></td>
+      <td>Fleet inventory across Sedans, SUVs, Buses, and Bikes, transit schedules, and driver assignments.</td>
+    </tr>
+    <tr>
+      <td><strong>Tour Guide</strong></td>
+      <td><span class="inline-code">guide@travelsphere.org</span><br><span class="inline-code">SphereGuide@2026</span></td>
+      <td>Assigned traveler rosters, group headcount, itinerary milestones, and tour feedback ratings.</td>
+    </tr>
+    <tr>
+      <td><strong>Global Administrator</strong></td>
+      <td><span class="inline-code">admin@travelsphere.org</span><br><span class="inline-code">SphereAdmin@2026</span></td>
+      <td>Financial analytics, user status toggles (<span class="inline-code">ACTIVE</span>/<span class="inline-code">INACTIVE</span>), provider approvals, and coupon generation.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout-gold">
+  <h3>Step 4: The "Golden Finale" — Live MySQL Terminal Proof (No Apache Needed!)</h3>
+  <p>When the examiner asks: <em>"Where is your database?"</em>, Alt+Tab to your terminal:</p>
+  <p><strong>1. Show All 19 Tables:</strong></p>
+  <pre>mysql -u root -e "USE travel_db; SHOW TABLES;"</pre>
+  <p><em>Say: "Sir/Ma'am, here is our live travel_db database running on MySQL port 3306 with 19 normalized tables."</em></p>
+
+  <p><strong>2. Show Encrypted bcrypt Passwords:</strong></p>
+  <pre>mysql -u root -e "USE travel_db; SELECT user_id, name, email, role, password FROM users LIMIT 3;"</pre>
+  <p><em>Point out: "Passwords are never stored in plaintext. They are encrypted using industry-standard bcrypt hashes ($2b$10$...)."</em></p>
+
+  <p><strong>3. Live Record Insertion:</strong> On the website Contact page, submit a message (Name: <em>Examiner Demo</em>, Message: <em>Live viva test</em>). In the terminal, run:</p>
+  <pre>mysql -u root -e "USE travel_db; SELECT contact_id, name, email, message, created_at FROM contact_messages ORDER BY contact_id DESC LIMIT 1;"</pre>
+  <p><em>The newly inserted row appears with the exact current timestamp! Say: "This proves live bidirectional REST communication between the frontend and MySQL."</em></p>
+</div>
+
+<div class="page-break"></div>
+
+<h2>🎓 5. Master Viva Voce Q&A Cheat Sheet (Top Questions & Answers)</h2>
+
+<div class="qa-block">
+  <div class="qa-q">Q1: What is the core problem TravelSphere solves?</div>
+  <div class="qa-a">"Most travel applications isolate booking from supplier operations. TravelSphere provides a unified platform using Role-Based Access Control (RBAC) connecting travelers with agents, hotels, transit providers, guides, and platform administrators in a synchronized system."</div>
+</div>
+
+<div class="qa-block">
+  <div class="qa-q">Q2: Why React 19 and Vite 8 instead of plain HTML/JS or traditional Create-React-App?</div>
+  <div class="qa-a">"React offers component-based architecture and a reactive Virtual DOM for zero-latency dashboard state updates. Vite replaces legacy Webpack bundling with native ES modules, compiling our build in under 1 second with automatic route-based code splitting."</div>
+</div>
+
+<div class="qa-block">
+  <div class="qa-q">Q3: How do you prevent unauthorized users from accessing the Admin panel?</div>
+  <div class="qa-a">"Through dual-layer protection: on the frontend, React Router wraps protected routes with a custom <code>&lt;ProtectedRoute allowedRoles={[...]}&gt;</code> guard checking authenticated tokens. If unauthorized, users are immediately redirected. On the backend, Express/Flask API middleware verifies HMAC session tokens and rejects unauthorized requests with HTTP 403 Forbidden."</div>
+</div>
+
+<div class="qa-block">
+  <div class="qa-q">Q4: How is the database organized and normalized?</div>
+  <div class="qa-a">"Our <code>travel_db</code> consists of 19 normalized relational tables in Third Normal Form (3NF). Core identity tables (<code>users</code>, <code>admin</code>) connect to resource tables (<code>packages</code>, <code>hotels</code>, <code>vehicles</code>) and transactional tables (<code>bookings</code>, <code>payments</code>) via Foreign Key constraints."</div>
+</div>
+
+<div class="qa-block">
+  <div class="qa-q">Q5: Why did you choose MySQL instead of MongoDB (NoSQL)?</div>
+  <div class="qa-a">"Tourism management requires strict <strong>ACID guarantees</strong> (Atomicity, Consistency, Isolation, Durability) for financial bookings and payments. Foreign keys prevent orphan records (a booking cannot exist without a valid package and user), ensuring absolute financial data integrity."</div>
+</div>
+
+<div class="qa-block">
+  <div class="qa-q">Q6: How does the application prevent SQL Injection attacks?</div>
+  <div class="qa-a">"We enforce <strong>Parameterized Prepared Statements</strong> (using <code>?</code> placeholders in Node.js <code>mysql2/promise</code> and <code>%s</code> tuples in PyMySQL). The database engine compiles the query template first; user input is treated strictly as data literals and can never execute as SQL code."</div>
+</div>
+
+<div class="qa-block">
+  <div class="qa-q">Q7: How are user passwords secured?</div>
+  <div class="qa-a">"Passwords are hashed using salted cryptographic <strong>bcrypt</strong> with work factor 10 (<code>$2b$10$...</code>). bcrypt incorporates a unique salt per password, rendering precomputed rainbow table and dictionary attacks computationally infeasible."</div>
+</div>
+
+<div class="qa-block">
+  <div class="qa-q">Q8: What is Database Connection Pooling?</div>
+  <div class="qa-a">"Instead of establishing a heavy new TCP socket connection to MySQL for every incoming HTTP request, a connection pool maintains a pool of reusable active connections. This eliminates connection overhead, reduces latency, and prevents server exhaustion under traffic spikes."</div>
+</div>
+
+<div class="qa-block">
+  <div class="qa-q">Q9: How do you handle Cross-Site Scripting (XSS)?</div>
+  <div class="qa-a">"React automatically escapes string variables within JSX before rendering to the DOM. Additionally, the backend enforces Content-Security-Policy (CSP), <code>X-Content-Type-Options: nosniff</code>, and <code>X-Frame-Options: DENY</code> security headers."</div>
+</div>
+
+<div class="qa-block">
+  <div class="qa-q">Q10: Did you conduct automated testing?</div>
+  <div class="qa-a">"Yes. We have a 59-test automated test suite executed via Node's native test runner (<code>npm test</code>) that audits session token security, RBAC boundary isolation, pricing algorithms, and input sanitization in under 600ms."</div>
+</div>
+
+<div class="qa-block">
+  <div class="qa-q">Q11: What happens if a user loses internet connectivity while browsing?</div>
+  <div class="qa-a">"The application utilizes client-side caching with <code>localStorage</code> fallback state and static Single Page Application (SPA) fallback routing (<code>404.html</code>), allowing travelers to inspect saved itineraries and vouchers even with intermittent network connection."</div>
+</div>
+
+<div class="footer-note">
+  TravelSphere Project Viva Defense Reference Sheet · Prepared for External University Evaluation · Page 3 of 3
+</div>
+
+</body>
+</html>

@@ -1,0 +1,68 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Root build output used by Live Server
+/assets/
+/destination-images/
+/hotel-images/
+/package-images/
+/vehicle-images/
+/favicon.svg
+/hero-lago-di-braies.jpg
+/spectrum.jpg
+/travel-image-placeholder.svg
+/llms.txt
+/manus-routes.json
+/robots.txt
+/sitemap.xml
+/_headers
+/404.html
+/guide-images/
+/guide-avatar.svg
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Local databases
+scratch/
+*.db
+*.sqlite
+*.sqlite3
+*.sqlite-wal
+*.sqlite-shm
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Agent tooling (auto-generated, not part of project)
+.agent/
+.agents/
+.gemini/
+.gsd/
+adapters/

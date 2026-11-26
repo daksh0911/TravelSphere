@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <defs>
+    <linearGradient id="gBg" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#fdfbf7"/>
+      <stop offset="1" stop-color="#eddcc9"/>
+    </linearGradient>
+    <linearGradient id="gCopper" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#a3704c"/>
+      <stop offset="1" stop-color="#c4976c"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="100" fill="url(#gBg)"/>
+  <circle cx="100" cy="100" r="95" stroke="#a3704c" stroke-opacity="0.25" stroke-width="2"/>
+  <!-- Head -->
+  <circle cx="100" cy="74" r="32" fill="url(#gCopper)"/>
+  <!-- Torso -->
+  <path d="M48 160c0-28.7 23.3-52 52-52s52 23.3 52 52v12H48v-12z" fill="url(#gCopper)" fill-opacity="0.9"/>
+  <!-- Guide Badge Pin -->
+  <circle cx="132" cy="130" r="12" fill="#ffffff" stroke="#a3704c" stroke-width="2"/>
+  <path d="M132 122l2.2 4.5 4.9.7-3.6 3.5.8 4.9-4.3-2.3-4.3 2.3.8-4.9-3.6-3.5 4.9-.7z" fill="#f59e0b"/>
+</svg>

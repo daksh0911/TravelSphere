@@ -1,0 +1,161 @@
+/* ═══════════════════════════════════════════════════════════════
+   Compare Panel – Dark Luxury Premium Aesthetic
+   ═══════════════════════════════════════════════════════════════ */
+
+.compare-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(6px);
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}
+
+.compare-panel {
+  width: min(980px, 100%);
+  max-height: calc(100vh - 36px);
+  overflow: auto;
+  background: var(--color-bg-white);
+  border: 1px solid rgba(163, 123, 92, 0.15);
+  border-radius: 18px;
+  padding: 34px;
+  position: relative;
+  box-shadow: var(--shadow-md);
+}
+
+.compare-panel h2 {
+  font-family: var(--font-family-heading);
+  font-size: clamp(2.2rem, 4vw, 4rem);
+  line-height: 0.92;
+  letter-spacing: -0.08em;
+  margin: 15px 0 26px;
+  color: var(--color-text-dark);
+}
+
+.compare-panel h2 em {
+  font-family: var(--font-family-heading);
+  color: var(--color-primary);
+  font-weight: 400;
+  font-style: italic;
+}
+
+/* ── Compare Table / Cards ────────────────────────────────────── */
+.compare-table {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.compare-table article {
+  background: var(--color-bg-white);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 13px;
+  overflow: hidden;
+  padding-bottom: 15px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.compare-table article:hover {
+  border-color: rgba(163, 123, 92, 0.25);
+  box-shadow: var(--shadow-md);
+}
+
+.compare-table article > .smart-image {
+  width: 100%;
+  height: 135px;
+  object-fit: cover;
+}
+
+.compare-table article > strong,
+.compare-table article > span,
+.compare-table article > b,
+.compare-table article > div {
+  display: block;
+  margin-left: 14px;
+  margin-right: 14px;
+}
+
+.compare-table article > strong {
+  font-size: 14px;
+  line-height: 1.1;
+  margin-top: 14px;
+  color: var(--color-text-dark);
+}
+
+.compare-table article > span {
+  font-size: 10px;
+  color: var(--color-text-medium);
+  margin-top: 5px;
+}
+
+.compare-table article > b {
+  font-size: 21px;
+  color: var(--color-primary);
+  margin-top: 15px;
+}
+
+.compare-table article > b small {
+  font-size: 9px;
+  color: var(--color-text-light);
+  font-weight: 400;
+}
+
+.compare-table article > div {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--color-text-medium);
+  font-size: 10px;
+  margin-top: 11px;
+}
+
+.compare-table article > div svg {
+  color: var(--color-primary);
+}
+
+.compare-table article > button {
+  margin: 16px 14px 0;
+  width: calc(100% - 28px);
+  padding: 11px;
+  border: 1.5px solid var(--color-primary);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-primary);
+  font-size: 10px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.compare-table article > button:hover {
+  background: var(--color-primary);
+  color: var(--color-bg-main);
+  box-shadow: var(--shadow-md);
+}
+
+/* ── Responsive: ≤ 620px ──────────────────────────────────────── */
+@media (max-width: 620px) {
+  .compare-panel {
+    padding: 26px 16px;
+    border-radius: 15px;
+  }
+
+  .compare-table {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+  }
+
+  .compare-table::-webkit-scrollbar {
+    display: none;
+  }
+
+  .compare-table article {
+    min-width: 245px;
+    scroll-snap-align: start;
+  }
+}

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" fill="none">
+  <defs>
+    <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#FBF9F5"/>
+      <stop offset="1" stop-color="#F0E8DC"/>
+    </linearGradient>
+    <linearGradient id="copper" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#A3704C"/>
+      <stop offset="1" stop-color="#C4976C"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#paper)"/>
+  <circle cx="600" cy="365" r="176" stroke="#A3704C" stroke-opacity=".16" stroke-width="2"/>
+  <circle cx="600" cy="365" r="132" stroke="#A3704C" stroke-opacity=".12" stroke-width="2"/>
+  <path d="M600 207c-40 55-67 106-67 158a67 67 0 1 0 134 0c0-52-27-103-67-158Z" fill="url(#copper)" fill-opacity=".82"/>
+  <circle cx="600" cy="365" r="20" fill="#FBF9F5"/>
+  <path d="M0 650c190-66 342-86 600-40s410 26 600-40v230H0V650Z" fill="#A3704C" fill-opacity=".055"/>
+  <text x="600" y="710" text-anchor="middle" fill="#78716C" font-family="Georgia,serif" font-size="25" letter-spacing="5">TRAVELSPHERE</text>
+</svg>

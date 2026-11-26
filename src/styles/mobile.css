@@ -1,0 +1,593 @@
+/* ==========================================================================
+   Comprehensive Mobile & Tablet Responsiveness System
+   Ensures flawless viewports, touch targets, modals, and tables on mobile devices
+   ========================================================================== */
+
+/* 1. Global Safe-Area & Viewport Adjustments */
+html,
+body,
+#root {
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* 2. Tablet & Mobile Responsive Rules (max-width: 992px) */
+@media (max-width: 992px) {
+  /* Customer Dashboard */
+  .ts-dashboard-body {
+    flex-direction: column;
+    padding: 0 1rem;
+    gap: 1rem;
+  }
+
+  .ts-sidebar {
+    position: static;
+    width: 100%;
+    margin: 1rem 0 0;
+    padding: 1rem;
+  }
+
+  .ts-sidebar-menu {
+    flex-direction: row;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    gap: 0.5rem;
+  }
+
+  .ts-sidebar-menu::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ts-sidebar-item {
+    width: auto;
+    white-space: nowrap;
+    padding: 0.6rem 1rem;
+  }
+
+  .ts-main-grid-2col {
+    grid-template-columns: 1fr;
+  }
+
+  .ts-metrics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* Admin Dashboard */
+  .admin-header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .admin-user-profile {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .admin-sections-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .packages-grid-admin,
+  .approval-cards-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+
+  /* Hotel Dashboard */
+  .hotel-profile-card {
+    grid-template-columns: 1fr;
+  }
+
+  .hotel-hero-img {
+    height: 260px;
+    min-height: auto;
+  }
+
+  .rooms-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+
+  /* Guide Dashboard */
+  .guide-profile-card {
+    grid-template-columns: 1fr;
+  }
+
+  .guide-avatar-img {
+    height: 260px;
+    min-height: auto;
+  }
+
+  .guide-meta-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 3. Small Mobile Devices (max-width: 768px) */
+@media (max-width: 768px) {
+  html {
+    scroll-padding-top: 72px;
+  }
+
+  body {
+    min-width: 320px;
+  }
+
+  main {
+    width: 100%;
+    min-width: 0;
+    overflow-x: clip;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 100%;
+    padding-inline: 16px;
+  }
+
+  .navbar-container {
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* Universal Touch Targets: Ensure min 44px on mobile */
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: 16px !important; /* Prevents auto-zoom on iOS */
+  }
+
+  /* Clean Single-Row Sticky Top Navbar for Customer Dashboard */
+  .ts-top-nav {
+    height: 64px !important;
+    padding: 0 1rem !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: nowrap !important;
+    gap: 0.75rem !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 120 !important;
+    background: rgba(255, 255, 255, 0.98) !important;
+    border-bottom: 1px solid var(--border-light, #e2e8f0) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04) !important;
+  }
+
+  .ts-top-nav-left {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.65rem !important;
+    margin: 0 !important;
+    flex-shrink: 0 !important;
+  }
+
+  .ts-header-right {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 0.55rem !important;
+    width: auto !important;
+    margin: 0 !important;
+    flex-shrink: 0 !important;
+  }
+
+  .ts-search-pill {
+    display: none !important;
+  }
+
+  .ts-nav-links {
+    display: none !important;
+  }
+
+  .admin-header,
+  .agent-header,
+  .hotel-header,
+  .transport-header,
+  .guide-header {
+    padding: 1rem 0.85rem;
+  }
+
+  .admin-header-content,
+  .agent-header-content,
+  .hotel-header-content,
+  .transport-header-content,
+  .guide-header-content {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.75rem !important;
+  }
+
+  .admin-title-badge,
+  .agent-title-badge,
+  .hotel-title-badge,
+  .transport-title-badge,
+  .guide-title-badge {
+    gap: 0.75rem !important;
+  }
+
+  .admin-title-badge h2,
+  .agent-title-badge h2,
+  .hotel-title-badge h2,
+  .transport-title-badge h2,
+  .guide-title-badge h2 {
+    font-size: clamp(1.2rem, 5vw, 1.45rem) !important;
+    line-height: 1.25 !important;
+  }
+
+  .admin-user-profile,
+  .agent-user-profile,
+  .hotel-user-profile,
+  .transport-user-profile,
+  .guide-user-profile {
+    width: 100% !important;
+    justify-content: space-between !important;
+    padding: 0.35rem 0.85rem !important;
+  }
+
+  /* Tabs Bar Horizontal Scroll on Mobile */
+  .admin-tabs-bar,
+  .agent-tabs-bar,
+  .hotel-tabs-bar,
+  .transport-tabs-bar,
+  .guide-tabs-bar {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    padding: 0.5rem 0.85rem !important;
+    gap: 0.45rem !important;
+  }
+
+  .admin-tabs-bar::-webkit-scrollbar,
+  .agent-tabs-bar::-webkit-scrollbar,
+  .hotel-tabs-bar::-webkit-scrollbar,
+  .transport-tabs-bar::-webkit-scrollbar,
+  .guide-tabs-bar::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .admin-tabs-bar .tab-btn,
+  .agent-tabs-bar .tab-btn,
+  .hotel-tabs-bar .tab-btn,
+  .transport-tabs-bar .tab-btn,
+  .guide-tabs-bar .tab-btn {
+    padding: 0.55rem 0.95rem !important;
+    font-size: 0.82rem !important;
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+    border-radius: 999px !important;
+  }
+
+  /* Content Padding */
+  .admin-content-area,
+  .agent-content-area,
+  .hotel-content-area,
+  .transport-content-area,
+  .guide-content-area {
+    padding: 0 0.85rem 80px !important;
+    margin: 1rem auto !important;
+  }
+
+  /* Metrics & Grids */
+  .ts-metrics-grid,
+  .kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.65rem !important;
+  }
+
+  .ts-hero-card {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .ts-hero-heading {
+    font-size: 1.85rem;
+  }
+
+  .ts-hero-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .ts-hero-actions button,
+  .ts-hero-actions a {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* All Grids Single Column on Mobile */
+  .agent-packages-grid,
+  .inquiries-grid,
+  .rooms-grid,
+  .services-grid,
+  .requests-grid,
+  .packages-grid-admin,
+  .approval-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  /* Fast Gateway Search Widget */
+  .ts-search-grid-bar {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .ts-search-submit-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .ts-details-4grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  /* Tables: Smooth Horizontal Touch Scrolling */
+  .admin-table-container,
+  .agent-table-container,
+  .hotel-table-container,
+  .transport-table-container,
+  .guide-table-container {
+    border-radius: 14px;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+  }
+
+  .admin-table,
+  .agent-table,
+  .hotel-table,
+  .transport-table,
+  .guide-table,
+  .ts-custom-table {
+    min-width: 680px;
+  }
+
+  /* Filter Bars */
+  .pane-filter-bar,
+  .pane-header-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.85rem;
+  }
+
+  .search-box,
+  .role-filter-group {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  /* Schedule Row on Mobile */
+  .schedule-row-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1.15rem;
+  }
+
+  .sch-times {
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  /* Modals on Mobile: Bottom-sheet style with safe scroll */
+  .modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .agent-modal-card,
+  .hotel-modal-card,
+  .transport-modal-card,
+  .guide-modal-card,
+  .admin-modal-card {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 24px 24px 0 0;
+    max-height: 85dvh;
+    padding: 1.75rem 1.25rem max(1.5rem, env(safe-area-inset-bottom));
+  }
+
+  .form-row-2,
+  .form-row-3 {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .modal-actions button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Public Showcase Pages */
+  .navbar-container {
+    padding-inline: max(16px, env(safe-area-inset-left)) max(16px, env(safe-area-inset-right));
+  }
+
+  .mobile-nav-panel {
+    max-height: calc(100dvh - 68px);
+    padding-bottom: max(24px, env(safe-area-inset-bottom));
+  }
+
+  .destination-grid,
+  .hotel-grid,
+  .package-grid {
+    grid-template-columns: 1fr !important;
+    width: 100%;
+    gap: 16px;
+  }
+
+  .destination-tile,
+  .destination-tile.featured {
+    grid-column: 1 / -1 !important;
+    min-height: 380px;
+  }
+
+  .destination-search,
+  .hotel-search-panel,
+  .package-search {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 0.75rem;
+  }
+
+  .newsletter-section,
+  .newsletter-content,
+  .newsletter-form,
+  .footer,
+  .footer-links-grid,
+  .footer-bottom {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .newsletter-content {
+    width: 100%;
+  }
+
+  /* Filter pill scroll container on mobile */
+  .region-tabs {
+    padding: 6px 2px 14px;
+    gap: 8px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .region-tabs button {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+
+  .compare-bar {
+    left: 10px;
+    right: 10px;
+    width: auto;
+    padding-bottom: max(13px, env(safe-area-inset-bottom));
+  }
+}
+
+/* 4. Touch Precision on Mobile Screens */
+@media (hover: none) and (pointer: coarse) {
+  .platform-lift:hover,
+  .hotel-card:hover,
+  .package-product-card:hover,
+  .destination-tile:hover,
+  .hero-orbit-card:hover,
+  .agent-card:hover,
+  .room-card:hover,
+  .service-card:hover,
+  .request-card:hover,
+  .kpi-card:hover {
+    transform: none;
+  }
+}
+
+/* ==========================================================================
+   5. Mobile Performance & Low-Latency Rendering Engine
+   Eliminates lag, dropped frames, and excessive layout recalculations
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* Replace expensive multi-pass GPU backdrop-filters with crisp opaque/frosted colors */
+  .navbar,
+  .navbar.scrolled,
+  .ts-top-nav,
+  .ts-ai-modal-overlay,
+  .command-backdrop,
+  .modal-overlay,
+  .destination-view-cursor {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .navbar {
+    background: rgba(253, 251, 248, 0.98) !important;
+  }
+
+  .navbar.scrolled {
+    background: #ffffff !important;
+    box-shadow: 0 2px 12px rgba(35, 28, 22, 0.08) !important;
+  }
+
+  /* Reset will-change layers to release constrained mobile GPU VRAM */
+  .reveal,
+  .hero-static-bg,
+  .global-scroll-progress,
+  .footer-reveal > .footer,
+  .destination-view-cursor {
+    will-change: auto !important;
+  }
+
+  /* Disable heavy infinite background animations on mobile viewports */
+  .hero-aurora {
+    display: none !important;
+    animation: none !important;
+  }
+
+  .hero-static-bg,
+  .hero-background .smart-image {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  /* Disable mouse-tracking cursor on touch screens */
+  .destination-view-cursor {
+    display: none !important;
+  }
+
+  /* Instant hardware momentum scrolling for touch viewports */
+  .destination-gallery-viewport,
+  .ts-sidebar-menu,
+  .ts-nav-links,
+  .admin-tabs-bar,
+  .agent-tabs-bar,
+  .hotel-tabs-bar,
+  .transport-tabs-bar,
+  .guide-tabs-bar,
+  .region-tabs {
+    scroll-behavior: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  /* CSS Content Containment & Visibility: Defer layout & paint of offscreen elements */
+  .discovery-section,
+  .vehicles-showcase-section,
+  .signal-section,
+  .journey-section,
+  .home-trip-cta,
+  .footer,
+  .package-product-card,
+  .destination-tile,
+  .hotel-card,
+  .home-vehicle-card,
+  .ts-card,
+  .ts-trip-plan-card,
+  .approval-card,
+  .room-card {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 380px;
+  }
+
+  /* Faster image decoding on mobile */
+  img {
+    content-visibility: auto;
+  }
+}

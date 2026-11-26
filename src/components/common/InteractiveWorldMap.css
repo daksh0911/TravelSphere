@@ -1,0 +1,387 @@
+/* ==========================================================================
+   Interactive World Map — TravelSphere Luxury Voyager Edition
+   ========================================================================== */
+
+.ts-map-container {
+  position: relative;
+  width: 100%;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 12px 36px -10px rgba(41, 37, 36, 0.12);
+  border: 1px solid rgba(163, 112, 76, 0.18);
+  background: #f4efe6;
+  margin-bottom: 2.5rem;
+}
+
+.ts-map-canvas {
+  width: 100%;
+  height: 100%;
+  min-height: 480px;
+  z-index: 1;
+}
+
+/* Map Header Floating Overlay */
+.ts-map-floating-bar {
+  position: absolute;
+  top: 0.85rem;
+  left: 0.85rem;
+  right: 0.85rem;
+  z-index: 500;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+
+.ts-map-controls-group {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  pointer-events: auto;
+  max-width: 100%;
+}
+
+.ts-region-scroll-pills {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ts-region-scroll-pills::-webkit-scrollbar {
+  display: none;
+}
+
+.ts-map-badge {
+  background: #1e293b;
+  color: #ffffff;
+  padding: 0.45rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.ts-map-pill-btn {
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(41, 37, 36, 0.14);
+  color: #44403c;
+  padding: 0.42rem 0.8rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.ts-map-pill-btn:hover {
+  background: #ffffff;
+  color: #a3704c;
+  border-color: #a3704c;
+  transform: translateY(-1px);
+}
+
+.ts-map-pill-btn.active {
+  background: #a3704c;
+  color: #ffffff;
+  border-color: #a3704c;
+  box-shadow: 0 3px 12px rgba(163, 112, 76, 0.35);
+}
+
+.ts-reset-btn {
+  background: rgba(255, 255, 255, 0.94);
+  font-weight: 700;
+}
+
+/* Custom Pin Marker in Leaflet — Compact Pill + Tooltip Design */
+.ts-custom-div-icon {
+  background: transparent !important;
+  border: none !important;
+}
+
+.ts-pin-wrapper {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  user-select: none;
+}
+
+.ts-pin-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #1e293b;
+  color: #ffffff;
+  padding: 4px 8px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border: 1.5px solid #ffffff;
+  white-space: nowrap;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ts-pin-wrapper:hover .ts-pin-badge {
+  transform: scale(1.15);
+  background: #a3704c;
+  box-shadow: 0 6px 18px rgba(163, 112, 76, 0.45);
+}
+
+.ts-pin-wrapper.active .ts-pin-badge {
+  background: #a3704c;
+  border-color: #fde047;
+  transform: scale(1.2);
+  box-shadow: 0 0 0 3px rgba(163, 112, 76, 0.35), 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+.ts-pin-icon {
+  font-size: 11px;
+  line-height: 1;
+}
+
+.ts-pin-price {
+  color: #fde047;
+  font-weight: 800;
+  font-size: 10.5px;
+}
+
+.ts-pin-tooltip {
+  position: absolute;
+  bottom: calc(100% + 5px);
+  background: rgba(15, 23, 42, 0.94);
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  z-index: 1000;
+}
+
+.ts-pin-wrapper:hover .ts-pin-tooltip,
+.ts-pin-wrapper.active .ts-pin-tooltip {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Floating Selected Item Preview Card */
+.ts-map-preview-card {
+  position: absolute;
+  bottom: 1.25rem;
+  left: 1.25rem;
+  z-index: 500;
+  max-width: 380px;
+  width: calc(100% - 2.5rem);
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(16px);
+  border-radius: 18px;
+  border: 1px solid rgba(41, 37, 36, 0.12);
+  box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.22);
+  padding: 0.85rem;
+  display: flex;
+  gap: 0.85rem;
+  animation: tsMapSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes tsMapSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ts-preview-thumb {
+  width: 85px;
+  height: 85px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.ts-preview-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.ts-preview-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 0.15rem;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 22px;
+}
+
+.ts-preview-sub {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin: 0 0 0.4rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ts-preview-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ts-preview-price {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #a3704c;
+}
+
+.ts-preview-action-btn {
+  background: #a3704c;
+  color: #ffffff;
+  border: none;
+  padding: 0.42rem 0.95rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 3px 10px rgba(163, 112, 76, 0.3);
+}
+
+.ts-preview-action-btn:hover {
+  background: #8b5d3b;
+  transform: translateY(-1px);
+}
+
+.ts-preview-close {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  background: #f1f5f9;
+  border: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #64748b;
+  transition: all 0.2s ease;
+}
+
+.ts-preview-close:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+/* Map Toggle Switch for List/Map View */
+.ts-view-mode-toggle {
+  display: inline-flex;
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: 9999px;
+  gap: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.ts-toggle-option {
+  padding: 0.4rem 0.95rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.2s ease;
+}
+
+.ts-toggle-option.active {
+  background: #ffffff;
+  color: #a3704c;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Leaflet Zoom Control Modernization */
+.leaflet-control-zoom {
+  border: none !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  margin-right: 14px !important;
+  margin-bottom: 14px !important;
+}
+
+.leaflet-control-zoom a {
+  background: rgba(255, 255, 255, 0.95) !important;
+  color: #1e293b !important;
+  font-weight: 700 !important;
+  width: 32px !important;
+  height: 32px !important;
+  line-height: 32px !important;
+  transition: all 0.2s ease !important;
+}
+
+.leaflet-control-zoom a:hover {
+  background: #ffffff !important;
+  color: #a3704c !important;
+}
+
+@media (max-width: 640px) {
+  .ts-map-floating-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .ts-map-controls-group {
+    justify-content: space-between;
+  }
+  .ts-map-preview-card {
+    max-width: 100%;
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    width: auto;
+  }
+}

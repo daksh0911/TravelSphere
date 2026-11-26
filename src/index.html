@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script>
+      (function () {
+        var p = window.location.pathname;
+        if (p !== '/' && !p.endsWith('/index.html') && !/\.[^/]+$/.test(p) && !window.location.hash) {
+          window.location.replace('/#' + p + window.location.search);
+        }
+      })();
+    </script>
+    <!-- Favicon & Apple Touch Icon -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <!-- Basic SEO -->
+    <title>TravelSphere - Discover your next journey</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="TravelSphere brings curated destinations, stays, and journeys together." />
+    <meta name="theme-color" content="#0066ff" />
+    <!-- Open Graph / Twitter Card -->
+    <meta property="og:title" content="TravelSphere – Travel Package Management System" />
+    <meta property="og:description" content="Explore hand‑picked travel packages, compare prices, and book with a single click." />
+    <meta property="og:image" content="https://travel--sphere.vercel.app/og-image.jpg" />
+    <meta property="og:url" content="https://travel--sphere.vercel.app/" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="TravelSphere – Travel Package Management System" />
+    <meta name="twitter:description" content="Explore hand‑picked travel packages, compare prices, and book with a single click." />
+    <meta name="twitter:image" content="https://travel--sphere.vercel.app/og-image.jpg" />
+    <!-- Fonts & LCP Asset Preload -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" as="image" href="/hero-lago-di-braies.jpg" fetchpriority="high" />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet"></noscript>
+    <style>
+      /* Critical inline styles — instant branded loading screen */
+      *{margin:0;padding:0;box-sizing:border-box}
+      body{font-family:'Plus Jakarta Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#fbf9f5;color:#292524}
+      #ts-splash{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fbf9f5;transition:opacity .25s ease,visibility .25s ease;will-change:opacity}
+      #ts-splash.hide{opacity:0;visibility:hidden;pointer-events:none}
+      #ts-splash svg{width:48px;height:48px;color:#a3704c;animation:ts-spin 1.2s linear infinite}
+      #ts-splash p{margin-top:1rem;font-size:.95rem;font-weight:600;color:#78716c;letter-spacing:.03em}
+      @keyframes ts-spin{to{transform:rotate(360deg)}}
+    </style>
+  </head>
+  <body>
+    <noscript>TravelSphere needs JavaScript to run. Please enable JavaScript in your browser.</noscript>
+    <!-- Instant branded splash shown while JS bundles download & parse -->
+    <div id="ts-splash" aria-label="Loading TravelSphere">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+      <p>TravelSphere</p>
+    </div>
+    <div id="root"></div>
+    <script type="module" src="./main.jsx"></script>
+  </body>
+</html>
