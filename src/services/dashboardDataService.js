@@ -118,10 +118,10 @@ const SEED_HOTEL_INFO = {
 };
 
 const SEED_HOTEL_ROOMS = [
-  { id: 201, roomType: 'Susuki Pavilion', pricePerNight: 2800, capacity: '2 Adults', status: 'Available', amenities: 'King Bed, Forest Canopy View, Hinoki Cypress Tub, Tatami Living Area', imageUrl: '/hotel-images/aman-kyoto.jpg' },
-  { id: 202, roomType: 'Hotaru Pavilion', pricePerNight: 2400, capacity: '2 Adults', status: 'Available', amenities: 'Stream View, Private Garden Terrace, Cedar Mineral Onsen Tub, Floor-to-Ceiling Windows', imageUrl: '/hotel-images/aman-kyoto.jpg' },
-  { id: 203, roomType: 'Washigamine Villa Suite', pricePerNight: 3800, capacity: '4 Adults', status: 'Booked', amenities: 'Secluded 2-Bedroom Sanctuary, Secret Garden Panorama, Private Kaiseki Dining Room, Onsen Baths', imageUrl: '/hotel-images/aman-kyoto.jpg' },
-  { id: 204, roomType: 'Takagamine Luxury Ryokan Room', pricePerNight: 1950, capacity: '2 Adults', status: 'Available', amenities: 'Traditional Tatami & Shoji Architecture, Living Area, Direct Botanical Forest Path, Mineral Spa Access', imageUrl: '/hotel-images/aman-kyoto.jpg' }
+  { id: 201, roomType: 'Susuki Pavilion', pricePerNight: 2800, capacity: '2 Adults', status: 'Available', amenities: 'King Bed, Forest Canopy View, Hinoki Cypress Tub, Tatami Living Area', imageUrl: '/hotel-images/aman-kyoto.webp' },
+  { id: 202, roomType: 'Hotaru Pavilion', pricePerNight: 2400, capacity: '2 Adults', status: 'Available', amenities: 'Stream View, Private Garden Terrace, Cedar Mineral Onsen Tub, Floor-to-Ceiling Windows', imageUrl: '/destination-images/kyoto.webp' },
+  { id: 203, roomType: 'Washigamine Villa Suite', pricePerNight: 3800, capacity: '4 Adults', status: 'Booked', amenities: 'Secluded 2-Bedroom Sanctuary, Secret Garden Panorama, Private Kaiseki Dining Room, Onsen Baths', imageUrl: '/hotel-images/capella-ubud.webp' },
+  { id: 204, roomType: 'Takagamine Luxury Ryokan Room', pricePerNight: 1950, capacity: '2 Adults', status: 'Available', amenities: 'Traditional Tatami & Shoji Architecture, Living Area, Direct Botanical Forest Path, Mineral Spa Access', imageUrl: '/hotel-images/backwater-ripples-kumarakom.webp' }
 ];
 
 const normalizeHotelRooms = (rooms, fallbackRooms = SEED_HOTEL_ROOMS) => {
@@ -133,6 +133,8 @@ const normalizeHotelRooms = (rooms, fallbackRooms = SEED_HOTEL_ROOMS) => {
       candidate.id === storedRoom.id || candidate.roomType === storedRoom.roomType
     ) || fallbackRooms[index] || {};
     const storedPrice = Number(storedRoom.pricePerNight);
+    const usesSharedHotelImage = ['/hotel-images/aman-kyoto.jpg', '/hotel-images/aman-kyoto.webp']
+      .includes(storedRoom.imageUrl);
 
     return {
       ...fallbackRoom,
@@ -144,7 +146,9 @@ const normalizeHotelRooms = (rooms, fallbackRooms = SEED_HOTEL_ROOMS) => {
       capacity: storedRoom.capacity || fallbackRoom.capacity || '2 Adults',
       status: storedRoom.status || fallbackRoom.status || 'Available',
       amenities: storedRoom.amenities || fallbackRoom.amenities || 'Suite amenities to be confirmed',
-      imageUrl: storedRoom.imageUrl || fallbackRoom.imageUrl || '/hotel-images/aman-kyoto.jpg'
+      imageUrl: storedRoom.imageUrl && !usesSharedHotelImage
+        ? storedRoom.imageUrl
+        : fallbackRoom.imageUrl || '/hotel-images/aman-kyoto.jpg'
     };
   });
 };
