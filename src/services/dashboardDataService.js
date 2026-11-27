@@ -124,6 +124,31 @@ const SEED_HOTEL_ROOMS = [
   { id: 204, roomType: 'Takagamine Luxury Ryokan Room', pricePerNight: 1950, capacity: '2 Adults', status: 'Available', amenities: 'Traditional Tatami & Shoji Architecture, Living Area, Direct Botanical Forest Path, Mineral Spa Access', imageUrl: '/hotel-images/aman-kyoto.jpg' }
 ];
 
+const normalizeHotelRooms = (rooms, fallbackRooms = SEED_HOTEL_ROOMS) => {
+  if (!Array.isArray(rooms)) return fallbackRooms;
+
+  return rooms.map((room, index) => {
+    const storedRoom = room && typeof room === 'object' ? room : {};
+    const fallbackRoom = fallbackRooms.find(candidate =>
+      candidate.id === storedRoom.id || candidate.roomType === storedRoom.roomType
+    ) || fallbackRooms[index] || {};
+    const storedPrice = Number(storedRoom.pricePerNight);
+
+    return {
+      ...fallbackRoom,
+      ...storedRoom,
+      roomType: storedRoom.roomType || fallbackRoom.roomType || `Suite ${index + 1}`,
+      pricePerNight: storedRoom.pricePerNight != null && storedRoom.pricePerNight !== '' && Number.isFinite(storedPrice)
+        ? storedPrice
+        : fallbackRoom.pricePerNight ?? 300,
+      capacity: storedRoom.capacity || fallbackRoom.capacity || '2 Adults',
+      status: storedRoom.status || fallbackRoom.status || 'Available',
+      amenities: storedRoom.amenities || fallbackRoom.amenities || 'Suite amenities to be confirmed',
+      imageUrl: storedRoom.imageUrl || fallbackRoom.imageUrl || '/hotel-images/aman-kyoto.jpg'
+    };
+  });
+};
+
 const SEED_HOTEL_RESERVATIONS = [
   { id: 'RES-8801', guestName: 'Alice Walker', roomType: 'Susuki Pavilion', checkIn: '2026-10-15', checkOut: '2026-10-20', guests: 2, totalAmount: 14000, status: 'Confirmed', paymentStatus: 'Paid' },
   { id: 'RES-8802', guestName: 'Robert Vance', roomType: 'Hotaru Pavilion', checkIn: '2026-11-01', checkOut: '2026-11-05', guests: 2, totalAmount: 9600, status: 'Confirmed', paymentStatus: 'Paid' },
@@ -338,6 +363,13 @@ const getStored = (key, fallback) => {
     if (key === 'ts_hotel_rooms' && Array.isArray(parsed) && parsed.some(r => r.roomType?.includes('Canaves') || r.roomType?.includes('Al Maha'))) {
       localStorage.setItem(key, JSON.stringify(fallback));
       return fallback;
+    }
+    if (key === 'ts_hotel_rooms') {
+      const normalizedRooms = normalizeHotelRooms(parsed, fallback);
+      if (JSON.stringify(normalizedRooms) !== JSON.stringify(parsed)) {
+        localStorage.setItem(key, JSON.stringify(normalizedRooms));
+      }
+      return normalizedRooms;
     }
     if (key === 'ts_hotel_reservations' && Array.isArray(parsed) && parsed.some(r => r.roomType?.includes('Canaves') || r.roomType?.includes('Al Maha'))) {
       localStorage.setItem(key, JSON.stringify(fallback));

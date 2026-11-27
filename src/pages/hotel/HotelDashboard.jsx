@@ -693,12 +693,12 @@ const HotelDashboard = () => {
                           </select>
                         </div>
                         <p className="room-capacity"><Users size={14} /> Max Capacity: {room.capacity}</p>
-                        <p className="room-amenities">{room.amenities}</p>
+                        <p className="room-amenities"><strong>Suite includes:</strong> {room.amenities}</p>
 
                         <div className="room-footer-row">
                           <div>
                             <span className="price-label">Nightly Rate</span>
-                            <span className="room-price">${room.pricePerNight} <small>/ night</small></span>
+                            <span className="room-price">${Number(room.pricePerNight).toLocaleString()} <small>/ night</small></span>
                           </div>
                           <div className="room-action-btns">
                             <button className="btn-edit-sm" onClick={() => handleOpenRoomModal(room)} title="Edit Room Details"><Edit size={16} /></button>
