@@ -31,13 +31,16 @@ import {
   Building
 } from 'lucide-react';
 import { useAuth } from '../../context/useAuth';
+import { useCurrency } from '../../context/useCurrency';
 import dashboardService from '../../services/dashboardDataService';
 import { generateBookingPDF } from '../../utils/pdfVoucher';
 import SmartImage from '../../components/common/SmartImage';
+import CurrencySwitcher from '../../components/common/CurrencySwitcher';
 import './AgentDashboard.css';
 
 const AgentDashboard = () => {
   const { user, logout } = useAuth();
+  const { formatPrice, currency } = useCurrency();
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState('overview');
@@ -384,6 +387,7 @@ const AgentDashboard = () => {
           </div>
 
           <div className="agent-header-actions">
+            <CurrencySwitcher variant="dark" />
             {/* Branch Selector Pill */}
             <div className="agent-branch-select-box">
               <Building size={14} className="agent-branch-icon" />
@@ -567,10 +571,10 @@ const AgentDashboard = () => {
                       </div>
                     </div>
                     <div className="agent-kpi-body">
-                      <div className="agent-kpi-value">$1,058.63</div>
+                      <div className="agent-kpi-value">{formatPrice(1058.63, { decimals: currency === 'INR' || currency === 'JPY' ? 0 : 2 })}</div>
                       <div className="agent-kpi-meta">
                         <span className="agent-badge-pill gold">{agencyProfile.commission_rate}% Tier</span>
-                        <span className="agent-meta-sub">${grossSalesVolume.toLocaleString()} Gross Volume</span>
+                        <span className="agent-meta-sub">{formatPrice(grossSalesVolume)} Gross Volume</span>
                       </div>
                     </div>
                   </div>
@@ -628,7 +632,7 @@ const AgentDashboard = () => {
                       <CreditCard size={18} className="shortcut-icon" />
                       <div>
                         <strong>Escrow & Payouts</strong>
-                        <span>$509.38 ready for payout</span>
+                        <span>{formatPrice(509.38, { decimals: currency === 'INR' || currency === 'JPY' ? 0 : 2 })} ready for payout</span>
                       </div>
                       <ArrowRight size={16} className="shortcut-arrow" />
                     </button>
@@ -671,7 +675,7 @@ const AgentDashboard = () => {
                               <td><strong>{String(b.id).startsWith('#') ? b.id : `#${b.id}`}</strong></td>
                               <td>{b.customerName}</td>
                               <td>{b.packageTitle}</td>
-                              <td>${Number(b.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                              <td>{formatPrice(b.amount, { decimals: currency === 'INR' || currency === 'JPY' ? 0 : 2 })}</td>
                               <td>
                                 <span className={`status-pill ${String(b.status || '').toLowerCase()}`}>
                                   {b.status}
@@ -719,7 +723,7 @@ const AgentDashboard = () => {
                       </div>
                       <div className="ops-credential-row">
                         <span className="ops-label">Escrow Balance:</span>
-                        <strong className="ops-val" style={{ color: '#d97706', fontSize: '1.1rem' }}>$509.38</strong>
+                        <strong className="ops-val" style={{ color: '#d97706', fontSize: '1.1rem' }}>{formatPrice(509.38, { decimals: currency === 'INR' || currency === 'JPY' ? 0 : 2 })}</strong>
                       </div>
                     </div>
 
@@ -730,7 +734,7 @@ const AgentDashboard = () => {
                         className="btn-request-payout-banner"
                         onClick={handleRequestPayout}
                       >
-                        <DollarSign size={16} /> {payoutRequested ? 'Payout Submitted' : 'Request Escrow Payout ($509.38)'}
+                        <DollarSign size={16} /> {payoutRequested ? 'Payout Submitted' : `Request Escrow Payout (${formatPrice(509.38, { decimals: currency === 'INR' || currency === 'JPY' ? 0 : 2 })})`}
                       </button>
                     </div>
 
@@ -847,7 +851,7 @@ const AgentDashboard = () => {
                           <div className="card-footer-row">
                             <div className="price-tag">
                               <span className="price-label">Price per guest</span>
-                              <span className="price-num">${pkg.price}</span>
+                              <span className="price-num">{formatPrice(pkg.price)}</span>
                             </div>
                             <div className="action-btn-group">
                               <button className="btn-icon-edit" onClick={() => handleOpenEditPkgModal(pkg)} title="Edit Package">
@@ -967,7 +971,7 @@ const AgentDashboard = () => {
                             <td>{b.packageTitle}</td>
                             <td>{b.schedule}</td>
                             <td>{b.guests} Guests</td>
-                            <td>${Number(b.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                            <td>{formatPrice(b.amount, { decimals: currency === 'INR' || currency === 'JPY' ? 0 : 2 })}</td>
                             <td>
                               <span className={`status-pill ${String(b.status || '').toLowerCase()}`}>
                                 {b.status}
@@ -1020,20 +1024,14 @@ const AgentDashboard = () => {
                                   type="button"
                                   onClick={() => {
                                     generateBookingPDF({
-                                      bookingId: b.id,
-                                      customerName: b.customerName,
-                                      customerEmail: 'customer@travelsphere.org',
-                                      totalAmount: b.amount,
-                                      currency: 'USD',
-                                      date: new Date().toLocaleDateString(),
-                                      items: [
-                                        {
-                                          type: 'Tour Package',
-                                          title: b.packageTitle,
-                                          details: `${b.schedule} • ${b.guests} Guests`,
-                                          price: b.amount
-                                        }
-                                      ]
+                                      id: b.id,
+                                      guestName: b.customerName,
+                                      email: 'customer@travelsphere.org',
+                                      title: b.packageTitle,
+                                      amount: b.amount,
+                                      currency,
+                                      startDate: b.schedule,
+                                      guests: b.guests
                                     });
                                   }}
                                   style={{
@@ -1200,7 +1198,7 @@ const AgentDashboard = () => {
                           <span>•</span>
                           <span><strong>{plan.nights || 4}</strong> Nights</span>
                           <span>•</span>
-                          <span>Budget: <strong style={{ color: '#0f172a' }}>${plan.budget || plan.price || 1200}</strong></span>
+                          <span>Budget: <strong style={{ color: '#0f172a' }}>{formatPrice(plan.budget || plan.price || 1200)}</strong></span>
                         </div>
 
                         <div style={{ fontSize: '0.85rem', color: '#475569', marginBottom: '1.25rem', lineHeight: '1.5' }}>
@@ -1262,7 +1260,7 @@ const AgentDashboard = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginTop: '1.25rem', marginBottom: '1.75rem' }}>
                   <div style={{ background: '#ffffff', padding: '1.25rem', borderRadius: '14px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
                     <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Gross Bookings Volume</span>
-                    <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0f172a', marginTop: '4px' }}>${grossSalesVolume.toLocaleString()}.00</div>
+                    <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0f172a', marginTop: '4px' }}>{formatPrice(grossSalesVolume, { decimals: currency === 'INR' || currency === 'JPY' ? 0 : 2 })}</div>
                     <span style={{ fontSize: '0.75rem', color: '#16a34a', fontWeight: 600 }}>4 Confirmed Itineraries</span>
                   </div>
                   <div style={{ background: '#ffffff', padding: '1.25rem', borderRadius: '14px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
@@ -1272,12 +1270,12 @@ const AgentDashboard = () => {
                   </div>
                   <div style={{ background: '#ffffff', padding: '1.25rem', borderRadius: '14px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
                     <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Total Earned</span>
-                    <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#059669', marginTop: '4px' }}>$1,058.63</div>
+                    <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#059669', marginTop: '4px' }}>{formatPrice(1058.63, { decimals: currency === 'INR' || currency === 'JPY' ? 0 : 2 })}</div>
                     <span style={{ fontSize: '0.75rem', color: '#059669', fontWeight: 600 }}>Cumulative 2026</span>
                   </div>
                   <div style={{ background: '#ffffff', padding: '1.25rem', borderRadius: '14px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
                     <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Escrow Balance</span>
-                    <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#d97706', marginTop: '4px' }}>$509.38</div>
+                    <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#d97706', marginTop: '4px' }}>{formatPrice(509.38, { decimals: currency === 'INR' || currency === 'JPY' ? 0 : 2 })}</div>
                     <span style={{ fontSize: '0.75rem', color: '#d97706', fontWeight: 600 }}>Eligible for Payout</span>
                   </div>
                 </div>
@@ -1303,8 +1301,8 @@ const AgentDashboard = () => {
                           <td><code>{txn.bookingRef}</code></td>
                           <td>{txn.customerName}</td>
                           <td>{txn.packageTitle}</td>
-                          <td><strong>${txn.grossAmount.toLocaleString()}</strong></td>
-                          <td><strong style={{ color: '#059669' }}>+${txn.commissionAmount.toFixed(2)}</strong></td>
+                          <td><strong>{formatPrice(txn.grossAmount)}</strong></td>
+                          <td><strong style={{ color: '#059669' }}>+{formatPrice(txn.commissionAmount, { decimals: currency === 'INR' || currency === 'JPY' ? 0 : 2 })}</strong></td>
                           <td>
                             <span className={`status-pill ${txn.status === 'Disbursed' ? 'status-active' : 'status-pending'}`}>
                               {txn.status}

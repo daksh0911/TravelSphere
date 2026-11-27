@@ -44,6 +44,7 @@ import SmartImage from '../../../components/common/SmartImage';
 import { generateBookingPDF } from '../../../utils/pdfVoucher';
 import { COUNTRIES, sanitizeFullName, sanitizePhoneDigits } from '../../../utils/countryPhoneConfig';
 import CheckoutModal from '../../../components/common/CheckoutModal/CheckoutModal';
+import CurrencySwitcher from '../../../components/common/CurrencySwitcher';
 
 import usePageTitle from '../../../hooks/usePageTitle';
 import { useCurrency } from '../../../context/useCurrency';
@@ -1078,7 +1079,7 @@ const CustomerDashboard = () => {
         const fallbackNotifications = isDemoUser ? [
           { id: 1, title: '✈️ Boarding Pass Ready', message: 'Your e-ticket & PDF voucher for Air France AF-104 is generated and ready to download.', is_read: 0, created_at: '2026-11-20 09:30' },
           { id: 2, title: '🏨 Hotel Check-In Confirmation', message: 'Aman Kyoto confirmed your reservation for Susuki Pavilion from 15 Oct to 20 Oct.', is_read: 1, created_at: '2026-10-14 14:15' },
-          { id: 3, title: '💳 Booking Payment Confirmed', message: 'Payment for Swiss Alps Glacier Express ($1,985) successfully processed.', is_read: 1, created_at: '2026-10-01 11:00' }
+          { id: 3, title: '💳 Booking Payment Confirmed', message: `Payment for Swiss Alps Glacier Express (${formatPrice(1985)}) successfully processed.`, is_read: 1, created_at: '2026-10-01 11:00' }
         ] : [];
         const loadedNotifications = (data.notifications && data.notifications.length > 0) ? data.notifications : fallbackNotifications;
         setNotifications(loadedNotifications);
@@ -1196,7 +1197,7 @@ const CustomerDashboard = () => {
     } finally {
       // Completed loading
     }
-  }, [user, userPhone]);
+  }, [user, userPhone, formatPrice]);
 
   useEffect(() => {
     if (!user) {
@@ -1611,6 +1612,7 @@ const CustomerDashboard = () => {
         </nav>
 
         <div className="ts-header-right">
+          <CurrencySwitcher variant="light" />
           <div className="ts-search-pill" style={{ position: 'relative' }}>
             <Search size={16} color="#94a3b8" />
             <input 

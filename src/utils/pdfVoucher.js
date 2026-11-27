@@ -1,3 +1,5 @@
+import { formatCurrencyPrice, getStoredCurrency } from './currencyFormat';
+
 /**
  * Generates an official, print-ready TravelSphere Booking Voucher & Boarding Pass.
  * Dynamically imports jsPDF on demand to optimize initial mobile bundle performance.
@@ -107,7 +109,11 @@ export async function generateBookingPDF(booking) {
   doc.setFontSize(11);
   doc.text('Total Amount Paid', 26, priceY + 11);
   doc.setFontSize(14);
-  doc.text(`$${Number(booking.amount || booking.total || 999).toLocaleString()}`, 184, priceY + 11, { align: 'right' });
+  const activeCurrency = booking.currency || getStoredCurrency();
+  const displayAmount = formatCurrencyPrice(Number(booking.amount ?? booking.total ?? 999), activeCurrency, {
+    pdfSafe: true,
+  });
+  doc.text(displayAmount, 184, priceY + 11, { align: 'right' });
 
   // 6. Security & Verification QR / Pass Notice
   const qrY = priceY + 28;

@@ -18,12 +18,15 @@ import {
   Save
 } from 'lucide-react';
 import { useAuth } from '../../context/useAuth';
+import { useCurrency } from '../../context/useCurrency';
 import dashboardService from '../../services/dashboardDataService';
 import SmartImage from '../../components/common/SmartImage';
+import CurrencySwitcher from '../../components/common/CurrencySwitcher';
 import './TransportDashboard.css';
 
 const TransportDashboard = () => {
   const { user, logout } = useAuth();
+  const { formatPrice } = useCurrency();
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState('services');
@@ -203,15 +206,18 @@ const TransportDashboard = () => {
             </div>
           </div>
 
-          <div className="transport-user-profile">
-            <div className="transport-avatar">TP</div>
-            <div className="transport-info">
-              <span className="transport-name">{user?.name || 'Michael Chang'}</span>
-              <span className="transport-role-tag">Transport Operator Manager</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexWrap: 'wrap' }}>
+            <CurrencySwitcher variant="dark" />
+            <div className="transport-user-profile">
+              <div className="transport-avatar">TP</div>
+              <div className="transport-info">
+                <span className="transport-name">{user?.name || 'Michael Chang'}</span>
+                <span className="transport-role-tag">Transport Operator Manager</span>
+              </div>
+              <button className="transport-logout-btn" onClick={() => { logout(); navigate('/login'); }}>
+                <LogOut size={16} /> Logout
+              </button>
             </div>
-            <button className="transport-logout-btn" onClick={() => { logout(); navigate('/login'); }}>
-              <LogOut size={16} /> Logout
-            </button>
           </div>
         </div>
       </div>
@@ -316,7 +322,7 @@ const TransportDashboard = () => {
                       <div className="seat-pricing-bar">
                         <div>
                           <span className="price-label">Price / Fare</span>
-                          <span className="ticket-price">${svc.price} <small>{svc.serviceType === 'Car' ? '/ day' : '/ seat'}</small></span>
+                          <span className="ticket-price">{formatPrice(svc.price)} <small>{svc.serviceType === 'Car' ? '/ day' : '/ seat'}</small></span>
                         </div>
                         <div>
                           <span className="price-label">Seats Available</span>
@@ -426,7 +432,7 @@ const TransportDashboard = () => {
                           <td>{b.serviceTitle}</td>
                           <td style={{ whiteSpace: 'nowrap' }}>{b.travelDate}</td>
                           <td><span className="seat-badge" style={{ whiteSpace: 'nowrap' }}>{b.seatNumbers}</span></td>
-                          <td><strong>${b.totalAmount}</strong></td>
+                          <td><strong>{formatPrice(b.totalAmount)}</strong></td>
                           <td><span className={`status-pill ${b.status.toLowerCase()}`}>{b.status}</span></td>
                           <td>
                             {b.status === 'Pending' ? (

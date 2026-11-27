@@ -41,7 +41,7 @@ export default function CheckoutModal({
   onSuccess 
 }) {
   const { user } = useAuth();
-  const { formatPrice } = useCurrency();
+  const { formatPrice, currency } = useCurrency();
   const navigate = useNavigate();
 
   // State
@@ -316,6 +316,7 @@ export default function CheckoutModal({
       title: paymentSuccess.package_title,
       destination: paymentSuccess.destination_name,
       amount: paymentSuccess.total_amount,
+      currency,
       startDate: paymentSuccess.start_date,
       endDate: paymentSuccess.end_date,
       guests: paymentSuccess.guests,

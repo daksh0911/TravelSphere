@@ -17,12 +17,15 @@ import {
   X
 } from 'lucide-react';
 import { useAuth } from '../../context/useAuth';
+import { useCurrency } from '../../context/useCurrency';
 import dashboardService from '../../services/dashboardDataService';
 import './GuideDashboard.css';
 import SmartImage from '../../components/common/SmartImage';
+import CurrencySwitcher from '../../components/common/CurrencySwitcher';
 
 const GuideDashboard = () => {
   const { user, logout } = useAuth();
+  const { formatPrice } = useCurrency();
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState('requests');
@@ -164,15 +167,18 @@ const GuideDashboard = () => {
             </div>
           </div>
 
-          <div className="guide-user-profile">
-            <div className="guide-avatar">TG</div>
-            <div className="guide-info">
-              <span className="guide-name">{profile.fullName || 'Marco Rossi'}</span>
-              <span className="guide-role-tag">★ {profile.rating || 4.95} Rating Guide</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexWrap: 'wrap' }}>
+            <CurrencySwitcher variant="dark" />
+            <div className="guide-user-profile">
+              <div className="guide-avatar">TG</div>
+              <div className="guide-info">
+                <span className="guide-name">{profile.fullName || 'Marco Rossi'}</span>
+                <span className="guide-role-tag">★ {profile.rating || 4.95} Rating Guide</span>
+              </div>
+              <button className="guide-logout-btn" onClick={() => { logout(); navigate('/login'); }}>
+                <LogOut size={16} /> Logout
+              </button>
             </div>
-            <button className="guide-logout-btn" onClick={() => { logout(); navigate('/login'); }}>
-              <LogOut size={16} /> Logout
-            </button>
           </div>
         </div>
       </div>
@@ -233,7 +239,7 @@ const GuideDashboard = () => {
                       </div>
 
                       <div className="req-footer">
-                        <span className="req-fee">Guide Fee: <strong>${req.totalAmount}</strong></span>
+                        <span className="req-fee">Guide Fee: <strong>{formatPrice(req.totalAmount)}</strong></span>
                         <div className="req-actions" style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
                           <button
                             type="button"
@@ -294,7 +300,7 @@ const GuideDashboard = () => {
                           <td>{t.requestDate}</td>
                           <td>{t.customerName} ({t.phone})</td>
                           <td>{t.guests} Guests</td>
-                          <td><strong>${t.totalAmount}</strong></td>
+                          <td><strong>{formatPrice(t.totalAmount)}</strong></td>
                           <td><span className={`status-pill ${t.status.toLowerCase()}`}>{t.status}</span></td>
                           <td>
                             <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
@@ -381,7 +387,7 @@ const GuideDashboard = () => {
 
                       <div>
                         <span className="meta-label"><DollarSign size={14} /> Guide Rates</span>
-                        <p className="rate-text"><strong>${profile.hourlyRate}</strong> / hr • <strong>${profile.dailyRate}</strong> / full day</p>
+                        <p className="rate-text"><strong>{formatPrice(profile.hourlyRate)}</strong> / hr • <strong>{formatPrice(profile.dailyRate)}</strong> / full day</p>
                       </div>
                     </div>
                   </div>
@@ -578,7 +584,7 @@ const GuideDashboard = () => {
                 <div><strong>Meeting Location:</strong> {selectedCustomerTour.location}</div>
                 <div><strong>Tour Date:</strong> {selectedCustomerTour.requestDate}</div>
                 <div><strong>Group Size:</strong> {selectedCustomerTour.guests} Guests</div>
-                <div><strong>Guide Fee:</strong> ${selectedCustomerTour.totalAmount}</div>
+                <div><strong>Guide Fee:</strong> {formatPrice(selectedCustomerTour.totalAmount)}</div>
               </div>
               <div style={{ padding: '0.85rem', borderRadius: '10px', background: '#fffbeb', border: '1px solid #fde68a' }}>
                 <strong>Special Request / Notes:</strong>

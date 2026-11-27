@@ -33,13 +33,16 @@ import {
   Save
 } from 'lucide-react';
 import { useAuth } from '../../context/useAuth';
+import { useCurrency } from '../../context/useCurrency';
 import dashboardService from '../../services/dashboardDataService';
 import './AdminDashboard.css';
 import SmartImage from '../../components/common/SmartImage';
+import CurrencySwitcher from '../../components/common/CurrencySwitcher';
 const AdminAnalytics = lazy(() => import('./AdminAnalytics'));
 
 const AdminDashboard = () => {
   const { user, logout } = useAuth();
+  const { formatPrice, currency } = useCurrency();
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState('overview');
@@ -160,8 +163,11 @@ const AdminDashboard = () => {
     const parsedPrice = parseFloat(newPrice);
     if (Number.isNaN(parsedPrice) || parsedPrice <= 0) return;
     await dashboardService.saveAgentPackage({ ...editingPackage, price: parsedPrice });
-    setPackages(prev => prev.map(p => p.id === editingPackage.id ? { ...p, price: parsedPrice } : p));
-    setActionMsg(`Updated package price to $${parsedPrice}`);
+    setData(prev => ({
+      ...prev,
+      packages: (prev.packages || []).map(p => p.id === editingPackage.id ? { ...p, price: parsedPrice } : p)
+    }));
+    setActionMsg(`Updated package price to ${formatPrice(parsedPrice)}`);
     setEditingPackage(null);
     setNewPrice('');
     setTimeout(() => setActionMsg(''), 3000);
@@ -402,6 +408,7 @@ const AdminDashboard = () => {
           </div>
 
           <div className="admin-user-profile">
+            <CurrencySwitcher variant="dark" />
             <div style={{ position: 'relative' }}>
               <button 
                 type="button" 
@@ -518,7 +525,7 @@ const AdminDashboard = () => {
                     <div className="kpi-icon"><DollarSign size={24} /></div>
                     <div className="kpi-body">
                       <span className="kpi-label">Gross Platform Revenue</span>
-                      <h3 className="kpi-value">${data.stats.totalRevenue?.toLocaleString()}</h3>
+                      <h3 className="kpi-value">{formatPrice(data.stats.totalRevenue || 0)}</h3>
                       <span className="kpi-trend green"><TrendingUp size={14} /> +18.4% this month</span>
                     </div>
                   </div>
@@ -751,7 +758,7 @@ const AdminDashboard = () => {
                       <div style={{ padding: '1rem' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
                           <h4 style={{ margin: 0, fontSize: '1.1rem', color: '#1e293b' }}>{dest.name}</h4>
-                          <span style={{ fontWeight: 700, color: '#a3704c', fontSize: '0.88rem' }}>From ${dest.price || 1200}</span>
+                          <span style={{ fontWeight: 700, color: '#a3704c', fontSize: '0.88rem' }}>From {formatPrice(dest.price || 1200)}</span>
                         </div>
                         <p style={{ fontSize: '0.82rem', color: '#64748b', margin: '0 0 0.5rem', lineHeight: '1.4' }}>{dest.description}</p>
                         {dest.best_time_to_visit && (
@@ -843,7 +850,7 @@ const AdminDashboard = () => {
                         <div className="price-row">
                           <div className="current-price">
                             <span className="price-label">Price per person</span>
-                            <span className="price-amount">${pkg.price}</span>
+                            <span className="price-amount">{formatPrice(pkg.price)}</span>
                           </div>
                           <div style={{ display: 'flex', gap: '0.4rem' }}>
                             <button 
@@ -900,8 +907,8 @@ const AdminDashboard = () => {
                         <tr key={coupon.id}>
                           <td><strong><Tag size={13} style={{ display: 'inline', marginRight: '4px' }} />{coupon.code}</strong></td>
                           <td style={{ textTransform: 'capitalize' }}>{coupon.discount_type}</td>
-                          <td><strong>{coupon.discount_type === 'percentage' ? `${coupon.discount_value}%` : `$${coupon.discount_value}`}</strong></td>
-                          <td>${coupon.min_amount}</td>
+                          <td><strong>{coupon.discount_type === 'percentage' ? `${coupon.discount_value}%` : formatPrice(coupon.discount_value)}</strong></td>
+                          <td>{formatPrice(coupon.min_amount)}</td>
                           <td>{coupon.used_count || 0} / {coupon.max_uses} uses</td>
                           <td>{coupon.expires_at}</td>
                           <td>
@@ -1066,7 +1073,7 @@ const AdminDashboard = () => {
                           <td>{booking.customerName}</td>
                           <td>{booking.serviceTitle}</td>
                           <td>{booking.schedule}</td>
-                          <td>${Number(booking.amount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                          <td>{formatPrice(booking.amount, { decimals: currency === 'INR' || currency === 'JPY' ? 0 : 2 })}</td>
                           <td><span className={`status-badge ${booking.status.toLowerCase()}`}>{booking.status.toUpperCase()}</span></td>
                           <td><span className={`status-tag ${booking.paymentStatus.toLowerCase().replaceAll(' ', '-')}`}>{booking.paymentStatus.toUpperCase()}</span></td>
                         </tr>

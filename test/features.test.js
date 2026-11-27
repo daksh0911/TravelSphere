@@ -9,6 +9,7 @@ import {
   getRentalSpecifications,
   normalizeApiVehicle
 } from '../src/data/vehicleCatalog.js';
+import { convertUsdAmount, formatCurrencyPrice } from '../src/utils/currencyFormat.js';
 
 describe('AI Dynamic Itinerary Generator (Gemini 2026 Engine)', () => {
   test('generates valid customized itinerary for Kyoto with budget tier', () => {
@@ -362,6 +363,15 @@ describe('Dedicated Vehicle Rental Catalog & Booking Flow', () => {
     assert.equal(getRentalButtonLabel(dynamicBike), 'Book Rental Bike');
     assert.equal(getVehicleById('999', [dynamicBike])?.name, 'Ducati Multistrada V4');
     assert.equal(VEHICLES.length, 24);
+  });
+});
+
+describe('Global Currency Sync Across Dashboards & Vouchers', () => {
+  test('converts and formats USD into supported dashboard & PDF voucher currencies', () => {
+    assert.equal(convertUsdAmount(100, 'INR'), 8350);
+    assert.equal(formatCurrencyPrice(100, 'INR'), '₹8,350');
+    assert.equal(formatCurrencyPrice(100, 'INR', { pdfSafe: true }), 'INR 8,350');
+    assert.equal(formatCurrencyPrice(100, 'EUR', { decimals: 2 }), '€92.00');
   });
 });
 

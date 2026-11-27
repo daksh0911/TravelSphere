@@ -26,13 +26,16 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { useAuth } from '../../context/useAuth';
+import { useCurrency } from '../../context/useCurrency';
 import dashboardService from '../../services/dashboardDataService';
 import { generateBookingPDF } from '../../utils/pdfVoucher';
 import SmartImage from '../../components/common/SmartImage';
+import CurrencySwitcher from '../../components/common/CurrencySwitcher';
 import './HotelDashboard.css';
 
 const HotelDashboard = () => {
   const { user, logout } = useAuth();
+  const { formatPrice, currency } = useCurrency();
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState('overview');
@@ -289,6 +292,7 @@ const HotelDashboard = () => {
       id: res.id,
       title: `${hotelInfo.name || 'Aman Kyoto'} - ${res.roomType}`,
       amount: res.totalAmount,
+      currency,
       status: `HOTEL RESERVATION: ${res.status.toUpperCase()}`,
       startDate: res.checkIn,
       endDate: res.checkOut,
@@ -318,7 +322,7 @@ const HotelDashboard = () => {
 
   const handleRequestPayout = () => {
     setPayoutRequested(true);
-    setActionMsg('Escrow payout request of $' + grossRevenue.toLocaleString() + ' submitted to platform financial clearing!');
+    setActionMsg(`Escrow payout request of ${formatPrice(grossRevenue)} submitted to platform financial clearing!`);
     setTimeout(() => setActionMsg(''), 5000);
   };
 
@@ -338,6 +342,7 @@ const HotelDashboard = () => {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+            <CurrencySwitcher variant="dark" />
             {/* Notifications Bell */}
             <div style={{ position: 'relative' }}>
               <button 
@@ -473,7 +478,7 @@ const HotelDashboard = () => {
                     <div className="kpi-icon"><DollarSign size={24} /></div>
                     <div className="kpi-body">
                       <span className="kpi-label">Gross Property Revenue</span>
-                      <h3 className="kpi-value">${grossRevenue.toLocaleString()}</h3>
+                      <h3 className="kpi-value">{formatPrice(grossRevenue)}</h3>
                       <span className="kpi-trend green"><TrendingUp size={14} /> +14.2% vs last month</span>
                     </div>
                   </div>
@@ -553,7 +558,7 @@ const HotelDashboard = () => {
                             <td>{res.guestName}</td>
                             <td>{res.roomType}</td>
                             <td>{res.checkIn} → {res.checkOut}</td>
-                            <td><strong>${res.totalAmount?.toLocaleString()}</strong></td>
+                            <td><strong>{formatPrice(res.totalAmount)}</strong></td>
                             <td><span className={`status-pill ${String(res.status).toLowerCase()}`}>{res.status}</span></td>
                             <td>
                               <button 
@@ -698,7 +703,7 @@ const HotelDashboard = () => {
                         <div className="room-footer-row">
                           <div>
                             <span className="price-label">Nightly Rate</span>
-                            <span className="room-price">${Number(room.pricePerNight).toLocaleString()} <small>/ night</small></span>
+                            <span className="room-price">{formatPrice(room.pricePerNight)} <small>/ night</small></span>
                           </div>
                           <div className="room-action-btns">
                             <button className="btn-edit-sm" onClick={() => handleOpenRoomModal(room)} title="Edit Room Details"><Edit size={16} /></button>
@@ -771,7 +776,7 @@ const HotelDashboard = () => {
                           <td>{res.checkIn}</td>
                           <td>{res.checkOut}</td>
                           <td>{res.guests || 2} Guests</td>
-                          <td><strong>${res.totalAmount?.toLocaleString()}</strong></td>
+                          <td><strong>{formatPrice(res.totalAmount)}</strong></td>
                           <td><span className={`status-pill ${res.status.toLowerCase()}`}>{res.status}</span></td>
                           <td>
                             <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
@@ -843,7 +848,7 @@ const HotelDashboard = () => {
                     <div className="kpi-icon"><DollarSign size={24} /></div>
                     <div className="kpi-body">
                       <span className="kpi-label">Gross Booked Volume</span>
-                      <h3 className="kpi-value">${grossRevenue.toLocaleString()}</h3>
+                      <h3 className="kpi-value">{formatPrice(grossRevenue)}</h3>
                       <span className="kpi-trend green">From verified guest bookings</span>
                     </div>
                   </div>
@@ -851,7 +856,7 @@ const HotelDashboard = () => {
                     <div className="kpi-icon"><CreditCard size={24} /></div>
                     <div className="kpi-body">
                       <span className="kpi-label">Average Daily Rate (ADR)</span>
-                      <h3 className="kpi-value">$2,737</h3>
+                      <h3 className="kpi-value">{formatPrice(2737)}</h3>
                       <span className="kpi-trend green">Luxury tier benchmark</span>
                     </div>
                   </div>
@@ -859,7 +864,7 @@ const HotelDashboard = () => {
                     <div className="kpi-icon"><Clock size={24} /></div>
                     <div className="kpi-body">
                       <span className="kpi-label">In Escrow Clearing</span>
-                      <h3 className="kpi-value">$18,400</h3>
+                      <h3 className="kpi-value">{formatPrice(18400)}</h3>
                       <span className="kpi-trend amber">Disbursed on guest checkout</span>
                     </div>
                   </div>
@@ -867,7 +872,7 @@ const HotelDashboard = () => {
                     <div className="kpi-icon"><TrendingUp size={24} /></div>
                     <div className="kpi-body">
                       <span className="kpi-label">RevPAR Performance</span>
-                      <h3 className="kpi-value">$2,052</h3>
+                      <h3 className="kpi-value">{formatPrice(2052)}</h3>
                       <span className="kpi-trend green">+8.4% above regional index</span>
                     </div>
                   </div>
@@ -893,7 +898,7 @@ const HotelDashboard = () => {
                           <td><strong>#TXN-HTL-{res.id}</strong></td>
                           <td>{res.guestName}</td>
                           <td>{res.roomType}</td>
-                          <td><strong>${res.totalAmount?.toLocaleString()}</strong></td>
+                          <td><strong>{formatPrice(res.totalAmount)}</strong></td>
                           <td>Credit Card (Stripe Secured)</td>
                           <td>
                             <span className={`status-pill ${res.status === 'Confirmed' ? 'confirmed' : 'pending'}`}>
