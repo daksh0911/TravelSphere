@@ -1,6 +1,9 @@
-import { Globe, Users, Award, Heart, MapPin, Star, ArrowRight } from 'lucide-react';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Globe, Users, Award, Heart, MapPin, Star, ArrowRight, Phone, Headphones, Clock3 } from 'lucide-react';
 import './About.css';
 import SmartImage from '../../../components/common/SmartImage';
+import UrgentTravelLineModal from '../../../components/common/UrgentTravelLineModal';
 
 import usePageTitle from '../../../hooks/usePageTitle';
 const stats = [
@@ -27,6 +30,8 @@ const values = [
 
 const AboutPage = () => {
   usePageTitle('About');
+  const [urgentLineOpen, setUrgentLineOpen] = useState(false);
+
   return (
     <div className="about-page">
 
@@ -68,10 +73,10 @@ const AboutPage = () => {
             <p className="about-story-para">
               We believe travel is more than just visiting places — it's about creating lifelong memories, embracing diverse cultures, and returning home a different, more enriched person.
             </p>
-            <button className="about-cta-btn">
+            <Link to="/packages" className="about-cta-btn" style={{ textDecoration: 'none' }}>
               <span>Explore Our Journeys</span>
               <ArrowRight size={16} />
-            </button>
+            </Link>
           </div>
           <div className="about-story-img-wrap">
             <SmartImage
@@ -116,18 +121,47 @@ const AboutPage = () => {
           </div>
         </div>
 
+        {/* 24/7 Urgent Travel Line */}
+        <div className="about-urgent-section">
+          <div className="about-urgent-info">
+            <div className="about-urgent-badge">
+              <Headphones size={14} />
+              <span>24/7 URGENT TRAVEL LINE</span>
+            </div>
+            <h3>On the road and need immediate help?</h3>
+            <p>
+              Flight delays, missed transfers, or last-minute hotel changes—our live urgent travel desk is open 24/7 for real-time assistance worldwide.
+            </p>
+            <div className="about-urgent-meta">
+              <span><Phone size={15} /> +1 800 872 835 (+1 800 TRAVEL)</span>
+              <span><Phone size={15} /> +91 98253 88470</span>
+              <span><Clock3 size={15} /> Under 5 min priority callback</span>
+            </div>
+          </div>
+          <div className="about-urgent-actions">
+            <button type="button" className="about-urgent-btn" onClick={() => setUrgentLineOpen(true)}>
+              <Phone size={16} /> Open Urgent Travel Line
+            </button>
+            <Link to="/support?category=During%20travel" className="about-urgent-link">
+              Support & FAQs <ArrowRight size={15} />
+            </Link>
+          </div>
+        </div>
+
         {/* CTA Banner */}
         <div className="about-cta-banner">
           <MapPin size={32} color="#60a5fa" />
           <h3 className="about-cta-title">Ready to Start Your Adventure?</h3>
           <p className="about-cta-desc">Join thousands of happy travelers who trust TravelSphere to craft their perfect getaway.</p>
           <div className="about-cta-actions">
-            <button className="about-btn-primary">Browse Destinations</button>
-            <button className="about-btn-secondary">Contact Us</button>
+            <Link to="/destinations" className="about-btn-primary" style={{ textDecoration: 'none' }}>Browse Destinations</Link>
+            <Link to="/contact" className="about-btn-secondary" style={{ textDecoration: 'none' }}>Contact Us</Link>
           </div>
         </div>
 
       </div>
+
+      <UrgentTravelLineModal isOpen={urgentLineOpen} onClose={() => setUrgentLineOpen(false)} />
     </div>
   );
 };

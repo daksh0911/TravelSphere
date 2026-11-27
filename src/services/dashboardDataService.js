@@ -334,12 +334,8 @@ const getStored = (key, fallback) => {
     const data = localStorage.getItem(key);
     if (!data) return fallback;
     const parsed = JSON.parse(data);
-    // Sync with updated verified catalog assets
-    if (key === 'ts_agent_packages' && Array.isArray(parsed) && parsed.some(p => p.imageUrl?.includes('destination-images'))) {
-      localStorage.setItem(key, JSON.stringify(fallback));
-      return fallback;
-    }
-    if (key === 'ts_hotel_rooms' && Array.isArray(parsed) && (parsed.some(r => r.roomType?.includes('Canaves') || r.roomType?.includes('Al Maha')) || parsed.length < 4)) {
+    // Only migrate legacy broken external image assets if needed; never wipe user-created or user-deleted records
+    if (key === 'ts_hotel_rooms' && Array.isArray(parsed) && parsed.some(r => r.roomType?.includes('Canaves') || r.roomType?.includes('Al Maha'))) {
       localStorage.setItem(key, JSON.stringify(fallback));
       return fallback;
     }
@@ -347,19 +343,7 @@ const getStored = (key, fallback) => {
       localStorage.setItem(key, JSON.stringify(fallback));
       return fallback;
     }
-    if (key === 'ts_transport_services' && Array.isArray(parsed) && (!parsed.some(s => s.serviceType === 'Flight') || parsed.length < 6)) {
-      localStorage.setItem(key, JSON.stringify(fallback));
-      return fallback;
-    }
-    if (key === 'ts_transport_bookings' && Array.isArray(parsed) && !parsed.some(b => b.serviceType === 'Flight')) {
-      localStorage.setItem(key, JSON.stringify(fallback));
-      return fallback;
-    }
-    if (key === 'ts_guide_requests' && Array.isArray(parsed) && parsed.length < 4) {
-      localStorage.setItem(key, JSON.stringify(fallback));
-      return fallback;
-    }
-    if (key === 'ts_admin_destinations' && Array.isArray(parsed) && (parsed.some(d => !d.image_url || d.image_url.includes('unsplash') || d.image_url.includes('images.unsplash')) || parsed.length < 4)) {
+    if (key === 'ts_admin_destinations' && Array.isArray(parsed) && parsed.some(d => !d.image_url || d.image_url.includes('unsplash') || d.image_url.includes('images.unsplash'))) {
       localStorage.setItem(key, JSON.stringify(fallback));
       return fallback;
     }
@@ -754,16 +738,27 @@ export const dashboardService = {
   saveAgentPackage: async (pkg) => {
     const packages = getStored('ts_agent_packages', SEED_AGENT_PACKAGES);
     let updated;
+    let savedPkg;
     if (pkg.id) {
-      updated = packages.map(p => p.id === pkg.id ? { ...p, ...pkg } : p);
+      updated = packages.map(p => {
+        if (String(p.id) === String(pkg.id)) {
+          savedPkg = { ...p, ...pkg };
+          return savedPkg;
+        }
+        return p;
+      });
+      if (!savedPkg) {
+        savedPkg = { ...pkg };
+        updated = [...packages, savedPkg];
+      }
       api.put(`/packages/${pkg.id}`, pkg).catch(() => {});
     } else {
-      const newPkg = { ...pkg, id: Date.now(), bookedCount: 0, rating: 5.0 };
-      updated = [...packages, newPkg];
+      savedPkg = { ...pkg, id: Date.now(), bookedCount: 0, rating: 5.0 };
+      updated = [...packages, savedPkg];
       api.post('/packages', pkg).catch(() => {});
     }
     setStored('ts_agent_packages', updated);
-    return { success: true };
+    return { success: true, package: savedPkg };
   },
 
   deleteAgentPackage: async (pkgId) => {

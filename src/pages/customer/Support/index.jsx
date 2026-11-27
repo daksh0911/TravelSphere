@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import './Support.css';
 import api from '../../../services/api';
 import usePageTitle from '../../../hooks/usePageTitle';
+import UrgentTravelLineModal from '../../../components/common/UrgentTravelLineModal';
 
 const FAQS = [
   { category: 'Bookings', question: 'Can I change the dates of a trip after booking?', answer: 'Most curated trips can be adjusted before confirmation. Open your booking from the dashboard and send a change request; your specialist will reply with availability and any fare difference.' },
@@ -26,6 +27,7 @@ export default function SupportPage() {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState(CATEGORIES.includes(initialCategory) ? initialCategory : 'All questions');
   const [sent, setSent] = useState(null);
+  const [urgentModalOpen, setUrgentModalOpen] = useState(false);
 
   const visible = useMemo(() => FAQS.filter((item) => {
     const matchesCategory = category === 'All questions' || item.category === category;
@@ -58,7 +60,7 @@ export default function SupportPage() {
           <p>Find a clear answer, check a common travel question, or send a ticket that gives our team enough context to help quickly.</p>
           <div className="support-hero-actions">
             <a href="#message" className="support-primary-link">Send a support ticket <ArrowRight size={15} /></a>
-            <a href="tel:+1800872835" className="support-text-link"><Phone size={14} /> Urgent travel line</a>
+            <button type="button" onClick={() => setUrgentModalOpen(true)} className="support-text-link"><Phone size={14} /> Urgent travel line</button>
           </div>
         </div>
         <div className="support-hero-card"><Headphones size={23} /><strong>Typical reply time</strong><b>under 15 min</b><small>Mon–Sun · urgent help always open</small></div>
@@ -85,11 +87,13 @@ export default function SupportPage() {
           <h3>Let’s sort it out.</h3>
           <p>Every message gets a ticket number so you know your request was captured, even if you are browsing without an account.</p>
           {sent ? <div className="support-success"><CheckCircle2 size={24} /><strong>Ticket {sent} created</strong><span>We saved your request and sent it to the support queue. Keep this number for follow-up.</span><button type="button" onClick={() => setSent(null)}>Send another message</button></div> : <form onSubmit={submit}><label>Your email<input name="email" type="email" required placeholder="you@example.com" /></label><label>What can we help with?<select name="category" defaultValue={initialCategory || 'booking'}><option value="booking">A booking or itinerary</option><option value="hotel">A hotel stay</option><option value="transport">Transport or transfers</option><option value="payment">Payment or cancellation</option><option value="other">Something else</option></select></label><label>Message<textarea name="message" required rows="5" placeholder="Include your booking reference, dates, and what you need..." /></label><button type="submit">Create support ticket <ArrowRight size={16} /></button></form>}
-          <div className="support-contact-links"><a href="mailto:support@travelsphere.com"><Mail size={16} /> Email support@travelsphere.com</a><a href="tel:+1800872835"><Phone size={16} /> Call +1 800 TRAVEL</a><span><Clock3 size={16} /> Urgent travel help is always open</span><span><ShieldCheck size={16} /> Your details stay private</span></div>
+          <div className="support-contact-links"><a href="mailto:support@travelsphere.com"><Mail size={16} /> Email support@travelsphere.com</a><button type="button" className="support-contact-call-btn" onClick={() => setUrgentModalOpen(true)}><Phone size={16} /> Urgent travel line (+1 800 TRAVEL)</button><span><Clock3 size={16} /> Urgent travel help is always open</span><span><ShieldCheck size={16} /> Your details stay private</span></div>
         </div>
       </section>
 
       <section className="support-bottom-help"><div><Ticket size={20} /><strong>Already sent a request?</strong><span>Your ticket is saved on this device under Support requests.</span></div><a href="mailto:support@travelsphere.com?subject=TravelSphere%20support%20follow-up">Follow up by email <MessageCircle size={15} /></a></section>
+
+      <UrgentTravelLineModal isOpen={urgentModalOpen} onClose={() => setUrgentModalOpen(false)} />
     </div>
   );
 }

@@ -37,6 +37,7 @@ const GuideDashboard = () => {
   // Profile Edit modal state
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [profileFormData, setProfileFormData] = useState({});
+  const [selectedCustomerTour, setSelectedCustomerTour] = useState(null);
 
   // Date-by-Date Availability State (PDF Table 10)
   const [dateAvailability, setDateAvailability] = useState(() => {
@@ -110,11 +111,34 @@ const GuideDashboard = () => {
 
   const handleSaveProfile = async (e) => {
     e.preventDefault();
+    setProfile(profileFormData);
     await dashboardService.saveGuideProfile(profileFormData);
     setActionMsg('Tour Guide Profile & Rates updated successfully!');
     setShowProfileModal(false);
     setTimeout(() => setActionMsg(''), 3000);
     loadGuideData();
+  };
+
+  const handleQuickAvailabilityStatus = async (newStatus) => {
+    const updatedProfile = { ...profile, status: newStatus };
+    setProfile(updatedProfile);
+    setProfileFormData(updatedProfile);
+    await dashboardService.saveGuideProfile(updatedProfile);
+    setActionMsg(`Guide availability status updated to "${newStatus}".`);
+    setTimeout(() => setActionMsg(''), 3000);
+  };
+
+  const handleSetAllDatesStatus = (targetStatus) => {
+    const updated = {};
+    Object.keys(dateAvailability).forEach(k => {
+      updated[k] = targetStatus;
+    });
+    setDateAvailability(updated);
+    try {
+      localStorage.setItem('ts_guide_date_avail', JSON.stringify(updated));
+    } catch { /* ignore */ }
+    setActionMsg(`All upcoming 14 days marked as ${targetStatus}.`);
+    setTimeout(() => setActionMsg(''), 2500);
   };
 
   const handleRequestStatus = async (requestId, status) => {
@@ -210,16 +234,25 @@ const GuideDashboard = () => {
 
                       <div className="req-footer">
                         <span className="req-fee">Guide Fee: <strong>${req.totalAmount}</strong></span>
-                        {req.status === 'Pending' && (
-                          <div className="req-actions">
-                            <button className="btn-accept" onClick={() => handleRequestStatus(req.id, 'Accepted')}>
-                              <Check size={16} /> Accept Request
-                            </button>
-                            <button className="btn-reject" onClick={() => handleRequestStatus(req.id, 'Rejected')}>
-                              <X size={16} /> Reject
-                            </button>
-                          </div>
-                        )}
+                        <div className="req-actions" style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                          <button
+                            type="button"
+                            onClick={() => setSelectedCustomerTour(req)}
+                            style={{ padding: '0.4rem 0.7rem', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#f8fafc', color: '#0f172a', fontSize: '0.78rem', fontWeight: 600, cursor: 'pointer' }}
+                          >
+                            View Customer Details
+                          </button>
+                          {req.status === 'Pending' && (
+                            <>
+                              <button className="btn-accept" onClick={() => handleRequestStatus(req.id, 'Accepted')}>
+                                <Check size={16} /> Accept Request
+                              </button>
+                              <button className="btn-reject" onClick={() => handleRequestStatus(req.id, 'Rejected')}>
+                                <X size={16} /> Reject
+                              </button>
+                            </>
+                          )}
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -264,35 +297,45 @@ const GuideDashboard = () => {
                           <td><strong>${t.totalAmount}</strong></td>
                           <td><span className={`status-pill ${t.status.toLowerCase()}`}>{t.status}</span></td>
                           <td>
-                            {t.status === 'Accepted' ? (
-                              <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
-                                <button 
-                                  onClick={() => handleEditMeetingPoint(t.id, t.location)}
-                                  style={{ padding: '0.25rem 0.5rem', borderRadius: '4px', border: '1px solid #cbd5e1', background: '#f8fafc', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}
-                                  title="Edit meeting location"
-                                >
-                                  Meeting Point
-                                </button>
-                                <button 
-                                  onClick={() => handleRescheduleTour(t.id, t.requestDate)}
-                                  style={{ padding: '0.25rem 0.5rem', borderRadius: '4px', border: '1px solid #cbd5e1', background: '#f8fafc', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}
-                                  title="Reschedule tour date"
-                                >
-                                  Reschedule
-                                </button>
-                                <button className="btn-mark-complete" onClick={() => handleRequestStatus(t.id, 'Completed')}>
-                                  Complete
-                                </button>
-                                <button 
-                                  onClick={() => handleRequestStatus(t.id, 'Cancelled')}
-                                  style={{ padding: '0.25rem 0.5rem', borderRadius: '4px', border: '1px solid #fecaca', background: '#fef2f2', color: '#dc2626', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}
-                                >
-                                  Cancel
-                                </button>
-                              </div>
-                            ) : (
-                              <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>{t.status}</span>
-                            )}
+                            <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+                              <button
+                                type="button"
+                                onClick={() => setSelectedCustomerTour(t)}
+                                style={{ padding: '0.25rem 0.5rem', borderRadius: '4px', border: '1px solid #bfdbfe', background: '#eff6ff', color: '#1d4ed8', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}
+                                title="View full customer details"
+                              >
+                                Customer Details
+                              </button>
+                              {t.status === 'Accepted' ? (
+                                <>
+                                  <button 
+                                    onClick={() => handleEditMeetingPoint(t.id, t.location)}
+                                    style={{ padding: '0.25rem 0.5rem', borderRadius: '4px', border: '1px solid #cbd5e1', background: '#f8fafc', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}
+                                    title="Edit meeting location"
+                                  >
+                                    Meeting Point
+                                  </button>
+                                  <button 
+                                    onClick={() => handleRescheduleTour(t.id, t.requestDate)}
+                                    style={{ padding: '0.25rem 0.5rem', borderRadius: '4px', border: '1px solid #cbd5e1', background: '#f8fafc', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}
+                                    title="Reschedule tour date"
+                                  >
+                                    Reschedule
+                                  </button>
+                                  <button className="btn-mark-complete" onClick={() => handleRequestStatus(t.id, 'Completed')}>
+                                    Complete
+                                  </button>
+                                  <button 
+                                    onClick={() => handleRequestStatus(t.id, 'Cancelled')}
+                                    style={{ padding: '0.25rem 0.5rem', borderRadius: '4px', border: '1px solid #fecaca', background: '#fef2f2', color: '#dc2626', fontSize: '0.75rem', fontWeight: 600, cursor: 'pointer' }}
+                                  >
+                                    Cancel
+                                  </button>
+                                </>
+                              ) : (
+                                <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>{t.status}</span>
+                              )}
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -346,10 +389,35 @@ const GuideDashboard = () => {
 
                 {/* Date-by-Date Availability Calendar (PDF Table 10) */}
                 <div style={{ marginTop: '1.5rem', background: '#fff', borderRadius: '14px', padding: '1.5rem', border: '1px solid #e2e8f0', boxShadow: '0 4px 16px rgba(0,0,0,0.04)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.75rem' }}>
                     <div>
-                      <h4 style={{ margin: 0, fontSize: '1.1rem', color: '#0f172a' }}>📅 Date-by-Date Booking Availability (Upcoming 14 Days)</h4>
-                      <p style={{ margin: '0.25rem 0 0', fontSize: '0.82rem', color: '#64748b' }}>Click any date badge to toggle between Available and Blocked status.</p>
+                      <h4 style={{ margin: 0, fontSize: '1.1rem', color: '#0f172a' }}>📅 Availability Management & 14-Day Schedule</h4>
+                      <p style={{ margin: '0.25rem 0 0', fontSize: '0.82rem', color: '#64748b' }}>Set your overall booking status or click any date below to toggle Available / Blocked.</p>
+                    </div>
+                    <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                      <select
+                        value={profile.status || 'Available'}
+                        onChange={(e) => handleQuickAvailabilityStatus(e.target.value)}
+                        style={{ padding: '0.45rem 0.75rem', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '0.82rem', fontWeight: 700, background: '#f8fafc', color: '#0f172a' }}
+                      >
+                        <option value="Available">● Available for Booking</option>
+                        <option value="On Tour">● On Tour</option>
+                        <option value="Off Duty">● Off Duty</option>
+                      </select>
+                      <button
+                        type="button"
+                        onClick={() => handleSetAllDatesStatus('Available')}
+                        style={{ padding: '0.45rem 0.75rem', borderRadius: '8px', border: '1px solid #bbf7d0', background: '#f0fdf4', color: '#166534', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer' }}
+                      >
+                        Mark All Available
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleSetAllDatesStatus('Blocked')}
+                        style={{ padding: '0.45rem 0.75rem', borderRadius: '8px', border: '1px solid #fecaca', background: '#fef2f2', color: '#991b1b', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer' }}
+                      >
+                        Block All Dates
+                      </button>
                     </div>
                   </div>
 
@@ -482,6 +550,44 @@ const GuideDashboard = () => {
                 <button type="submit" className="btn-save">Save Profile</button>
               </div>
             </form>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* CUSTOMER DETAILS MODAL */}
+      {selectedCustomerTour && createPortal(
+        <div className="modal-overlay" onClick={() => setSelectedCustomerTour(null)} style={{ position: 'fixed', inset: 0, zIndex: 99999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="guide-modal-card" onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+              <h3 style={{ margin: 0 }}>Customer & Tour Details</h3>
+              <button type="button" onClick={() => setSelectedCustomerTour(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}>
+                <X size={20} />
+              </button>
+            </div>
+            <div style={{ display: 'grid', gap: '0.75rem', fontSize: '0.9rem', color: '#334155' }}>
+              <div style={{ padding: '0.85rem', borderRadius: '10px', background: '#f8fafc', border: '1px solid #e2e8f0' }}>
+                <div><strong>Booking Ref:</strong> #{selectedCustomerTour.id}</div>
+                <div><strong>Status:</strong> {selectedCustomerTour.status}</div>
+                <div><strong>Customer Name:</strong> {selectedCustomerTour.customerName}</div>
+                <div><strong>Phone Number:</strong> {selectedCustomerTour.phone || 'Not provided'}</div>
+                {selectedCustomerTour.email && <div><strong>Email:</strong> {selectedCustomerTour.email}</div>}
+              </div>
+              <div style={{ padding: '0.85rem', borderRadius: '10px', background: '#f8fafc', border: '1px solid #e2e8f0' }}>
+                <div><strong>Tour Name:</strong> {selectedCustomerTour.tourName}</div>
+                <div><strong>Meeting Location:</strong> {selectedCustomerTour.location}</div>
+                <div><strong>Tour Date:</strong> {selectedCustomerTour.requestDate}</div>
+                <div><strong>Group Size:</strong> {selectedCustomerTour.guests} Guests</div>
+                <div><strong>Guide Fee:</strong> ${selectedCustomerTour.totalAmount}</div>
+              </div>
+              <div style={{ padding: '0.85rem', borderRadius: '10px', background: '#fffbeb', border: '1px solid #fde68a' }}>
+                <strong>Special Request / Notes:</strong>
+                <p style={{ margin: '0.35rem 0 0', color: '#78350f' }}>{selectedCustomerTour.specialNotes || 'No special requests provided.'}</p>
+              </div>
+            </div>
+            <div className="modal-actions" style={{ marginTop: '1.25rem' }}>
+              <button type="button" className="btn-save" onClick={() => setSelectedCustomerTour(null)}>Close</button>
+            </div>
           </div>
         </div>,
         document.body

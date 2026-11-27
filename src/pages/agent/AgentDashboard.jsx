@@ -268,7 +268,10 @@ const AgentDashboard = () => {
       ...(editingPkg ? { ...pkgFormData, id: editingPkg.id } : pkgFormData),
       promo: computedPromo
     };
-    await dashboardService.saveAgentPackage(pkgToSave);
+    const res = await dashboardService.saveAgentPackage(pkgToSave);
+    if (res?.package) {
+      setPackages(prev => editingPkg ? prev.map(p => p.id === editingPkg.id ? { ...p, ...res.package } : p) : [...prev, res.package]);
+    }
     setActionMsg(editingPkg ? 'Tour Package updated successfully!' : 'New Tour Package created!');
     setShowPkgModal(false);
     setTimeout(() => setActionMsg(''), 3000);

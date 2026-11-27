@@ -160,18 +160,18 @@ const HotelDashboard = () => {
     setIsRegisteringNewHotel(true);
     setHotelFormData({
       name: '',
-      propertyType: 'Boutique Luxury Hotel & Spa',
-      city: 'Kyoto',
-      licenseNumber: 'HTL-LIC-' + Math.floor(1000 + Math.random() * 9000),
-      totalRooms: 50,
-      contactPhone: '+81 75-555-0199',
-      contactEmail: user?.email || 'manager@hotel.com',
-      amenities: 'Thermal Onsen, Forest Pavilion, Michelin Dining, Free High-Speed WiFi, Valet Parking',
-      facilities: ['Thermal Spring Onsen', 'Tea Ceremony Pavilion', 'Forest Spa', 'Michelin Dining', 'Concierge Service'],
-      description: 'Exclusive luxury boutique estate situated in serene surroundings offering bespoke hospitality.',
-      address: '1 Okitayama Washimine-cho, Kita-ku, Kyoto 603-8458',
-      imageUrl: '/hotel-images/aman-kyoto.webp',
-      galleryImages: '/hotel-images/aman-kyoto.webp, /hotel-images/canaves-oia.webp'
+      propertyType: '',
+      city: '',
+      licenseNumber: '',
+      totalRooms: '',
+      contactPhone: '',
+      contactEmail: '',
+      amenities: '',
+      facilities: [],
+      description: '',
+      address: '',
+      imageUrl: '',
+      galleryImages: ''
     });
     setShowHotelModal(true);
   };
@@ -198,10 +198,14 @@ const HotelDashboard = () => {
 
     const updated = {
       ...hotelFormData,
+      totalRooms: Number(hotelFormData.totalRooms) || 1,
+      rating: hotelFormData.rating || hotelInfo.rating || 4.8,
+      imageUrl: hotelFormData.imageUrl || '/hotel-images/aman-kyoto.webp',
       facilities: facilitiesArray
     };
+    setHotelInfo(updated);
     await dashboardService.saveHotelInfo(updated);
-    setActionMsg(isRegisteringNewHotel ? 'New hotel registered successfully on platform!' : 'Hotel information and facilities updated successfully!');
+    setActionMsg(isRegisteringNewHotel ? 'New hotel registered successfully on platform!' : 'Hotel information, facilities and images updated successfully!');
     setShowHotelModal(false);
     setTimeout(() => setActionMsg(''), 3000);
     loadHotelData();
@@ -210,7 +214,15 @@ const HotelDashboard = () => {
   const handleOpenRoomModal = (room = null) => {
     setEditingRoom(room);
     if (room) {
-      setRoomFormData(room);
+      setRoomFormData({
+        ...room,
+        roomType: room.roomType || '',
+        pricePerNight: room.pricePerNight ?? '',
+        capacity: room.capacity || '2 Adults',
+        status: room.status || 'Available',
+        amenities: room.amenities || '',
+        imageUrl: room.imageUrl || '/hotel-images/aman-kyoto.webp'
+      });
     } else {
       setRoomFormData({
         roomType: '',
@@ -226,7 +238,17 @@ const HotelDashboard = () => {
 
   const handleSaveRoom = async (e) => {
     e.preventDefault();
-    const roomToSave = editingRoom ? { ...roomFormData, id: editingRoom.id } : roomFormData;
+    const roomToSave = {
+      ...(editingRoom ? { ...roomFormData, id: editingRoom.id } : { ...roomFormData, id: Date.now() }),
+      pricePerNight: Number(roomFormData.pricePerNight) || 0,
+      capacity: roomFormData.capacity || '2 Adults',
+      status: roomFormData.status || 'Available',
+      imageUrl: roomFormData.imageUrl || '/hotel-images/aman-kyoto.webp'
+    };
+    setRooms(prev => editingRoom
+      ? prev.map(r => String(r.id) === String(editingRoom.id) ? roomToSave : r)
+      : [...prev, roomToSave]
+    );
     await dashboardService.saveHotelRoom(roomToSave);
     setActionMsg(editingRoom ? 'Room details updated!' : 'New room added to property!');
     setShowRoomModal(false);
@@ -235,9 +257,11 @@ const HotelDashboard = () => {
   };
 
   const handleQuickToggleRoomStatus = async (roomId, newStatus) => {
-    const targetRoom = rooms.find(r => r.id === roomId);
+    const targetRoom = rooms.find(r => String(r.id) === String(roomId));
     if (!targetRoom) return;
-    await dashboardService.saveHotelRoom({ ...targetRoom, status: newStatus });
+    const updatedRoom = { ...targetRoom, status: newStatus };
+    setRooms(prev => prev.map(r => String(r.id) === String(roomId) ? updatedRoom : r));
+    await dashboardService.saveHotelRoom(updatedRoom);
     setActionMsg(`Room status set to ${newStatus}`);
     setTimeout(() => setActionMsg(''), 3000);
     loadHotelData();
@@ -245,6 +269,7 @@ const HotelDashboard = () => {
 
   const handleDeleteRoom = async (roomId) => {
     if (window.confirm('Remove this room from inventory?')) {
+      setRooms(prev => prev.filter(r => String(r.id) !== String(roomId)));
       await dashboardService.deleteHotelRoom(roomId);
       setActionMsg('Room removed.');
       setTimeout(() => setActionMsg(''), 3000);
@@ -595,6 +620,26 @@ const HotelDashboard = () => {
                         <span key={i} className="facility-pill"><CheckCircle size={14} /> {fac}</span>
                       ))}
                     </div>
+
+                    {hotelInfo.galleryImages && (
+                      <div style={{ marginTop: '1.1rem' }}>
+                        <h4 style={{ marginBottom: '0.5rem' }}>Property Gallery</h4>
+                        <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+                          {String(hotelInfo.galleryImages)
+                            .split(',')
+                            .map(s => s.trim())
+                            .filter(Boolean)
+                            .map((imgUrl, idx) => (
+                              <SmartImage
+                                key={idx}
+                                src={imgUrl}
+                                alt={`${hotelInfo.name || 'Property'} gallery ${idx + 1}`}
+                                style={{ width: 92, height: 64, objectFit: 'cover', borderRadius: '8px', border: '1px solid #e2e8f0' }}
+                              />
+                            ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -1044,8 +1089,9 @@ const HotelDashboard = () => {
                   <label>Total Rooms Capacity</label>
                   <input 
                     type="number" 
-                    value={hotelFormData.totalRooms || 48} 
-                    onChange={e => setHotelFormData({ ...hotelFormData, totalRooms: parseInt(e.target.value) || 1 })}
+                    value={hotelFormData.totalRooms ?? ''} 
+                    onChange={e => setHotelFormData({ ...hotelFormData, totalRooms: e.target.value === '' ? '' : (parseInt(e.target.value, 10) || 1) })}
+                    placeholder="e.g. 48"
                     min="1"
                     required
                   />
@@ -1118,24 +1164,81 @@ const HotelDashboard = () => {
               </div>
 
               <div className="form-group">
-                <label>Main Photo Image URL</label>
-                <input 
-                  type="text" 
-                  value={hotelFormData.imageUrl || ''} 
-                  onChange={e => setHotelFormData({ ...hotelFormData, imageUrl: e.target.value })}
-                  placeholder="/hotel-images/aman-kyoto.webp"
-                  required
-                />
+                <label>Main Photo Image</label>
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <input
+                    id="ts-hotel-main-img-file"
+                    type="file"
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    onChange={e => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const reader = new FileReader();
+                      reader.onload = () => {
+                        if (typeof reader.result === 'string') {
+                          setHotelFormData(prev => ({ ...prev, imageUrl: reader.result }));
+                        }
+                      };
+                      reader.readAsDataURL(file);
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => document.getElementById('ts-hotel-main-img-file')?.click()}
+                    style={{ padding: '0.55rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#f8fafc', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
+                  >
+                    Upload Photo
+                  </button>
+                  <input 
+                    type="text" 
+                    style={{ flex: 1, minWidth: '180px' }}
+                    value={hotelFormData.imageUrl || ''} 
+                    onChange={e => setHotelFormData({ ...hotelFormData, imageUrl: e.target.value })}
+                    placeholder="/hotel-images/aman-kyoto.webp"
+                    required
+                  />
+                </div>
               </div>
 
               <div className="form-group">
-                <label>Gallery Images (Comma-separated URLs)</label>
-                <input 
-                  type="text" 
-                  value={hotelFormData.galleryImages || ''} 
-                  onChange={e => setHotelFormData({ ...hotelFormData, galleryImages: e.target.value })}
-                  placeholder="/hotel-images/aman-kyoto.webp, /hotel-images/canaves-oia.webp"
-                />
+                <label>Gallery Images (Upload or Comma-separated URLs)</label>
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <input
+                    id="ts-hotel-gallery-file"
+                    type="file"
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    onChange={e => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const reader = new FileReader();
+                      reader.onload = () => {
+                        if (typeof reader.result === 'string') {
+                          setHotelFormData(prev => ({
+                            ...prev,
+                            galleryImages: prev.galleryImages ? `${prev.galleryImages}, ${reader.result}` : reader.result
+                          }));
+                        }
+                      };
+                      reader.readAsDataURL(file);
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => document.getElementById('ts-hotel-gallery-file')?.click()}
+                    style={{ padding: '0.55rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#f8fafc', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
+                  >
+                    Add Gallery Photo
+                  </button>
+                  <input 
+                    type="text" 
+                    style={{ flex: 1, minWidth: '180px' }}
+                    value={hotelFormData.galleryImages || ''} 
+                    onChange={e => setHotelFormData({ ...hotelFormData, galleryImages: e.target.value })}
+                    placeholder="/hotel-images/aman-kyoto.webp, /hotel-images/canaves-oia.webp"
+                  />
+                </div>
               </div>
 
               <div className="modal-actions">
@@ -1170,8 +1273,10 @@ const HotelDashboard = () => {
                   <label>Nightly Rate ($)</label>
                   <input 
                     type="number" 
-                    value={roomFormData.pricePerNight} 
-                    onChange={e => setRoomFormData({ ...roomFormData, pricePerNight: parseFloat(e.target.value) })}
+                    value={roomFormData.pricePerNight ?? ''} 
+                    onChange={e => setRoomFormData({ ...roomFormData, pricePerNight: e.target.value === '' ? '' : (parseFloat(e.target.value) || 0) })}
+                    placeholder="e.g. 350"
+                    min="1"
                     required
                   />
                 </div>
@@ -1179,7 +1284,7 @@ const HotelDashboard = () => {
                 <div className="form-group">
                   <label>Room Availability Status</label>
                   <select 
-                    value={roomFormData.status} 
+                    value={roomFormData.status || 'Available'} 
                     onChange={e => setRoomFormData({ ...roomFormData, status: e.target.value })}
                   >
                     <option value="Available">Available</option>
@@ -1190,22 +1295,61 @@ const HotelDashboard = () => {
               </div>
 
               <div className="form-group">
+                <label>Max Guest Capacity</label>
+                <input 
+                  type="text" 
+                  value={roomFormData.capacity || ''} 
+                  onChange={e => setRoomFormData({ ...roomFormData, capacity: e.target.value })}
+                  placeholder="e.g. 2 Adults, 1 Child"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
                 <label>Amenities Description</label>
                 <input 
                   type="text" 
-                  value={roomFormData.amenities} 
+                  value={roomFormData.amenities || ''} 
                   onChange={e => setRoomFormData({ ...roomFormData, amenities: e.target.value })}
                   placeholder="e.g. King Bed, Balcony, Private Jacuzzi"
                 />
               </div>
 
               <div className="form-group">
-                <label>Room Image URL</label>
-                <input 
-                  type="text" 
-                  value={roomFormData.imageUrl} 
-                  onChange={e => setRoomFormData({ ...roomFormData, imageUrl: e.target.value })}
-                />
+                <label>Room Image</label>
+                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <input
+                    id="ts-room-img-file"
+                    type="file"
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    onChange={e => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const reader = new FileReader();
+                      reader.onload = () => {
+                        if (typeof reader.result === 'string') {
+                          setRoomFormData(prev => ({ ...prev, imageUrl: reader.result }));
+                        }
+                      };
+                      reader.readAsDataURL(file);
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => document.getElementById('ts-room-img-file')?.click()}
+                    style={{ padding: '0.55rem 0.85rem', borderRadius: '8px', border: '1px solid #cbd5e1', background: '#f8fafc', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
+                  >
+                    Upload Photo
+                  </button>
+                  <input 
+                    type="text" 
+                    style={{ flex: 1, minWidth: '180px' }}
+                    value={roomFormData.imageUrl || ''} 
+                    onChange={e => setRoomFormData({ ...roomFormData, imageUrl: e.target.value })}
+                    placeholder="/hotel-images/aman-kyoto.webp"
+                  />
+                </div>
               </div>
 
               <div className="modal-actions">

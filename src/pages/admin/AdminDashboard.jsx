@@ -157,8 +157,11 @@ const AdminDashboard = () => {
   const handleSavePackagePrice = async (e) => {
     e.preventDefault();
     if (!editingPackage || !newPrice) return;
-    await dashboardService.saveAgentPackage({ ...editingPackage, price: parseFloat(newPrice) });
-    setActionMsg(`Updated package price to $${newPrice}`);
+    const parsedPrice = parseFloat(newPrice);
+    if (Number.isNaN(parsedPrice) || parsedPrice <= 0) return;
+    await dashboardService.saveAgentPackage({ ...editingPackage, price: parsedPrice });
+    setPackages(prev => prev.map(p => p.id === editingPackage.id ? { ...p, price: parsedPrice } : p));
+    setActionMsg(`Updated package price to $${parsedPrice}`);
     setEditingPackage(null);
     setNewPrice('');
     setTimeout(() => setActionMsg(''), 3000);

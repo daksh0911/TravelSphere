@@ -37,7 +37,7 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useAuth } from '../../../context/useAuth';
-import { BUILT_IN_DEMO_ACCOUNTS } from '../../../services/authService';
+import { BUILT_IN_DEMO_ACCOUNTS, changePassword } from '../../../services/authService';
 import api from '../../../services/api';
 import './Dashboard.css';
 import SmartImage from '../../../components/common/SmartImage';
@@ -111,6 +111,27 @@ const getBookingBadgeLabel = (b) => {
   return '🎫 Tour Package';
 };
 
+// Per-user localStorage key helper — prevents cross-account data bleed
+const getUserStorageKey = (email, baseKey) => {
+  if (!email) return baseKey;
+  // Simple sanitize: lowercase, replace special chars with underscore
+  const safe = String(email).trim().toLowerCase().replace(/[^a-z0-9]/g, '_');
+  return `${baseKey}_${safe}`;
+};
+
+// Read the currently-logged-in user's email from auth storage (used in lazy useState initialisers
+// that run before the React context is available)
+const getActiveEmail = () => {
+  try {
+    const raw = localStorage.getItem('travelsphere_active_user');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return parsed?.email || '';
+    }
+  } catch { /* ignore */ }
+  return '';
+};
+
 // Canonical catalog packages mapping ID to title, image and price for wishlist and explore persistence
 const CANONICAL_PACKAGES = [
   { id: 1, package_id: 1, title: 'Maldives Overwater Luxury Bungalow', price: 1045, rating: 4.9, image_url: '/package-images/1-maldives.webp', destination: 'Maldives' },
@@ -123,9 +144,10 @@ const CANONICAL_PACKAGES = [
   { id: 8, package_id: 8, title: 'Rajasthan Royal Palaces & Desert Safari', price: 1280, rating: 4.8, image_url: '/package-images/8-rajasthan.webp', destination: 'Jaipur & Udaipur, India' }
 ];
 
-const resolveWishlistFromStorage = () => {
+const resolveWishlistFromStorage = (email) => {
   try {
-    const local = JSON.parse(localStorage.getItem('ts_package_wishlist') || '[]');
+    const key = getUserStorageKey(email, 'ts_package_wishlist');
+    const local = JSON.parse(localStorage.getItem(key) || '[]');
     if (Array.isArray(local) && local.length > 0) {
       return local.map(item => {
         const numId = Number(typeof item === 'object' ? (item.package_id || item.id) : item);
@@ -547,6 +569,14 @@ const CERTIFIED_GUIDES = [
 const CustomerDashboard = () => {
   usePageTitle('My Dashboard');
   const { user, logout } = useAuth();
+  const isDemoUser = Boolean(user?.email && BUILT_IN_DEMO_ACCOUNTS[String(user.email).trim().toLowerCase()]);
+  // User-scoped storage helper — avoids data bleed between accounts
+  const userEmail = user?.email || '';
+  const tripKey    = getUserStorageKey(userEmail, 'ts_trip_requests');
+  const wishKey    = getUserStorageKey(userEmail, 'ts_package_wishlist');
+  const plansKey   = getUserStorageKey(userEmail, 'ts_customer_trip_plans');
+  const reviewsKey = getUserStorageKey(userEmail, 'ts_user_reviews');
+  const avatarKey  = getUserStorageKey(userEmail, 'ts_user_avatar');
   const { formatPrice } = useCurrency();
   const navigate = useNavigate();
 
@@ -570,12 +600,30 @@ const CustomerDashboard = () => {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showSearchRecs, setShowSearchRecs] = useState(false);
+
+  const searchRecommendations = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    const source = [
+      ...CANONICAL_PACKAGES.map(p => ({ id: `pkg-${p.id}`, title: p.title, subtitle: `${p.destination} • ${p.days || 5} Days`, price: p.price, image: p.image_url, type: 'Package', query: p.destination || p.title })),
+      { id: 'dest-kyoto', title: 'Kyoto, Japan', subtitle: 'Cultural Temples & Arashiyama', price: 1250, image: '/destination-images/kyoto.webp', type: 'Destination', query: 'Kyoto' },
+      { id: 'dest-swiss', title: 'Swiss Alps, Switzerland', subtitle: 'Glacier Express & Zermatt', price: 1680, image: '/destination-images/swiss-alps.webp', type: 'Destination', query: 'Swiss' },
+      { id: 'dest-maldives', title: 'Maldives', subtitle: 'Overwater Luxury Bungalows', price: 1850, image: '/destination-images/maldives.webp', type: 'Destination', query: 'Maldives' },
+      { id: 'dest-santorini', title: 'Santorini, Greece', subtitle: 'Caldera Sunsets & Villas', price: 1450, image: '/destination-images/santorini.webp', type: 'Destination', query: 'Santorini' }
+    ];
+    if (!q) return source.slice(0, 5);
+    return source.filter(item =>
+      item.title.toLowerCase().includes(q) ||
+      item.subtitle.toLowerCase().includes(q) ||
+      item.type.toLowerCase().includes(q)
+    ).slice(0, 6);
+  }, [searchQuery]);
   const [liveBookings, setLiveBookings] = useState(() => {
     try {
-      const stored = JSON.parse(localStorage.getItem('ts_trip_requests') || '[]');
+      const stored = JSON.parse(localStorage.getItem(getUserStorageKey(getActiveEmail(), 'ts_trip_requests')) || '[]');
       if (Array.isArray(stored) && stored.length > 0) return stored;
     } catch { /* ignore */ }
-    return DEFAULT_CUSTOMER_BOOKINGS;
+    return isDemoUser ? DEFAULT_CUSTOMER_BOOKINGS : [];
   });
 
   // Packages and trips booked by the user (only booked packages shown in reviews)
@@ -613,8 +661,9 @@ const CustomerDashboard = () => {
     return list;
   }, [liveBookings]);
   const [liveWishlist, setLiveWishlist] = useState(() => {
-    const fromStorage = resolveWishlistFromStorage();
+    const fromStorage = resolveWishlistFromStorage(getActiveEmail());
     if (fromStorage.length > 0) return fromStorage;
+    if (!isDemoUser) return [];
     return [
       { id: 1, package_id: 1, title: 'Maldives Overwater Luxury Bungalow', price: 1045, rating: 4.9, image_url: '/package-images/1-maldives.webp', destination: 'Maldives' },
       { id: 2, package_id: 2, title: 'Santorini Villa & Yacht Week', price: 1242, rating: 4.8, image_url: '/package-images/2-santorini.webp', destination: 'Santorini, Greece' }
@@ -622,9 +671,10 @@ const CustomerDashboard = () => {
   });
   const [savedTripPlans, setSavedTripPlans] = useState(() => {
     try {
-      const stored = JSON.parse(localStorage.getItem('ts_customer_trip_plans') || '[]');
+      const stored = JSON.parse(localStorage.getItem(getUserStorageKey(getActiveEmail(), 'ts_customer_trip_plans')) || '[]');
       if (Array.isArray(stored) && stored.length > 0) return stored;
     } catch { /* ignore */ }
+    if (!isDemoUser) return [];
     return [
       {
         plan_id: 1,
@@ -693,7 +743,7 @@ const CustomerDashboard = () => {
     return {
       name: user?.name || 'Alice Walker',
       phone: digits || '9876543210',
-      avatar_url: user?.avatar_url || localStorage.getItem('ts_user_avatar') || '/destination-images/swiss-alps.webp'
+      avatar_url: user?.avatar_url || localStorage.getItem(getUserStorageKey(getActiveEmail(), 'ts_user_avatar')) || '/destination-images/swiss-alps.webp'
     };
   });
   const [profileSavedMsg, setProfileSavedMsg] = useState('');
@@ -731,7 +781,7 @@ const CustomerDashboard = () => {
   // Synchronize wishlist across routes and storage
   useEffect(() => {
     const syncWishlist = () => {
-      const stored = resolveWishlistFromStorage();
+      const stored = resolveWishlistFromStorage(userEmail || getActiveEmail());
       if (stored.length > 0) setLiveWishlist(stored);
     };
     window.addEventListener('ts_wishlist_updated', syncWishlist);
@@ -740,7 +790,7 @@ const CustomerDashboard = () => {
       window.removeEventListener('ts_wishlist_updated', syncWishlist);
       window.removeEventListener('storage', syncWishlist);
     };
-  }, []);
+  }, [userEmail]);
 
   // MakeMyTrip Package Filter states for Explore tab
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -825,7 +875,7 @@ const CustomerDashboard = () => {
     setLiveBookings(prev => {
       const updated = prev.map(b => (b.booking_id === bookingId || b.id === bookingId || b.display_id === bookingId) ? { ...b, status: 'Cancelled', booking_status: 'Cancelled' } : b);
       try {
-        localStorage.setItem('ts_trip_requests', JSON.stringify(updated));
+        localStorage.setItem(tripKey, JSON.stringify(updated));
       } catch (_err) {
         void _err;
       }
@@ -879,7 +929,7 @@ const CustomerDashboard = () => {
     const updated = [newPlan, ...savedTripPlans];
     setSavedTripPlans(updated);
     try {
-      localStorage.setItem('ts_customer_trip_plans', JSON.stringify(updated));
+      localStorage.setItem(plansKey, JSON.stringify(updated));
     } catch (_err) {
       void _err;
     }
@@ -893,13 +943,13 @@ const CustomerDashboard = () => {
     const updated = savedTripPlans.filter(p => (p.plan_id !== planId && p.id !== planId));
     setSavedTripPlans(updated);
     try {
-      localStorage.setItem('ts_customer_trip_plans', JSON.stringify(updated));
+      localStorage.setItem(plansKey, JSON.stringify(updated));
     } catch (_err) {
       void _err;
     }
   };
 
-  const handleChangePassword = (e) => {
+  const handleChangePassword = async (e) => {
     e.preventDefault();
     setPasswordMsg('');
     setPasswordError('');
@@ -911,9 +961,18 @@ const CustomerDashboard = () => {
       setPasswordError('New password and confirmation do not match.');
       return;
     }
-    setPasswordMsg('🎉 Password updated successfully!');
-    setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
-    setTimeout(() => setPasswordMsg(''), 5000);
+    try {
+      const res = await changePassword({
+        email: liveUser?.email,
+        currentPassword: passwordForm.currentPassword,
+        newPassword: passwordForm.newPassword
+      });
+      setPasswordMsg(`🎉 ${res.message || 'Password updated successfully! You can now log in with your new password.'}`);
+      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      setTimeout(() => setPasswordMsg(''), 6000);
+    } catch (err) {
+      setPasswordError(err.message || 'Failed to update password.');
+    }
   };
 
   // Working Logout handler
@@ -933,7 +992,7 @@ const CustomerDashboard = () => {
         setDbUser(data.user);
         
         // Merge API bookings with any locally drafted bookings so they are never lost
-        const localRequests = JSON.parse(localStorage.getItem('ts_trip_requests') || '[]');
+        const localRequests = JSON.parse(localStorage.getItem(tripKey) || '[]');
         const combined = [...(data.bookings || [])];
         localRequests.forEach(req => {
           const reqId = req.display_id || req.id;
@@ -960,14 +1019,14 @@ const CustomerDashboard = () => {
             });
           }
         });
-        // Ensure rich authentic bookings are always available even if backend returned empty array
-        if (combined.length === 0) {
+        // Ensure rich authentic bookings are available for demo accounts even if backend returned empty array
+        if (combined.length === 0 && isDemoUser) {
           combined.push(...DEFAULT_CUSTOMER_BOOKINGS);
         }
         setLiveBookings(combined);
 
         let loadedWishlist = [];
-        const fromStorage = resolveWishlistFromStorage();
+        const fromStorage = resolveWishlistFromStorage(userEmail);
         if (fromStorage.length > 0) {
           loadedWishlist = [...fromStorage];
         }
@@ -993,34 +1052,34 @@ const CustomerDashboard = () => {
           });
         }
 
-        if (loadedWishlist.length === 0) {
+        if (loadedWishlist.length === 0 && isDemoUser) {
           loadedWishlist = [
             { id: 1, package_id: 1, title: 'Maldives Overwater Luxury Bungalow', price: 1045, rating: 4.9, image_url: '/package-images/1-maldives.webp', destination: 'Maldives' },
             { id: 2, package_id: 2, title: 'Santorini Villa & Yacht Week', price: 1242, rating: 4.8, image_url: '/package-images/2-santorini.webp', destination: 'Santorini, Greece' }
           ];
           try {
-            localStorage.setItem('ts_package_wishlist', JSON.stringify([1, 2]));
+            localStorage.setItem(wishKey, JSON.stringify([1, 2]));
           } catch { /* ignore */ }
         } else {
           try {
             const ids = loadedWishlist.map(w => Number(w.package_id || w.id)).filter(Boolean);
-            localStorage.setItem('ts_package_wishlist', JSON.stringify(ids));
+            localStorage.setItem(wishKey, JSON.stringify(ids));
           } catch { /* ignore */ }
         }
         setLiveWishlist(loadedWishlist);
 
-        const fallbackReviews = [
+        const fallbackReviews = isDemoUser ? [
           { id: 1, package_id: 3, package_title: 'Swiss Alps Scenic Glacier Express', rating: 5, comment: 'Unbelievable alpine panoramas, smooth rail journeys, and warm mountain hospitality.', created_at: '2026-10-24' },
           { id: 2, package_id: 1, package_title: 'Kyoto Culture & Sakura Blossom Tour', rating: 5, comment: 'Kenji Sato was an extraordinary tour guide. The Ryokan onsen in Aman Kyoto was life-changing.', created_at: '2026-09-15' }
-        ];
+        ] : [];
         const loadedReviews = (data.reviews && data.reviews.length > 0) ? data.reviews : fallbackReviews;
         setReviews(loadedReviews);
 
-        const fallbackNotifications = [
+        const fallbackNotifications = isDemoUser ? [
           { id: 1, title: '✈️ Boarding Pass Ready', message: 'Your e-ticket & PDF voucher for Air France AF-104 is generated and ready to download.', is_read: 0, created_at: '2026-11-20 09:30' },
           { id: 2, title: '🏨 Hotel Check-In Confirmation', message: 'Aman Kyoto confirmed your reservation for Susuki Pavilion from 15 Oct to 20 Oct.', is_read: 1, created_at: '2026-10-14 14:15' },
           { id: 3, title: '💳 Booking Payment Confirmed', message: 'Payment for Swiss Alps Glacier Express ($1,985) successfully processed.', is_read: 1, created_at: '2026-10-01 11:00' }
-        ];
+        ] : [];
         const loadedNotifications = (data.notifications && data.notifications.length > 0) ? data.notifications : fallbackNotifications;
         setNotifications(loadedNotifications);
 
@@ -1029,11 +1088,11 @@ const CustomerDashboard = () => {
         if (loadedWishlist.length > 0) {
           try {
             const wishIds = loadedWishlist.map(w => w.package_id || w.id).filter(Boolean);
-            localStorage.setItem('ts_package_wishlist', JSON.stringify(wishIds));
+            localStorage.setItem(wishKey, JSON.stringify(wishIds));
           } catch { /* ignore */ }
         }
         if (data.reviews) {
-          try { localStorage.setItem('ts_user_reviews', JSON.stringify(data.reviews)); } catch { /* ignore */ }
+          try { localStorage.setItem(reviewsKey, JSON.stringify(data.reviews)); } catch { /* ignore */ }
         }
         if (data.notifications) {
           try { localStorage.setItem('ts_user_notifications', JSON.stringify(data.notifications)); } catch { /* ignore */ }
@@ -1067,7 +1126,7 @@ const CustomerDashboard = () => {
     } catch (err) {
       console.warn('Using cached dashboard session:', err);
       try {
-        const localRequests = JSON.parse(localStorage.getItem('ts_trip_requests') || '[]');
+        const localRequests = JSON.parse(localStorage.getItem(tripKey) || '[]');
         const fallbackBookings = localRequests.length > 0 ? localRequests.map((r, i) => ({
           booking_id: r.id || r.booking_id || (101 + i),
           display_id: r.display_id || (r.id ? ('#' + r.id) : ('#TS-' + (772918 + i))),
@@ -1087,7 +1146,7 @@ const CustomerDashboard = () => {
           status: r.status || 'confirmed',
           package_image: r.package_image || r.image || '/destination-images/swiss-alps.webp',
           notes: r.notes || ''
-        })) : DEFAULT_CUSTOMER_BOOKINGS;
+        })) : (isDemoUser ? DEFAULT_CUSTOMER_BOOKINGS : []);
         setLiveBookings(fallbackBookings);
 
         // Phone number initialization in fallback
@@ -1100,21 +1159,23 @@ const CustomerDashboard = () => {
         });
 
         try {
-          const fromStorage = resolveWishlistFromStorage();
+          const fromStorage = resolveWishlistFromStorage(userEmail);
           if (fromStorage.length > 0) {
             setLiveWishlist(fromStorage);
-          } else {
+          } else if (isDemoUser) {
             const defaultCatalog = [
               { id: 1, package_id: 1, title: 'Maldives Overwater Luxury Bungalow', price: 1045, rating: 4.9, image_url: '/package-images/1-maldives.webp', destination: 'Maldives' },
               { id: 2, package_id: 2, title: 'Santorini Villa & Yacht Week', price: 1242, rating: 4.8, image_url: '/package-images/2-santorini.webp', destination: 'Santorini, Greece' }
             ];
             setLiveWishlist(defaultCatalog);
-            localStorage.setItem('ts_package_wishlist', JSON.stringify([1, 2]));
+            localStorage.setItem(wishKey, JSON.stringify([1, 2]));
+          } else {
+            setLiveWishlist([]);
           }
         } catch { /* ignore */ }
 
         try {
-          const localReviews = JSON.parse(localStorage.getItem('ts_user_reviews') || '[]');
+          const localReviews = JSON.parse(localStorage.getItem(reviewsKey) || '[]');
           if (localReviews.length > 0) {
             setReviews(localReviews);
           }
@@ -1205,9 +1266,9 @@ const CustomerDashboard = () => {
 
     // Keep localStorage synchronized across packages and dashboard
     try {
-      const local = JSON.parse(localStorage.getItem('ts_package_wishlist') || '[]');
+      const local = JSON.parse(localStorage.getItem(wishKey) || '[]');
       if (!local.includes(pkgId)) local.push(pkgId);
-      localStorage.setItem('ts_package_wishlist', JSON.stringify(local));
+      localStorage.setItem(wishKey, JSON.stringify(local));
     } catch { /* ignore */ }
 
     try {
@@ -1233,8 +1294,8 @@ const CustomerDashboard = () => {
   const handleRemoveFromWishlist = async (pkgId) => {
     // Keep localStorage synchronized
     try {
-      const local = JSON.parse(localStorage.getItem('ts_package_wishlist') || '[]').filter(x => Number(x) !== Number(pkgId) && x !== pkgId);
-      localStorage.setItem('ts_package_wishlist', JSON.stringify(local));
+      const local = JSON.parse(localStorage.getItem(wishKey) || '[]').filter(x => Number(x) !== Number(pkgId) && x !== pkgId);
+      localStorage.setItem(wishKey, JSON.stringify(local));
     } catch { /* ignore */ }
 
     try {
@@ -1315,10 +1376,18 @@ const CustomerDashboard = () => {
       setTimeout(() => setProfileSavedMsg(''), 4000);
     }
 
-    const updatedUser = { ...(dbUser || user || {}), name: trimmedName, phone: fullPhoneNumber };
+    const updatedUser = {
+      ...(dbUser || user || {}),
+      name: trimmedName,
+      phone: fullPhoneNumber,
+      avatar_url: profileData.avatar_url || liveUser?.avatar_url || '/destination-images/swiss-alps.webp'
+    };
     setDbUser(updatedUser);
     try {
       localStorage.setItem('ts_user_profile', JSON.stringify(updatedUser));
+      if (profileData.avatar_url) {
+        localStorage.setItem(avatarKey, profileData.avatar_url);
+      }
     } catch { /* ignore */ }
     setProfileSavedMsg('Profile updated successfully!');
   };
@@ -1359,7 +1428,7 @@ const CustomerDashboard = () => {
             updated_at: new Date().toISOString()
           } : r);
           setReviews(updated);
-          try { localStorage.setItem('ts_user_reviews', JSON.stringify(updated)); } catch { /* ignore */ }
+          try { localStorage.setItem(reviewsKey, JSON.stringify(updated)); } catch { /* ignore */ }
           setEditingReview(null);
           setReviewForm({ rating: 5, comment: '', packageId: '' });
           setReviewStatusMsg('✓ Review updated successfully in your account!');
@@ -1389,7 +1458,7 @@ const CustomerDashboard = () => {
           };
           const next = [newRev, ...reviews];
           setReviews(next);
-          try { localStorage.setItem('ts_user_reviews', JSON.stringify(next)); } catch { /* ignore */ }
+          try { localStorage.setItem(reviewsKey, JSON.stringify(next)); } catch { /* ignore */ }
           setReviewForm({ rating: 5, comment: '', packageId: '' });
           setReviewStatusMsg('✓ Thank you! Your review has been submitted.');
           setIsSubmittingReview(false);
@@ -1410,7 +1479,7 @@ const CustomerDashboard = () => {
         updated_at: new Date().toISOString()
       } : r);
       setReviews(updated);
-      try { localStorage.setItem('ts_user_reviews', JSON.stringify(updated)); } catch { /* ignore */ }
+      try { localStorage.setItem(reviewsKey, JSON.stringify(updated)); } catch { /* ignore */ }
       setEditingReview(null);
       setReviewStatusMsg('✓ Review updated successfully!');
     } else {
@@ -1424,7 +1493,7 @@ const CustomerDashboard = () => {
       );
       const next = [fallbackRev, ...reviews];
       setReviews(next);
-      try { localStorage.setItem('ts_user_reviews', JSON.stringify(next)); } catch { /* ignore */ }
+      try { localStorage.setItem(reviewsKey, JSON.stringify(next)); } catch { /* ignore */ }
       setReviewStatusMsg('✓ Review submitted successfully!');
     }
     setReviewForm({ rating: 5, comment: '', packageId: '' });
@@ -1467,7 +1536,7 @@ const CustomerDashboard = () => {
     );
     const next = [quickRev, ...reviews];
     setReviews(next);
-    try { localStorage.setItem('ts_user_reviews', JSON.stringify(next)); } catch { /* ignore */ }
+    try { localStorage.setItem(reviewsKey, JSON.stringify(next)); } catch { /* ignore */ }
     setOverviewSubmitted(true);
     setOverviewComment('');
     setTimeout(() => setOverviewSubmitted(false), 4000);
@@ -1542,22 +1611,92 @@ const CustomerDashboard = () => {
         </nav>
 
         <div className="ts-header-right">
-          <div className="ts-search-pill">
+          <div className="ts-search-pill" style={{ position: 'relative' }}>
             <Search size={16} color="#94a3b8" />
             <input 
               type="text" 
               placeholder="Search trips, destination..." 
               value={searchQuery}
+              onFocus={() => setShowSearchRecs(true)}
+              onBlur={() => setTimeout(() => setShowSearchRecs(false), 180)}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
                 setPkgSearch(e.target.value);
+                setShowSearchRecs(true);
               }}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
+                  setShowSearchRecs(false);
                   setActiveTab('explore');
                 }
               }}
             />
+            {showSearchRecs && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 'calc(100% + 8px)',
+                  left: 0,
+                  width: '320px',
+                  maxWidth: '90vw',
+                  background: '#ffffff',
+                  borderRadius: '14px',
+                  border: '1px solid #e2e8f0',
+                  boxShadow: '0 20px 40px -15px rgba(15, 23, 42, 0.2)',
+                  zIndex: 1200,
+                  padding: '0.5rem',
+                  textAlign: 'left'
+                }}
+              >
+                <div style={{ fontSize: '0.7rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.06em', padding: '0.35rem 0.6rem' }}>
+                  {searchQuery.trim() ? 'Matching Recommendations' : 'Recommended Destinations & Packages'}
+                </div>
+                {searchRecommendations.length > 0 ? (
+                  searchRecommendations.map(rec => (
+                    <button
+                      key={rec.id}
+                      type="button"
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        setSearchQuery(rec.query);
+                        setPkgSearch(rec.query);
+                        setShowSearchRecs(false);
+                        setActiveTab('explore');
+                      }}
+                      style={{
+                        width: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.65rem',
+                        padding: '0.5rem 0.6rem',
+                        background: 'transparent',
+                        border: 'none',
+                        borderRadius: '10px',
+                        cursor: 'pointer',
+                        textAlign: 'left'
+                      }}
+                    >
+                      <SmartImage src={rec.image} alt={rec.title} style={{ width: 38, height: 38, borderRadius: '8px', objectFit: 'cover', flexShrink: 0 }} />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {rec.title}
+                        </div>
+                        <div style={{ fontSize: '0.72rem', color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {rec.type} • {rec.subtitle}
+                        </div>
+                      </div>
+                      <span style={{ fontSize: '0.76rem', fontWeight: 800, color: '#a3704c' }}>
+                        {formatPrice(rec.price)}
+                      </span>
+                    </button>
+                  ))
+                ) : (
+                  <div style={{ padding: '0.75rem', fontSize: '0.8rem', color: '#64748b', textAlign: 'center' }}>
+                    No matching destinations found. Press Enter to search all packages.
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* NOTIFICATION BELL WITH DROPDOWN */}
@@ -3779,7 +3918,7 @@ const CustomerDashboard = () => {
           )}
 
           {/* TAB 6: PROFILE & SETTINGS TAB */}
-          {activeTab === 'profile' && (
+          {(activeTab === 'profile' || activeTab === 'settings') && (
             <div className="ts-card-panel" style={{ maxWidth: '650px' }}>
               <div style={{ marginBottom: '1.25rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '0.75rem' }}>
                 <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--color-text-dark)' }}>
@@ -3862,10 +4001,10 @@ const CustomerDashboard = () => {
                     </div>
                   </div>
 
-                  {/* Profile Photo (avatar_url) */}
+                  {/* Profile Photo (File Manager Upload or URL) */}
                   <div>
                     <label style={{ fontSize: '0.75rem', fontWeight: 800, color: '#64748b', textTransform: 'uppercase' }}>
-                      Profile Photo (Avatar URL)
+                      Profile Photo
                     </label>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.4rem', flexWrap: 'wrap' }}>
                       <img 
@@ -3874,13 +4013,57 @@ const CustomerDashboard = () => {
                         style={{ width: 56, height: 56, borderRadius: '50%', objectFit: 'cover', border: '2px solid #a3704c' }} 
                       />
                       <div style={{ flex: 1, minWidth: '220px' }}>
-                        <input 
-                          type="url" 
-                          style={{ width: '100%', padding: '0.65rem 0.85rem', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
-                          value={profileData.avatar_url || ''}
-                          onChange={e => setProfileData(prev => ({ ...prev, avatar_url: e.target.value }))}
-                          placeholder="https://example.com/photo.jpg or pick a preset"
-                        />
+                        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                          <input
+                            id="ts-avatar-file-input"
+                            type="file"
+                            accept="image/*"
+                            style={{ display: 'none' }}
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              if (file.size > 3 * 1024 * 1024) {
+                                setProfileError('Please choose an image smaller than 3 MB.');
+                                return;
+                              }
+                              const reader = new FileReader();
+                              reader.onload = () => {
+                                if (typeof reader.result === 'string') {
+                                  setProfileData(prev => ({ ...prev, avatar_url: reader.result }));
+                                  setProfileError('');
+                                  try {
+                                    localStorage.setItem(avatarKey, reader.result);
+                                  } catch { /* ignore */ }
+                                }
+                              };
+                              reader.readAsDataURL(file);
+                            }}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => document.getElementById('ts-avatar-file-input')?.click()}
+                            style={{
+                              padding: '0.6rem 0.95rem',
+                              borderRadius: '10px',
+                              border: '1px solid #a3704c',
+                              background: '#fdf8f4',
+                              color: '#855838',
+                              fontSize: '0.82rem',
+                              fontWeight: 700,
+                              cursor: 'pointer',
+                              whiteSpace: 'nowrap'
+                            }}
+                          >
+                            Upload from File Manager
+                          </button>
+                          <input 
+                            type="url" 
+                            style={{ flex: 1, minWidth: '160px', padding: '0.65rem 0.85rem', borderRadius: '10px', border: '1px solid #cbd5e1', fontSize: '0.85rem' }}
+                            value={profileData.avatar_url || ''}
+                            onChange={e => setProfileData(prev => ({ ...prev, avatar_url: e.target.value }))}
+                            placeholder="Or paste image URL / pick preset"
+                          />
+                        </div>
                         <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.4rem', flexWrap: 'wrap', alignItems: 'center' }}>
                           <span style={{ fontSize: '0.725rem', color: '#64748b' }}>Presets:</span>
                           {[

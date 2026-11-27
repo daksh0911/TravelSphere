@@ -71,6 +71,18 @@ export default function CheckoutModal({
   });
 
   useEffect(() => {
+    if (isOpen) {
+      setPaymentSuccess(null);
+      setPayError('');
+      setProcessing(false);
+      setCouponError('');
+      setAppliedCoupon(null);
+      setSelectedGuideId(bookingDetails?.guide_id || bookingDetails?.guideId || null);
+      if (user?.name) setCardName(user.name);
+    }
+  }, [isOpen, bookingDetails, user?.name]);
+
+  useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
         onClose();
@@ -193,6 +205,14 @@ export default function CheckoutModal({
 
   // Task 1: Complete Checkout & Save to Payments Table
   const handlePayAndConfirm = async () => {
+    if (method === 'card' && (!cardName.trim() || !cardNumber.trim() || !cardExpiry.trim() || !cardCvv.trim())) {
+      setPayError('Please fill in all card details before confirming payment.');
+      return;
+    }
+    if (method === 'upi' && !upiId.includes('@')) {
+      setPayError('Please enter a valid UPI ID (e.g. username@bank).');
+      return;
+    }
     setProcessing(true);
     setPayError('');
 
@@ -243,10 +263,13 @@ export default function CheckoutModal({
         transaction_ref: generateTxnRef(payRes.data?.transaction_ref || payRes.data?.transactionRef)
       };
 
-      // Sync local storage for offline responsiveness
+      // Sync local storage for offline responsiveness (user-scoped to avoid cross-account bleed)
       try {
-        const stored = JSON.parse(localStorage.getItem('ts_trip_requests') || '[]');
-        localStorage.setItem('ts_trip_requests', JSON.stringify([confirmedBooking, ...stored]));
+        const tripKey = user?.email
+          ? `ts_trip_requests_${String(user.email).trim().toLowerCase().replace(/[^a-z0-9]/g, '_')}`
+          : 'ts_trip_requests';
+        const stored = JSON.parse(localStorage.getItem(tripKey) || '[]');
+        localStorage.setItem(tripKey, JSON.stringify([confirmedBooking, ...stored]));
       } catch { /* ignore */ }
 
       setPaymentSuccess(confirmedBooking);
@@ -272,8 +295,11 @@ export default function CheckoutModal({
       };
 
       try {
-        const stored = JSON.parse(localStorage.getItem('ts_trip_requests') || '[]');
-        localStorage.setItem('ts_trip_requests', JSON.stringify([fallbackTxn, ...stored]));
+        const tripKey = user?.email
+          ? `ts_trip_requests_${String(user.email).trim().toLowerCase().replace(/[^a-z0-9]/g, '_')}`
+          : 'ts_trip_requests';
+        const stored = JSON.parse(localStorage.getItem(tripKey) || '[]');
+        localStorage.setItem(tripKey, JSON.stringify([fallbackTxn, ...stored]));
       } catch { /* ignore */ }
 
       setPaymentSuccess(fallbackTxn);

@@ -146,8 +146,16 @@ export const loginUser = async (credentials) => {
 
   // 2. Offline Fallback for Demo Accounts (All 6 Roles)
   const demoProfile = BUILT_IN_DEMO_ACCOUNTS[cleanEmail];
+  let demoPasswordOverrides = {};
+  try {
+    demoPasswordOverrides = JSON.parse(localStorage.getItem('ts_demo_password_overrides') || '{}');
+  } catch { /* ignore */ }
+  const overriddenHash = demoPasswordOverrides[cleanEmail];
+  const providedDemoHash = overriddenHash ? await hashSecret(credentials.password || '') : null;
   const isDemoPasswordValid = demoProfile && (
-    demoProfile.validPasswords?.includes(credentials.password)
+    overriddenHash
+      ? overriddenHash === providedDemoHash
+      : demoProfile.validPasswords?.includes(credentials.password)
   );
 
   if (isDemoPasswordValid) {
@@ -278,6 +286,71 @@ export const loginSocialUser = async (provider) => {
       token: `mock-${provider.toLowerCase()}-token-${foundUser.id}`
     };
   }
+};
+
+export const changePassword = async ({ email, currentPassword, newPassword }) => {
+  const cleanEmail = (email || '').trim().toLowerCase();
+  if (!cleanEmail) {
+    throw new Error('User email not found. Please log in again.');
+  }
+  if (!newPassword || newPassword.length < 6) {
+    throw new Error('New password must be at least 6 characters long.');
+  }
+
+  try {
+    const res = await api.post('/auth/change-password', { email: cleanEmail, currentPassword, newPassword }, { timeout: 2500 });
+    if (res.data?.success) {
+      return res.data;
+    }
+  } catch (err) {
+    if (err.response?.status === 400 || err.response?.status === 401 || err.response?.status === 403) {
+      throw new Error(err.response.data?.message || 'Current password is incorrect.', { cause: err });
+    }
+    // Offline fallback below
+  }
+
+  const currentHash = await hashSecret(currentPassword || '');
+  const newHash = await hashSecret(newPassword);
+
+  // 1. Check demo account
+  const demoProfile = BUILT_IN_DEMO_ACCOUNTS[cleanEmail];
+  if (demoProfile) {
+    let overrides = {};
+    try {
+      overrides = JSON.parse(localStorage.getItem('ts_demo_password_overrides') || '{}');
+    } catch { /* ignore */ }
+    const existingOverride = overrides[cleanEmail];
+    const validCurrent = existingOverride
+      ? existingOverride === currentHash
+      : demoProfile.validPasswords?.includes(currentPassword);
+    if (!validCurrent) {
+      throw new Error('Current password is incorrect.');
+    }
+    overrides[cleanEmail] = newHash;
+    localStorage.setItem('ts_demo_password_overrides', JSON.stringify(overrides));
+    return { success: true, message: 'Password updated successfully! You can now log in with your new password.' };
+  }
+
+  // 2. Check locally registered accounts
+  const localUsers = getLocalUsers();
+  const userIndex = localUsers.findIndex(u => (u.email || '').trim().toLowerCase() === cleanEmail);
+  if (userIndex !== -1) {
+    const target = localUsers[userIndex];
+    const matchesHash = target.passwordHash && target.passwordHash === currentHash;
+    const matchesLegacy = target.password && target.password === currentPassword;
+    if ((target.passwordHash || target.password) && !matchesHash && !matchesLegacy) {
+      throw new Error('Current password is incorrect.');
+    }
+    localUsers[userIndex] = {
+      ...target,
+      passwordHash: newHash
+    };
+    delete localUsers[userIndex].password;
+    saveLocalUsers(localUsers);
+    return { success: true, message: 'Password updated successfully! You can now log in with your new password.' };
+  }
+
+  throw new Error('Account record not found. Please log in again.');
 };
 
 export const fetchAllUsers = async () => {
